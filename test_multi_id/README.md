@@ -25,3 +25,14 @@ Dans un autre terminal, on lance le noeud `listener` :
 ```bash
 ROS_DOMAIN_ID=3 ros2 run demo_nodes_py listener
 ```
+
+
+## Test avec turtle sim
+
+Lancement des `turtle` dans des ROS_DOMAIN_ID différent (et terminaux différents) :
+
+```bash
+ROS_DOMAIN_ID=2 ros2 run turtlesim turtlesim_node
+ROS_DOMAIN_ID=3 ros2 run turtlesim turtlesim_node
+```
+

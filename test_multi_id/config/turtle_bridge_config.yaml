@@ -1,0 +1,32 @@
+# Name of the domain bridge, used for node naming and logging
+name: turtle_bridge
+from_domain: 1
+to_domain: 2
+topics:
+  # Bridge "/target" topic from domain ID 1 to domain ID 2
+  target:
+    type: geometry_msgs/msg/PointStamped
+    from_domain: 1
+    to_domain: 2
+
+  
+  # Also bridge "/target" topic from domain ID 1 to domain ID 3
+  target:
+    type: geometry_msgs/msg/PointStamped
+    from_domain: 1
+    to_domain: 3
+
+
+  distanceToTarget:
+    type: std_msgs/msg/Float32
+    from_domain: 2
+    to_domain: 1
+
+    remap: distance2
+
+  distanceToTarget:
+    type: std_msgs/msg/Float32
+    from_domain: 3
+    to_domain: 1
+
+    remap: distance3
