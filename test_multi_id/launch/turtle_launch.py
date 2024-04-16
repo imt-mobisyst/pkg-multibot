@@ -22,7 +22,6 @@ def generate_launch_description():
     operator_domain_id_launch_arg = DeclareLaunchArgument(
         "operator_domain_id", default_value=TextSubstitution(text="1")
     )
-
     # include the launch file for the domain_bridge with given domain ids
     bridge_launch = GroupAction(
         actions=[
@@ -33,8 +32,8 @@ def generate_launch_description():
                         'launch/domain_bridge.launch.xml')),
                 launch_arguments={
                     'config':  os.path.join(get_package_share_directory('test_multi_id'), 'config/turtle_bridge_config.yaml'),
-                    'from_domain': LaunchConfiguration('bot_domain_id'),
-                    'to_domain': LaunchConfiguration('operator_domain_id')
+                    'to_domain': LaunchConfiguration('bot_domain_id'),
+                    'from_domain': LaunchConfiguration('operator_domain_id')
                 }.items()
             )
         ]
@@ -45,12 +44,16 @@ def generate_launch_description():
         package='turtlesim',
         executable='turtlesim_node',
         name='turtle'
+        # parameters=[{
+        #     "background_r": LaunchConfiguration('background_r'),
+        # }]
     )
 
     controller_node = Node(
         package='test_multi_id',
         executable='turtle_controller.py',
-        name='turtle_controller'
+        name='turtle_controller',
+        # arguments=['--ros-args', '--log-level', 'DEBUG']
     )
 
   
