@@ -2,6 +2,11 @@
 
 On utilise la librairie [domain_bridge](https://github.com/ros2/domain_bridge/blob/main/doc/design.md) qui permet de lancer plusieurs noeuds dans un même processus et ainsi pouvoir "bridge" des topics d'un DOMAIN_ID vers un autre.
 
+Pour l'installer : 
+```bash
+apt install ros-iron-domain-bridge
+```
+
 ## Test simple avec un talker et listener
 
 Il suffit de créer un fichier de configuration qui indique quels topics transmettre, de quel DOMAIN_ID et vers quel DOMAIN_ID *(cf [talker_bridge_config.yaml](./config/talker_bridge_config.yaml))*
