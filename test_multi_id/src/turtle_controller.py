@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 import rclpy
 from rclpy.node import Node
+from os import getenv
 
 import numpy as np
 
-from std_msgs.msg import Float32
+from test_multi_id_interfaces.msg import DistanceToTarget
 from geometry_msgs.msg import PointStamped, Twist
 from turtlesim.msg import Pose
 
@@ -18,7 +19,7 @@ class TurtleFollow(Node):
         self.create_subscription(Pose, '/turtle1/pose', self.pose_callback, 10)
 
         # Init publishers
-        self.distanceToTargetPublisher = self.create_publisher(Float32, '/distanceToTarget', 10)
+        self.distanceToTargetPublisher = self.create_publisher(DistanceToTarget, '/distanceToTarget', 10)
         self.velPublisher = self.create_publisher(Twist, '/turtle1/cmd_vel', 10)
 
         # Init loop
@@ -36,8 +37,9 @@ class TurtleFollow(Node):
 
         distanceToPoint = np.linalg.norm(self.target - self.pos)
 
-        res = Float32()
-        res.data = distanceToPoint
+        res = DistanceToTarget()
+        res.robot_id = int(getenv('ROS_DOMAIN_ID')) # Send the domain ID that the robot is currently in
+        res.distance = distanceToPoint
 
         self.distanceToTargetPublisher.publish(res)
 

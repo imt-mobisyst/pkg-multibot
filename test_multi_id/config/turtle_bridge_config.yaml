@@ -9,4 +9,4 @@ topics:
     reversed: true
 
   distanceToTarget:
-    type: test_multi_id/msg/DistanceToTarget
+    type: test_multi_id_interfaces/msg/DistanceToTarget

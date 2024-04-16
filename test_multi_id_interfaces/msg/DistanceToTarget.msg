@@ -1,0 +1,2 @@
+int8 robot_id
+float32 distance

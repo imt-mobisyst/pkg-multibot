@@ -3,14 +3,15 @@ import rclpy
 from rclpy.node import Node
 
 from std_msgs.msg import Float32
+from test_multi_id_interfaces.msg import DistanceToTarget
 
 class Operator(Node):
 
     def __init__(self):
         super().__init__('operator')
-        self.subscription = self.create_subscription(Float32, 'distanceToTarget', self.turtleDistance_callback, 10)
+        self.subscription = self.create_subscription(DistanceToTarget, 'distanceToTarget', self.turtleDistance_callback, 10)
 
-    def turtleDistance_callback(self, msg):
+    def turtleDistance_callback(self, msg:DistanceToTarget):
         print(msg)
 
 
