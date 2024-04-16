@@ -29,10 +29,24 @@ ROS_DOMAIN_ID=3 ros2 run demo_nodes_py listener
 
 ## Test avec turtle sim
 
-Lancement des `turtle` dans des ROS_DOMAIN_ID différent (et terminaux différents) :
+Chaque "robot" sera associé à un domain ID unique *(`bot_domain_id`)*. Dans chaque domain ID, on aura un `turtlesim_node` et un `turtle_controller` (qui permettra de déplacer la turtle vers les points).
+
+Lancement des `turtle` dans des terminaux différents (les noeuds sont lancés automatiquement dans le bon ROS_DOMAIN_ID donné en argument du launchfile) :
 
 ```bash
-ROS_DOMAIN_ID=2 ros2 run turtlesim turtlesim_node
-ROS_DOMAIN_ID=3 ros2 run turtlesim turtlesim_node
+ros2 launch test_multi_id turtle_launch.py bot_domain_id:="10" operator_domain_id:="1"
+ros2 launch test_multi_id turtle_launch.py bot_domain_id:="11" operator_domain_id:="1"
 ```
 
+
+Des noeuds de bridge sont lancés automatiquement par les launchfile pour transmettre les topics nécessaires aux noeuds dans l'`operator_domain_id`. On lancera donc le noeud opérateur (qui s'occupe de gérer la priorité entre les turtle) dans ce domaine :
+
+```bash
+ROS_DOMAIN_ID=1 ros2 run test_multi_id operator.py --ros-args -p nb_robots:=2
+```
+
+
+Pour envoyer des points à atteindre, on utilise la commande suivante :
+```bash
+ROS_DOMAIN_ID=1 ros2 topic pub /target geometry_msgs/msg/PointStamped "{point: {x: 4.5, y: 9.0, z: 0.0}}" --once
+```
