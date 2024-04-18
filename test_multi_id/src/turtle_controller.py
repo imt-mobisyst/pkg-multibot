@@ -30,30 +30,35 @@ class TurtleFollow(Node):
         self.create_timer(0.01, self.loop)
 
         # Init variables
-
         self.pose = Pose()
         self.pose.x = 5.44
         self.pose.y = 5.44
+        
+        self.speedFactor = 0.2
 
         self.distanceTolerance = 0.01
 
         self.targetPos = None
-        self.goToTarget = False
+
+        self.queue = []
+
+
 
     def pose_callback(self, msg:Pose):
         self.pose = msg
 
     def target_callback(self, msg:PointStamped):
-        if(self.goToTarget and self.targetPos is None):
-            return
-        
+        # Save position        
         self.targetPos = msg.point
 
-        distanceToPoint = self.euclidean_distance(self.targetPos)
+        # Calculate cost (total distance) to go to that position
+        initPose = self.pose if len(self.queue) == 0 else self.queue[-1]
+        totalDistance = self.totalQueueDistance() + self.euclidean_distance(self.targetPos, initPose)
 
+        # Send it to the operator to see which turtle gets assigned to it
         res = DistanceToTarget()
         res.robot_id = self.ROS_DOMAIN_ID # Send the domain ID that the robot is currently in
-        res.distance = distanceToPoint
+        res.distance = totalDistance
 
         self.distanceToTargetPublisher.publish(res)
 
@@ -62,14 +67,31 @@ class TurtleFollow(Node):
         print(f"msg assigned robot {msg}")
 
         if(assignedRobotId == self.ROS_DOMAIN_ID):# If the robot assigned is this one, tell it to move
-            self.goToTarget = True
-        else: # If the robot assigned is not this one, reset
-            self.targetPos = None
+            self.queue.append(self.targetPos)
+        
+        # If the robot assigned is not this one OR the position has been added to queue => reset
+        self.targetPos = None
 
 
-    def euclidean_distance(self, targetPos):
+    def totalQueueDistance(self):
+        if len(self.queue) == 0:
+            return 0
+        
+        dist = 0
+        positions = [self.pose] + self.queue
+        for i in range(len(positions)-1):
+            dist += self.euclidean_distance(positions[i+1], positions[i])
+
+        return dist
+            
+
+
+    def euclidean_distance(self, targetPos, initPose=None):
         """Euclidean distance between current pose and the goal."""
-        return np.sqrt(np.square(targetPos.y - self.pose.y) + np.square(targetPos.x - self.pose.x))
+        if initPose is None:
+            initPose = self.pose
+
+        return np.sqrt(np.square(targetPos.y - initPose.y) + np.square(targetPos.x - initPose.x))
 
     
     def linear_vel(self, targetPos, constant=1.5):
@@ -80,38 +102,36 @@ class TurtleFollow(Node):
         """See video: https://www.youtube.com/watch?v=Qh15Nol5htM."""
         return np.arctan2(targetPos.y - self.pose.y, targetPos.x - self.pose.x)
     
-    def angular_vel(self, goal_pose, constant=6):
+    def angular_vel(self, goal_pose, constant=10):
         """See video: https://www.youtube.com/watch?v=Qh15Nol5htM."""
         return constant * (self.steering_angle(goal_pose) - self.pose.theta)
 
 
     def loop(self):
-        if self.targetPos is None or self.goToTarget == False:
+        if len(self.queue) == 0:
             # self.velPublisher.publish(Twist()) # Stop moving
             return
         
 
         vel_msg = Twist()
 
-        if self.euclidean_distance(self.targetPos) >= self.distanceTolerance:
-
-            # Porportional controller.
-            # https://en.wikipedia.org/wiki/Proportional_control
+        # Go to first pose in the queue
+        if self.euclidean_distance(self.queue[0]) >= self.distanceTolerance:
 
             # Linear velocity in the x-axis.
-            vel_msg.linear.x = self.linear_vel(self.targetPos)
+            # vel_msg.linear.x = self.linear_vel(self.queue[0]) * self.speedFactor
+            vel_msg.linear.x = 4.0 * self.speedFactor
             vel_msg.linear.y = 0.0
             vel_msg.linear.z = 0.0
 
             # Angular velocity in the z-axis.
             vel_msg.angular.x = 0.0
             vel_msg.angular.y = 0.0
-            vel_msg.angular.z = self.angular_vel(self.targetPos)
+            vel_msg.angular.z = self.angular_vel(self.queue[0])
 
         else:
             # If reached point, reset variables
-            self.targetPos = None
-            self.goToTarget = False
+            self.queue.pop(0) # Remove first pos from the queue
 
 
         self.velPublisher.publish(vel_msg)
