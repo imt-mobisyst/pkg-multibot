@@ -55,3 +55,5 @@ Pour envoyer des points à atteindre, on utilise la commande suivante :
 ```bash
 ROS_DOMAIN_ID=1 ros2 topic pub /target geometry_msgs/msg/PointStamped "{point: {x: 4.5, y: 9.0, z: 0.0}}" --once
 ```
+
+> Remarque : Au bout d'un certain temps, les noeuds "disparaissaient" : pas de crash, process qui tourne toujours, mais `ros2 node list` et `ros2 topic list` complétement vides. La seule solution qui a semblé marcher est de changer le DDS de **eProsima Fast DDS** vers **Eclipse Cyclone DDS**
