@@ -31,7 +31,7 @@ def generate_launch_description():
                         get_package_share_directory('domain_bridge'),
                         'launch/domain_bridge.launch.xml')),
                 launch_arguments={
-                    'config':  os.path.join(get_package_share_directory('test_multi_id'), 'config/turtle_bridge_config.yaml'),
+                    'config':  os.path.join(get_package_share_directory('test_multi_id'), 'config/turtlesim_bridge_config.yaml'),
                     'to_domain': LaunchConfiguration('bot_domain_id'),
                     'from_domain': LaunchConfiguration('operator_domain_id')
                 }.items()
