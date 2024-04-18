@@ -35,7 +35,7 @@ install(DIRECTORY
 # Python scripts
 install( PROGRAMS 
   src/operator.py
-  src/turtle_controller.py
+  src/turtlesim_controller.py
 DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

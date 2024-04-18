@@ -34,7 +34,7 @@ ROS_DOMAIN_ID=3 ros2 run demo_nodes_py listener
 
 ## Test avec turtle sim
 
-Chaque "robot" sera associé à un domain ID unique *(`bot_domain_id`)*. Dans chaque domain ID, on aura un `turtlesim_node` et un `turtle_controller` (qui permettra de déplacer la turtle vers les points).
+Chaque "robot" sera associé à un domain ID unique *(`bot_domain_id`)*. Dans chaque domain ID, on aura un `turtlesim_node` et un `turtlesim_controller` (qui permettra de déplacer la turtle vers les points).
 
 Lancement des `turtle` dans des terminaux différents (les noeuds sont lancés automatiquement dans le bon ROS_DOMAIN_ID donné en argument du launchfile) :
 

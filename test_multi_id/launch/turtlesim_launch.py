@@ -51,8 +51,8 @@ def generate_launch_description():
 
     controller_node = Node(
         package='test_multi_id',
-        executable='turtle_controller.py',
-        name='turtle_controller',
+        executable='turtlesim_controller.py',
+        name='turtlesim_controller',
         # arguments=['--ros-args', '--log-level', 'DEBUG']
     )
 
