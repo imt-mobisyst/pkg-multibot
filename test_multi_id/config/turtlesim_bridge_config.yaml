@@ -7,9 +7,16 @@ topics:
   target:
     type: geometry_msgs/msg/PointStamped
 
+  # Bridge "/distanceToTarget" topic from domain ID 2 to domain ID 1
   distanceToTarget:
     type: test_multi_id_interfaces/msg/DistanceToTarget
     reversed: true
 
+  # Bridge "/assignedRobot" topic from domain ID 1 to domain ID 2
   assignedRobot:
     type: std_msgs/msg/Int8
+
+  # Bridge "/turtle_marker" topic from domain ID 2 to domain ID 1
+  turtle_marker:
+    type: visualization_msgs/msg/Marker
+    reversed: true

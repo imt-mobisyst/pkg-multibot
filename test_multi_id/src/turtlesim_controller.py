@@ -9,6 +9,7 @@ from test_multi_id_interfaces.msg import DistanceToTarget
 from geometry_msgs.msg import PointStamped, Twist
 from turtlesim.msg import Pose
 from std_msgs.msg import Int8
+from visualization_msgs.msg import Marker
 
 class TurtleFollow(Node):
 
@@ -25,6 +26,7 @@ class TurtleFollow(Node):
         # Init publishers
         self.distanceToTargetPublisher = self.create_publisher(DistanceToTarget, '/distanceToTarget', 10)
         self.velPublisher = self.create_publisher(Twist, '/turtle1/cmd_vel', 10)
+        self.markerPublisher = self.create_publisher(Marker, '/turtle_marker', 10)
 
         # Init loop
         self.create_timer(0.01, self.loop)
@@ -42,10 +44,49 @@ class TurtleFollow(Node):
 
         self.queue = []
 
+    def get_quaternion_from_euler(self, roll, pitch, yaw):
+        qx = np.sin(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) - np.cos(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
+        qy = np.cos(roll/2) * np.sin(pitch/2) * np.cos(yaw/2) + np.sin(roll/2) * np.cos(pitch/2) * np.sin(yaw/2)
+        qz = np.cos(roll/2) * np.cos(pitch/2) * np.sin(yaw/2) - np.sin(roll/2) * np.sin(pitch/2) * np.cos(yaw/2)
+        qw = np.cos(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) + np.sin(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
+        
+        return [qx, qy, qz, qw]
 
 
     def pose_callback(self, msg:Pose):
         self.pose = msg
+
+        # Publish marker for vizualisation in rviz
+        marker = Marker()
+        marker.header.frame_id = "/map"
+        marker.header.stamp = self.get_clock().now().to_msg()
+
+        # set shape, Arrow: 0; Cube: 1 ; Sphere: 2 ; Cylinder: 3
+        marker.type = 0
+        marker.id = self.ROS_DOMAIN_ID
+
+        # Set the scale of the marker
+        marker.scale.x = 1.0
+        marker.scale.y = 0.3
+        marker.scale.z = 0.3
+
+        # Set the color
+        marker.color.r = 0.0
+        marker.color.g = 1.0
+        marker.color.b = 0.0
+        marker.color.a = 1.0
+
+        # Set the pose of the marker
+        q = self.get_quaternion_from_euler(0, 0, self.pose.theta)
+        marker.pose.position.x = self.pose.x
+        marker.pose.position.y = self.pose.y
+        marker.pose.position.z = 0.0
+        marker.pose.orientation.x = q[0]
+        marker.pose.orientation.y = q[1]
+        marker.pose.orientation.z = q[2]
+        marker.pose.orientation.w = q[3]
+
+        self.markerPublisher.publish(marker)
 
     def target_callback(self, msg:PointStamped):
         # Save position        
