@@ -39,8 +39,8 @@ Chaque "robot" sera associé à un domain ID unique *(`bot_domain_id`)*. Dans ch
 Lancement des `turtle` dans des terminaux différents (les noeuds sont lancés automatiquement dans le bon ROS_DOMAIN_ID donné en argument du launchfile) :
 
 ```bash
-ros2 launch test_multi_id turtle_launch.py bot_domain_id:="10" operator_domain_id:="1"
-ros2 launch test_multi_id turtle_launch.py bot_domain_id:="11" operator_domain_id:="1"
+ros2 launch test_multi_id turtlesim_bridge_launch.py bot_domain_id:="10" operator_domain_id:="1"
+ros2 launch test_multi_id turtlesim_bridge_launch.py bot_domain_id:="11" operator_domain_id:="1"
 ```
 
 

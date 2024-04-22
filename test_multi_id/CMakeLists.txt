@@ -36,7 +36,6 @@ install(DIRECTORY
 install( PROGRAMS 
   src/operator.py
   src/turtlesim_controller.py
-  src/turtle_gazebo_controller.py
 DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
