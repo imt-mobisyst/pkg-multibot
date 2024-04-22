@@ -36,11 +36,19 @@ ROS_DOMAIN_ID=3 ros2 run demo_nodes_py listener
 
 Chaque "robot" sera associé à un domain ID unique *(`bot_domain_id`)*. Dans chaque domain ID, on aura un `turtlesim_node` et un `turtlesim_controller` (qui permettra de déplacer la turtle vers les points).
 
+Il suffira de lancer le launchfile suivant qui s'occupera de tout lancer (`turtle`, `operator` et `rviz`) :
+```bash
+ros2 launch test_multi_id turtlesim_bridge_launch.py
+```
+---
+
+Si vous souhaitez cependant lancer tout cela à la main, voici la les commandes :
+
 Lancement des `turtle` dans des terminaux différents (les noeuds sont lancés automatiquement dans le bon ROS_DOMAIN_ID donné en argument du launchfile) :
 
 ```bash
-ros2 launch test_multi_id turtlesim_bridge_launch.py bot_domain_id:="10" operator_domain_id:="1"
-ros2 launch test_multi_id turtlesim_bridge_launch.py bot_domain_id:="11" operator_domain_id:="1"
+ros2 launch test_multi_id turtlesim_robot__launch.py bot_domain_id:="10" operator_domain_id:="1"
+ros2 launch test_multi_id turtlesim_robot_launch.py bot_domain_id:="11" operator_domain_id:="1"
 ```
 
 
@@ -50,10 +58,11 @@ Des noeuds de bridge sont lancés automatiquement par les launchfile pour transm
 ROS_DOMAIN_ID=1 ros2 run test_multi_id operator.py --ros-args -p nb_robots:=2
 ```
 
+---
 
 Pour envoyer des points à atteindre, on utilise la commande suivante :
 ```bash
-ROS_DOMAIN_ID=1 ros2 topic pub /target geometry_msgs/msg/PointStamped "{point: {x: 4.5, y: 9.0, z: 0.0}}" --once
+ROS_DOMAIN_ID=1 ros2 topic pub /goal_pose geometry_msgs/msg/PoseStamped "{pose: {position: {x: 9, y: 9.0, z: 0.0}}}" --once
 ```
 
 > Remarque : Au bout d'un certain temps, les noeuds "disparaissaient" : pas de crash, process qui tourne toujours, mais `ros2 node list` et `ros2 topic list` complétement vides. La seule solution qui a semblé marcher est de changer le DDS de **eProsima Fast DDS** vers **Eclipse Cyclone DDS**

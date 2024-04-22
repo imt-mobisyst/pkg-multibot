@@ -6,7 +6,7 @@ from os import getenv
 import numpy as np
 
 from test_multi_id_interfaces.msg import DistanceToTarget
-from geometry_msgs.msg import PointStamped, Twist
+from geometry_msgs.msg import PoseStamped, Twist
 from turtlesim.msg import Pose
 from std_msgs.msg import Int8
 from visualization_msgs.msg import Marker
@@ -19,7 +19,7 @@ class TurtleFollow(Node):
         self.ROS_DOMAIN_ID = int(getenv('ROS_DOMAIN_ID'))
 
         # Init subscriptions
-        self.create_subscription(PointStamped, '/target', self.target_callback, 10)
+        self.create_subscription(PoseStamped, '/goal_pose', self.target_callback, 10)
         self.create_subscription(Pose, '/turtle1/pose', self.pose_callback, 10)
         self.create_subscription(Int8, '/assignedRobot', self.assignedRobot_callback, 10)
 
@@ -88,9 +88,9 @@ class TurtleFollow(Node):
 
         self.markerPublisher.publish(marker)
 
-    def target_callback(self, msg:PointStamped):
+    def target_callback(self, msg:PoseStamped):
         # Save position        
-        self.targetPos = msg.point
+        self.targetPos = msg.pose.position
 
         # Calculate cost (total distance) to go to that position
         initPose = self.pose if len(self.queue) == 0 else self.queue[-1]

@@ -4,7 +4,7 @@ from rclpy.node import Node
 
 from std_msgs.msg import Int8
 from test_multi_id_interfaces.msg import DistanceToTarget
-from geometry_msgs.msg import PointStamped
+from geometry_msgs.msg import PoseStamped
 
 class Operator(Node):
 
@@ -17,7 +17,7 @@ class Operator(Node):
         print(f"Init node with {self.paramInt('nb_robots')} robot(s)")
 
         # Init subscriber
-        self.create_subscription(PointStamped, '/target', self.target_callback, 10)
+        self.create_subscription(PoseStamped, '/goal_pose', self.target_callback, 10)
         self.create_subscription(DistanceToTarget, '/distanceToTarget', self.turtleDistance_callback, 10)
 
         # Init publisher
@@ -26,9 +26,9 @@ class Operator(Node):
         
         self.distanceDict = {}
 
-    def target_callback(self, msg:PointStamped):
+    def target_callback(self, msg:PoseStamped):
         print("TARGET RECEIVED")
-        # Reset values in case not enough responses were received from the previous target
+        # Reset values in case not enough responses were received from the previous goal_pose
         self.distanceDict.clear()
 
 
