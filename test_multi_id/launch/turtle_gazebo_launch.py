@@ -26,13 +26,10 @@ from launch.substitutions import LaunchConfiguration, TextSubstitution
 
 
 def generate_launch_description():
-    launch_file_dir = os.path.join(get_package_share_directory('turtlebot3_gazebo'), 'launch')
     pkg = get_package_share_directory('test_multi_id')
 
     
     use_sim_time = DeclareLaunchArgument('use_sim_time', default_value=TextSubstitution(text='true'))
-    x_pose = DeclareLaunchArgument('x_pose', default_value=TextSubstitution(text='-2.0'))
-    y_pose = DeclareLaunchArgument('y_pose', default_value=TextSubstitution(text='-0.5'))
 
     world = os.path.join(
         get_package_share_directory('turtlebot3_gazebo'),
@@ -49,28 +46,10 @@ def generate_launch_description():
         }.items()
     )
 
-    # spawn_turtlebot_cmd = IncludeLaunchDescription(
-    #     PythonLaunchDescriptionSource(
-    #         os.path.join(launch_file_dir, 'spawn_turtlebot3.launch.py')
-    #     ),
-    #     launch_arguments={
-    #         'x_pose': x_pose,
-    #         'y_pose': y_pose
-    #     }.items()
-    # )
+    # TODO : Lancer les spawn turtle dans des domain ID différents
 
-    # robot_state_publisher_cmd = IncludeLaunchDescription(
-    #     PythonLaunchDescriptionSource(
-    #         os.path.join(launch_file_dir, 'robot_state_publisher.launch.py')
-    #     ),
-    #     launch_arguments={'use_sim_time': LaunchConfiguration('use_sim_time')}.items()
-    # )
 
     return LaunchDescription([
         use_sim_time,
-        x_pose,
-        y_pose,
-        gazebo,
-        # spawn_turtlebot_cmd,
-        # robot_state_publisher_cmd
+        gazebo
     ])
