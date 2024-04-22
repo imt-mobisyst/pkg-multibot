@@ -1,4 +1,3 @@
-
 import os
 
 from ament_index_python import get_package_share_directory
@@ -11,60 +10,53 @@ from launch.actions import SetEnvironmentVariable
 from launch.substitutions import LaunchConfiguration
 from launch.substitutions import TextSubstitution
 from launch_ros.actions import Node
-from launch_xml.launch_description_sources import XMLLaunchDescriptionSource
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description():
 
-    # args that can be set from the command line or a default will be used
-    bot_domain_id_launch_arg = DeclareLaunchArgument(
-        "bot_domain_id", default_value=TextSubstitution(text="2")
-    )
-    operator_domain_id_launch_arg = DeclareLaunchArgument(
-        "operator_domain_id", default_value=TextSubstitution(text="1")
-    )
-    # include the launch file for the domain_bridge with given domain ids
-    bridge_launch = GroupAction(
-        actions=[
+    turtles = []
+
+    for i in range(3):
+        turtles.append(
             IncludeLaunchDescription(
-                XMLLaunchDescriptionSource(
+                PythonLaunchDescriptionSource(
                     os.path.join(
-                        get_package_share_directory('domain_bridge'),
-                        'launch/domain_bridge.launch.xml')),
+                        get_package_share_directory('test_multi_id'),
+                        'launch/include/turtlesim_robot_launch.py')),
+
+                # Launch turtles in domain ID 10, 11 and 12
                 launch_arguments={
-                    'config':  os.path.join(get_package_share_directory('test_multi_id'), 'config/turtlesim_bridge_config.yaml'),
-                    'to_domain': LaunchConfiguration('bot_domain_id'),
-                    'from_domain': LaunchConfiguration('operator_domain_id')
+                    "bot_domain_id": str(10+i),
+                    "operator_domain_id": "1"
                 }.items()
             )
+        )
+
+    # Launch operator node in domain ID 1
+    operator_node = Node(
+        package='test_multi_id',
+        executable='operator.py',
+        name='operator',
+        parameters=[
+            {'nb_robots': 3}
         ]
     )
 
-    # start a turtlesim_node in the turtlesim1 namespace
-    turtlesim_node = Node(
-        package='turtlesim',
-        executable='turtlesim_node',
-        name='turtle'
-        # parameters=[{
-        #     "background_r": LaunchConfiguration('background_r'),
-        # }]
+    # Rviz with specific config
+    rviz_node = Node(
+        package='rviz2',
+        executable='rviz2',
+        arguments=['-d' + os.path.join(get_package_share_directory('test_multi_id'), 'config', 'turtlesim.rviz')]
     )
-
-    controller_node = Node(
-        package='test_multi_id',
-        executable='turtlesim_controller.py',
-        name='turtlesim_controller',
-        # arguments=['--ros-args', '--log-level', 'DEBUG']
-    )
-
-  
 
     return LaunchDescription([
-        SetEnvironmentVariable(name='ROS_DOMAIN_ID', value=LaunchConfiguration('bot_domain_id')),
-        bot_domain_id_launch_arg,
-        operator_domain_id_launch_arg,
-
-        bridge_launch,
+        # Turtles with corresponding bridges
+        *turtles,
         
-        turtlesim_node,
-        controller_node,
+        # Run operator in domain ID 1
+        SetEnvironmentVariable(name='ROS_DOMAIN_ID', value="1"),
+        operator_node,
+        
+        # Rviz with specific config
+        rviz_node
     ])
