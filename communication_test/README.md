@@ -34,7 +34,7 @@ ROS_DOMAIN_ID=3 ros2 run demo_nodes_py listener
 ```
 
 
-### Test avec turtle sim
+### Test avec plusieurs turtlesim
 
 Chaque "robot" sera associé à un domain ID unique *(`bot_domain_id`)*. Dans chaque domain ID, on aura un `turtlesim_node` et un `turtlesim_controller` (qui permettra de déplacer la turtle vers les points).
 
@@ -49,7 +49,7 @@ Si vous souhaitez cependant lancer tout cela à la main, voici la les commandes 
 Lancement des `turtle` dans des terminaux différents (les noeuds sont lancés automatiquement dans le bon ROS_DOMAIN_ID donné en argument du launchfile) :
 
 ```bash
-ros2 launch communication_test turtlesim_robot__launch.py bot_domain_id:="10" operator_domain_id:="1"
+ros2 launch communication_test turtlesim_bridge_robot_launch.py bot_domain_id:="10" operator_domain_id:="1"
 ros2 launch communication_test turtlesim_bridge_robot_launch.py bot_domain_id:="11" operator_domain_id:="1"
 ```
 
@@ -60,9 +60,14 @@ Des noeuds de bridge sont lancés automatiquement par les launchfile pour transm
 ROS_DOMAIN_ID=1 ros2 run communication_test operator.py --ros-args -p nb_robots:=2
 ```
 
+Lancement de rviz :
+```bash
+ROS_DOMAIN_ID=1 ros2 launch communication_test rviz_launch.py
+```
+
 ---
 
-Pour envoyer des points à atteindre, on utilise la commande suivante :
+Pour envoyer des points à atteindre, on utilisera le bouton `2D Goal Pose` de Rviz ou bien la commande suivante :
 ```bash
 ROS_DOMAIN_ID=1 ros2 topic pub /goal_pose geometry_msgs/msg/PoseStamped "{pose: {position: {x: 9, y: 9.0, z: 0.0}}}" --once
 ```
@@ -149,3 +154,52 @@ Cela se fait avec la commande suivante :
 > export FASTRTPS_DEFAULT_PROFILES_FILE=path/to/super_client_configuration_file.xml
 > ```
 > Attention cependant, vous aurez ainsi accès à tous les noeuds du graphe, **sans aucune partition du réseau**.
+
+
+### Test avec plusieurs turtlesim
+
+
+Chaque "robot" hébergera un serveur DDS permettant la communication de ses noeuds internes. Les noeuds nécessitant de communiquer avec l'extérieur (autres robots/opérateur) se connecteront au serveur DDS de l'opérateur.
+
+Il suffira de lancer le launchfile suivant qui s'occupera de tout lancer (`turtle`, `operator` et `rviz`) :
+```bash
+ros2 launch communication_test turtlesim_dds_launch.py
+```
+---
+
+Si vous souhaitez cependant lancer tout cela à la main, voici la les commandes :
+
+Lancement des serveurs DDS :
+```bash
+fastdds discovery -i 0 -l 127.0.0.1 -p 11811 # Serveur local du robot 1
+fastdds discovery -i 1 -l 127.0.0.1 -p 11812 # Serveur local du robot 2
+fastdds discovery -i 2 -l 127.0.0.1 -p 11813 # Serveur local du robot 3
+fastdds discovery -i 3 -l 127.0.0.1 -p 11814 # Serveur commun à tous, sur l'opérateur
+```
+
+Lancement des `turtle` (`turtlesim` et `turtle_controller`) dans des terminaux différents (les noeuds sont lancés automatiquement en se connectant aux bons serveurs DDS) :
+
+```bash
+ros2 launch communication_test turtlesim_dds_robot_launch.py local_dds_server:="127.0.0.1:11811" subnet_dds_server:="127.0.0.1:11814" nb_robots:="3" robot_id:="1"
+ros2 launch communication_test turtlesim_dds_robot_launch.py local_dds_server:="127.0.0.1:11812" subnet_dds_server:="127.0.0.1:11814" nb_robots:="3" robot_id:="2"
+ros2 launch communication_test turtlesim_dds_robot_launch.py local_dds_server:="127.0.0.1:11813" subnet_dds_server:="127.0.0.1:11814" nb_robots:="3" robot_id:="3"
+```
+
+Lancement du noeud opérateur :
+```bash
+export ROS_DISCOVERY_SERVER=";;;127.0.0.1:11814"
+ros2 run communication_test operator.py --ros-args -p nb_robots:=3
+```
+
+Lancement de rviz :
+```bash
+export ROS_DISCOVERY_SERVER=";;;127.0.0.1:11814"
+ros2 launch communication_test rviz_launch.py
+```
+
+---
+
+Pour envoyer des points à atteindre, on utilisera le bouton `2D Goal Pose` de Rviz ou bien la commande suivante :
+```bash
+ros2 topic pub /goal_pose geometry_msgs/msg/PoseStamped "{pose: {position: {x: 9, y: 9.0, z: 0.0}}}" --once
+```
