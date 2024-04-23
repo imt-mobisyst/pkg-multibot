@@ -68,3 +68,84 @@ ROS_DOMAIN_ID=1 ros2 topic pub /goal_pose geometry_msgs/msg/PoseStamped "{pose: 
 ```
 
 > Remarque : Au bout d'un certain temps, les noeuds "disparaissaient" : pas de crash, process qui tourne toujours, mais `ros2 node list` et `ros2 topic list` complétement vides. La seule solution qui a semblé marcher est de changer le DDS de **eProsima Fast DDS** vers **Eclipse Cyclone DDS**
+
+
+## Partitionnement des réseaux avec FastDDS server
+
+DDS est le protocole utilisé par ROS pour la communication entre les noeuds. Une partie de ce protocole consiste à chercher sur le réseau avec quels éléments un noeud est capable de communiquer, c'est le "discovery protocol".
+
+Dans notre cas, on utilise un [Discovery server](https://docs.ros.org/en/iron/Tutorials/Advanced/Discovery-Server/Discovery-Server.html) du protocole Fast DDS, afin de simuler des "routeurs" et ainsi isoler des sous réseaux DDS. Exemple :
+
+![Virtual discovery partitions](https://docs.ros.org/en/iron/_images/ds_partition_example.svg "Exemple de partitionnement DDS")
+
+### Test simple avec un talker et listener
+
+On lancera plusieurs serveurs DDS : 
+- un pour isoler un réseau "local", dont le port est `11811`. Celui-ci représentera celui qui serait sur l'un des PC d'un robot.
+- un pour le réseau commun à tous les robots, dont le port est `11812`. Celui-ci représentera celui qui serait sur le PC opérateur.
+
+```bash
+fastdds discovery -i 0 -l 127.0.0.1 -p 11811 # Local
+fastdds discovery -i 1 -l 127.0.0.1 -p 11812 # Commun
+```
+
+---
+
+**Test 1 :** On vérifie qu'un `talker` en local peut être écouté par un noeud en local et également un noeud en commun MAIS pas par un noeud de l'opérateur
+```bash
+# Simule un noeud local sur le robot
+export ROS_DISCOVERY_SERVER="127.0.0.1:11811"
+ros2 run demo_nodes_py talker
+```
+```bash
+# Simule un noeud local sur le robot
+export ROS_DISCOVERY_SERVER="127.0.0.1:11811"
+ros2 run demo_nodes_py listener
+```
+```bash
+# Simule un noeud subnet sur le robot
+export ROS_DISCOVERY_SERVER="127.0.0.1:11811;127.0.0.1:11812"
+ros2 run demo_nodes_py listener
+```
+```bash
+# Simule un noeud de l'opérateur
+export ROS_DISCOVERY_SERVER=";127.0.0.1:11812"
+ros2 run demo_nodes_py listener
+```
+
+Les 2 premiers `listeners` devraient recevoir les messages publiés, mais pas le noeud "opérateur.
+
+---
+
+**Test 2 :** On vérifie qu'un `talker` dans le réseau commun peut être écouté par un noeud en local et également un noeud en commun
+```bash
+# Simule un noeud subnet sur le robot
+export ROS_DISCOVERY_SERVER="127.0.0.1:11811;127.0.0.1:11812"
+ros2 run demo_nodes_py talker
+```
+```bash
+# Simule un noeud local sur le robot
+export ROS_DISCOVERY_SERVER="127.0.0.1:11811"
+ros2 run demo_nodes_py listener
+```
+```bash
+# Simule un autre noeud subnet sur le robot
+export ROS_DISCOVERY_SERVER="127.0.0.1:11811;127.0.0.1:11812"
+ros2 run demo_nodes_py listener
+```
+```bash
+# Simule un noeud de l'opérateur
+export ROS_DISCOVERY_SERVER=";127.0.0.1:11812"
+ros2 run demo_nodes_py listener
+```
+
+Les 3 listeners devraient recevoir les messages publiés.
+
+---
+
+> **Remarque :** Par défaut, le ROS2 CLI créé un noeud pour découvrir le reste du réseau de noeuds. Pour que cela fonctionne, il faut que le ROS2 soit configuré comme **"Super client"**.
+Cela se fait avec la commande suivante :
+> ```bash
+> export FASTRTPS_DEFAULT_PROFILES_FILE=path/to/super_client_configuration_file.xml
+> ```
+> Attention cependant, vous aurez ainsi accès à tous les noeuds du graphe, **sans aucune partition du réseau**.
