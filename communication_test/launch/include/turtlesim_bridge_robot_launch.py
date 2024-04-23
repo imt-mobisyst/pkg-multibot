@@ -44,16 +44,15 @@ def generate_launch_description():
         package='turtlesim',
         executable='turtlesim_node',
         name='turtle'
-        # parameters=[{
-        #     "background_r": LaunchConfiguration('background_r'),
-        # }]
     )
 
     controller_node = Node(
         package='communication_test',
         executable='turtlesim_controller.py',
         name='turtlesim_controller',
-        # arguments=['--ros-args', '--log-level', 'DEBUG']
+        parameters=[
+            {'robot_id': LaunchConfiguration('bot_domain_id')}
+        ]
     )
 
   

@@ -16,16 +16,17 @@ class TurtleFollow(Node):
     def __init__(self):
         super().__init__('turtle_follow')
 
-        self.ROS_DOMAIN_ID = int(getenv('ROS_DOMAIN_ID'))
+        # Declare ROS parameters
+        self.declare_parameter('robot_id', 1)
 
         # Init subscriptions
         self.create_subscription(PoseStamped, '/goal_pose', self.target_callback, 10)
-        self.create_subscription(Pose, '/turtle1/pose', self.pose_callback, 10)
+        self.create_subscription(Pose, 'turtle1/pose', self.pose_callback, 10)
         self.create_subscription(Int8, '/assignedRobot', self.assignedRobot_callback, 10)
 
         # Init publishers
         self.distanceToTargetPublisher = self.create_publisher(DistanceToTarget, '/distanceToTarget', 10)
-        self.velPublisher = self.create_publisher(Twist, '/turtle1/cmd_vel', 10)
+        self.velPublisher = self.create_publisher(Twist, 'turtle1/cmd_vel', 10)
         self.markerPublisher = self.create_publisher(Marker, '/turtle_marker', 10)
 
         # Init loop
@@ -43,6 +44,10 @@ class TurtleFollow(Node):
         self.targetPos = None
 
         self.queue = []
+
+    def paramInt(self, name):
+        return self.get_parameter(name).get_parameter_value().integer_value
+
 
     def get_quaternion_from_euler(self, roll, pitch, yaw):
         qx = np.sin(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) - np.cos(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
@@ -63,7 +68,7 @@ class TurtleFollow(Node):
 
         # set shape, Arrow: 0; Cube: 1 ; Sphere: 2 ; Cylinder: 3
         marker.type = 0
-        marker.id = self.ROS_DOMAIN_ID
+        marker.id = self.paramInt('robot_id')
 
         # Set the scale of the marker
         marker.scale.x = 1.0
@@ -98,7 +103,7 @@ class TurtleFollow(Node):
 
         # Send it to the operator to see which turtle gets assigned to it
         res = DistanceToTarget()
-        res.robot_id = self.ROS_DOMAIN_ID # Send the domain ID that the robot is currently in
+        res.robot_id = self.paramInt('robot_id') # Send the domain ID that the robot is currently in
         res.distance = totalDistance
 
         self.distanceToTargetPublisher.publish(res)
@@ -107,7 +112,7 @@ class TurtleFollow(Node):
         assignedRobotId = int(msg.data)
         print(f"msg assigned robot {msg}")
 
-        if(assignedRobotId == self.ROS_DOMAIN_ID):# If the robot assigned is this one, tell it to move
+        if(assignedRobotId == self.paramInt('robot_id')):# If the robot assigned is this one, tell it to move
             self.queue.append(self.targetPos)
         
         # If the robot assigned is not this one OR the position has been added to queue => reset
