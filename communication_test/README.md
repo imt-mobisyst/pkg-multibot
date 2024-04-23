@@ -1,4 +1,6 @@
-# Test communication multi ID
+# Test communication entre plusieurs robots
+
+## Communication multi DOMAIN_ID
 
 On utilise la librairie [domain_bridge](https://github.com/ros2/domain_bridge/blob/main/doc/design.md) qui permet de lancer plusieurs noeuds dans un même processus et ainsi pouvoir "bridge" des topics d'un DOMAIN_ID vers un autre.
 
@@ -7,7 +9,7 @@ Pour l'installer :
 apt install ros-iron-domain-bridge
 ```
 
-## Test simple avec un talker et listener
+### Test simple avec un talker et listener
 
 Il suffit de créer un fichier de configuration qui indique quels topics transmettre, de quel DOMAIN_ID et vers quel DOMAIN_ID *(cf [talker_bridge_config.yaml](./config/talker_bridge_config.yaml))*
 
@@ -32,13 +34,13 @@ ROS_DOMAIN_ID=3 ros2 run demo_nodes_py listener
 ```
 
 
-## Test avec turtle sim
+### Test avec turtle sim
 
 Chaque "robot" sera associé à un domain ID unique *(`bot_domain_id`)*. Dans chaque domain ID, on aura un `turtlesim_node` et un `turtlesim_controller` (qui permettra de déplacer la turtle vers les points).
 
 Il suffira de lancer le launchfile suivant qui s'occupera de tout lancer (`turtle`, `operator` et `rviz`) :
 ```bash
-ros2 launch test_multi_id turtlesim_bridge_launch.py
+ros2 launch communication_test turtlesim_bridge_launch.py
 ```
 ---
 
@@ -47,15 +49,15 @@ Si vous souhaitez cependant lancer tout cela à la main, voici la les commandes 
 Lancement des `turtle` dans des terminaux différents (les noeuds sont lancés automatiquement dans le bon ROS_DOMAIN_ID donné en argument du launchfile) :
 
 ```bash
-ros2 launch test_multi_id turtlesim_robot__launch.py bot_domain_id:="10" operator_domain_id:="1"
-ros2 launch test_multi_id turtlesim_robot_launch.py bot_domain_id:="11" operator_domain_id:="1"
+ros2 launch communication_test turtlesim_robot__launch.py bot_domain_id:="10" operator_domain_id:="1"
+ros2 launch communication_test turtlesim_bridge_robot_launch.py bot_domain_id:="11" operator_domain_id:="1"
 ```
 
 
 Des noeuds de bridge sont lancés automatiquement par les launchfile pour transmettre les topics nécessaires aux noeuds dans l'`operator_domain_id`. On lancera donc le noeud opérateur (qui s'occupe de gérer la priorité entre les turtle) dans ce domaine :
 
 ```bash
-ROS_DOMAIN_ID=1 ros2 run test_multi_id operator.py --ros-args -p nb_robots:=2
+ROS_DOMAIN_ID=1 ros2 run communication_test operator.py --ros-args -p nb_robots:=2
 ```
 
 ---

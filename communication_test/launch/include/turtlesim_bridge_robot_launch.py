@@ -31,7 +31,7 @@ def generate_launch_description():
                         get_package_share_directory('domain_bridge'),
                         'launch/domain_bridge.launch.xml')),
                 launch_arguments={
-                    'config':  os.path.join(get_package_share_directory('test_multi_id'), 'config/turtlesim_bridge_config.yaml'),
+                    'config':  os.path.join(get_package_share_directory('communication_test'), 'config/turtlesim_bridge_config.yaml'),
                     'to_domain': LaunchConfiguration('bot_domain_id'),
                     'from_domain': LaunchConfiguration('operator_domain_id')
                 }.items()
@@ -50,7 +50,7 @@ def generate_launch_description():
     )
 
     controller_node = Node(
-        package='test_multi_id',
+        package='communication_test',
         executable='turtlesim_controller.py',
         name='turtlesim_controller',
         # arguments=['--ros-args', '--log-level', 'DEBUG']
@@ -61,7 +61,7 @@ def generate_launch_description():
     return LaunchDescription([
         bot_domain_id_launch_arg,
         operator_domain_id_launch_arg,
-        
+
         SetEnvironmentVariable(name='ROS_DOMAIN_ID', value=LaunchConfiguration('bot_domain_id')),
 
         bridge_launch,

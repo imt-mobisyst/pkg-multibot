@@ -9,7 +9,7 @@ topics:
 
   # Bridge "/distanceToTarget" topic from domain ID 2 to domain ID 1
   distanceToTarget:
-    type: test_multi_id_interfaces/msg/DistanceToTarget
+    type: communication_test_interfaces/msg/DistanceToTarget
     reversed: true
 
   # Bridge "/assignedRobot" topic from domain ID 1 to domain ID 2

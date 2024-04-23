@@ -12,6 +12,6 @@ def generate_launch_description():
         Node(
             package='rviz2',
             executable='rviz2',
-            arguments=['-d' + os.path.join(get_package_share_directory('test_multi_id'), 'config', 'turtlesim.rviz')]
+            arguments=['-d' + os.path.join(get_package_share_directory('communication_test'), 'config', 'turtlesim.rviz')]
         )
     ])

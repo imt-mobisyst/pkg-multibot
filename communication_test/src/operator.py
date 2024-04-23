@@ -3,7 +3,7 @@ import rclpy
 from rclpy.node import Node
 
 from std_msgs.msg import Int8
-from test_multi_id_interfaces.msg import DistanceToTarget
+from communication_test_interfaces.msg import DistanceToTarget
 from geometry_msgs.msg import PoseStamped
 
 class Operator(Node):

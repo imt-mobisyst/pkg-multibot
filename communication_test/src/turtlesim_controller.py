@@ -5,7 +5,7 @@ from os import getenv
 
 import numpy as np
 
-from test_multi_id_interfaces.msg import DistanceToTarget
+from communication_test_interfaces.msg import DistanceToTarget
 from geometry_msgs.msg import PoseStamped, Twist
 from turtlesim.msg import Pose
 from std_msgs.msg import Int8

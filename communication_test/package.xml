@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>test_multi_id</name>
+  <name>communication_test</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
   <maintainer email="lucas@todo.todo">lucas</maintainer>
@@ -16,7 +16,7 @@
   <depend>std_msgs</depend>
   <depend>geometry_msgs</depend>
 
-  <exec_depend>test_multi_id_interfaces</exec_depend>
+  <exec_depend>communication_test_interfaces</exec_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

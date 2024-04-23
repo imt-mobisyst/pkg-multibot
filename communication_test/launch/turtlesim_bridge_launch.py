@@ -21,8 +21,8 @@ def generate_launch_description():
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(
                     os.path.join(
-                        get_package_share_directory('test_multi_id'),
-                        'launch/include/turtlesim_robot_launch.py')),
+                        get_package_share_directory('communication_test'),
+                        'launch/include/turtlesim_bridge_robot_launch.py')),
 
                 # Launch turtles in domain ID 10, 11 and 12
                 launch_arguments={
@@ -34,7 +34,7 @@ def generate_launch_description():
 
     # Launch operator node in domain ID 1
     operator_node = Node(
-        package='test_multi_id',
+        package='communication_test',
         executable='operator.py',
         name='operator',
         parameters=[
@@ -46,7 +46,7 @@ def generate_launch_description():
     rviz_node = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
-                get_package_share_directory('test_multi_id'),
+                get_package_share_directory('communication_test'),
                 'launch/include/rviz_launch.py')),
     )
 
