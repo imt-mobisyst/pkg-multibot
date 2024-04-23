@@ -43,10 +43,11 @@ def generate_launch_description():
     )
 
     # Rviz with specific config
-    rviz_node = Node(
-        package='rviz2',
-        executable='rviz2',
-        arguments=['-d' + os.path.join(get_package_share_directory('test_multi_id'), 'config', 'turtlesim.rviz')]
+    rviz_node = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                get_package_share_directory('test_multi_id'),
+                'launch/include/rviz_launch.py')),
     )
 
     return LaunchDescription([
