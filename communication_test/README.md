@@ -4,14 +4,18 @@
 
 On utilise la librairie [domain_bridge](https://github.com/ros2/domain_bridge/blob/main/doc/design.md) qui permet de lancer plusieurs noeuds dans un même processus et ainsi pouvoir "bridge" des topics d'un DOMAIN_ID vers un autre.
 
+![domain_brige example](https://github.com/ros2/domain_bridge/raw/main/doc/topic_example.png)
+
 Pour l'installer : 
 ```bash
 apt install ros-iron-domain-bridge
 ```
 
+> **Remarque :** La librairie ne semble plus maintenue : [dernier commit](https://github.com/ros2/domain_bridge/commit/64e34de40218909b91057c368c10d4ce584af612) le 2 janvier 2023. Peut-être faudrait-il regarder [DDS Router](https://github.com/eProsima/DDS-Router) ou bien essayer de reproduire son fonctionnement au sein de nos noeuds de communication.
+
 ### Test simple avec un talker et listener
 
-Il suffit de créer un fichier de configuration qui indique quels topics transmettre, de quel DOMAIN_ID et vers quel DOMAIN_ID *(cf [talker_bridge_config.yaml](./config/talker_bridge_config.yaml))*
+Il suffit de créer un fichier de configuration qui indique quels topics transmettre, de quel `ROS_DOMAIN_ID` et vers quel `ROS_DOMAIN_ID` *(cf [talker_bridge_config.yaml](./config/talker_bridge_config.yaml))*
 
 Pour lancer le bridge, on utilise la commande suivante :
 
@@ -19,7 +23,7 @@ Pour lancer le bridge, on utilise la commande suivante :
 ros2 run domain_bridge domain_bridge <path_to>/bridge_config.yaml
 ```
 
-> On peut lancer cette commande dans un terminal dont le DOMAIN_ID est quelconque
+> On peut lancer cette commande dans un terminal dont le `ROS_DOMAIN_ID` est quelconque
 
 Dans un autre terminal, on lance le noeud `talker` :
 
@@ -44,9 +48,9 @@ ros2 launch communication_test turtlesim_bridge_launch.py
 ```
 ---
 
-Si vous souhaitez cependant lancer tout cela à la main, voici la les commandes :
+Si vous souhaitez cependant lancer tout cela à la main, voici les commandes :
 
-Lancement des `turtle` dans des terminaux différents (les noeuds sont lancés automatiquement dans le bon ROS_DOMAIN_ID donné en argument du launchfile) :
+Lancement des `turtle` dans des terminaux différents (les noeuds sont lancés automatiquement dans le bon `ROS_DOMAIN_ID` donné en argument du launchfile) :
 
 ```bash
 ros2 launch communication_test turtlesim_bridge_robot_launch.py bot_domain_id:="10" operator_domain_id:="1"
@@ -60,7 +64,7 @@ Des noeuds de bridge sont lancés automatiquement par les launchfile pour transm
 ROS_DOMAIN_ID=1 ros2 run communication_test operator.py --ros-args -p nb_robots:=2
 ```
 
-Lancement de rviz :
+Lancement de rviz dans le `ROS_DOMAIN_ID` de l'opérateur :
 ```bash
 ROS_DOMAIN_ID=1 ros2 launch communication_test rviz_launch.py
 ```
@@ -77,7 +81,7 @@ ROS_DOMAIN_ID=1 ros2 topic pub /goal_pose geometry_msgs/msg/PoseStamped "{pose: 
 
 ## Partitionnement des réseaux avec FastDDS server
 
-DDS est le protocole utilisé par ROS pour la communication entre les noeuds. Une partie de ce protocole consiste à chercher sur le réseau avec quels éléments un noeud est capable de communiquer, c'est le "discovery protocol".
+DDS est le protocole utilisé par ROS2 pour la communication entre les noeuds. Une partie de ce protocole consiste à chercher sur le réseau avec quels éléments un noeud est capable de communiquer, c'est le "discovery protocol".
 
 Dans notre cas, on utilise un [Discovery server](https://docs.ros.org/en/iron/Tutorials/Advanced/Discovery-Server/Discovery-Server.html) du protocole Fast DDS, afin de simuler des "routeurs" et ainsi isoler des sous réseaux DDS. Exemple :
 
@@ -148,18 +152,20 @@ Les 3 listeners devraient recevoir les messages publiés.
 
 ---
 
-> **Remarque :** Par défaut, le ROS2 CLI créé un noeud pour découvrir le reste du réseau de noeuds. Pour que cela fonctionne, il faut que le ROS2 soit configuré comme **"Super client"**.
-Cela se fait avec la commande suivante :
+> **Remarque :** Par défaut, ROS2 CLI créé un noeud pour découvrir le reste du réseau de noeuds. Pour que cela fonctionne, il faut que ROS2 soit configuré comme **"Super client"**.  
+Cela se fait grâce au fichier de configuration [super_client_configuration_file.xml](./config/super_client_configuration_file.xml) et la commande suivante :
 > ```bash
 > export FASTRTPS_DEFAULT_PROFILES_FILE=path/to/super_client_configuration_file.xml
+> ros2 daemon stop && ros2 daemon start # On redémarre le daemon pour s'assurer de la MAJ
 > ```
 > Attention cependant, vous aurez ainsi accès à tous les noeuds du graphe, **sans aucune partition du réseau**.
+> Pour sélectionner les serveurs DDS auxquels vous souhaitez vous connecter, vous pouvez commenter les `<RemoteServer>` non concernés.
 
 
 ### Test avec plusieurs turtlesim
 
 
-Chaque "robot" hébergera un serveur DDS permettant la communication de ses noeuds internes. Les noeuds nécessitant de communiquer avec l'extérieur (autres robots/opérateur) se connecteront au serveur DDS de l'opérateur.
+Chaque "robot" hébergera un serveur DDS "local" permettant la communication de ses noeuds internes. Les noeuds nécessitant de communiquer avec l'extérieur (autres robots/opérateur) se connecteront en plus au serveur DDS de l'opérateur.
 
 Il suffira de lancer le launchfile suivant qui s'occupera de tout lancer (`turtle`, `operator` et `rviz`) :
 ```bash
@@ -171,11 +177,13 @@ Si vous souhaitez cependant lancer tout cela à la main, voici la les commandes 
 
 Lancement des serveurs DDS :
 ```bash
-fastdds discovery -i 0 -l 127.0.0.1 -p 11811 # Serveur local du robot 1
-fastdds discovery -i 1 -l 127.0.0.1 -p 11812 # Serveur local du robot 2
-fastdds discovery -i 2 -l 127.0.0.1 -p 11813 # Serveur local du robot 3
-fastdds discovery -i 3 -l 127.0.0.1 -p 11814 # Serveur commun à tous, sur l'opérateur
+fastdds discovery -i 0 -l 127.0.0.1 -p 11811 # Serveur DDS local du robot 1
+fastdds discovery -i 1 -l 127.0.0.1 -p 11812 # Serveur DDS local du robot 2
+fastdds discovery -i 2 -l 127.0.0.1 -p 11813 # Serveur DDS local du robot 3
+fastdds discovery -i 3 -l 127.0.0.1 -p 11814 # Serveur DDS commun à tous, sur l'opérateur
 ```
+
+> **Remarque :** Ici on utilise des ports différents pour simuler les machines différentes. En pratique, chaque robot n'hébergera qu'un seul serveur DDS local, et le dernier (commun) sera sur l'opérateur.
 
 Lancement des `turtle` (`turtlesim` et `turtle_controller`) dans des terminaux différents (les noeuds sont lancés automatiquement en se connectant aux bons serveurs DDS) :
 
@@ -213,5 +221,3 @@ Il suffira de lancer le launchfile suivant qui s'occupera de tout lancer (`turtl
 ```bash
 ros2 launch communication_test turtlesim_namespace_launch.py
 ```
----
-
