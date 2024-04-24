@@ -203,3 +203,15 @@ Pour envoyer des points à atteindre, on utilisera le bouton `2D Goal Pose` de R
 ```bash
 ros2 topic pub /goal_pose geometry_msgs/msg/PoseStamped "{pose: {position: {x: 9, y: 9.0, z: 0.0}}}" --once
 ```
+
+
+## Séparation des robots avec namespaces
+
+Les namespaces permettent d'ajouter un prefix à tous les noeuds, topics, services... d'un launchfile. Ils permettent ainsi d'éviter les collisions de données entre les données de robots différents.
+
+Il suffira de lancer le launchfile suivant qui s'occupera de tout lancer (`turtle`, `operator` et `rviz`) :
+```bash
+ros2 launch communication_test turtlesim_namespace_launch.py
+```
+---
+
