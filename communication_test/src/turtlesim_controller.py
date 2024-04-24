@@ -30,7 +30,7 @@ class TurtleFollow(Node):
         self.markerPublisher = self.create_publisher(Marker, '/turtle_marker', 10)
 
         # Init loop
-        self.create_timer(0.01, self.loop)
+        self.create_timer(1/60.0, self.loop)
 
         # Init variables
         self.pose = Pose()
@@ -61,6 +61,7 @@ class TurtleFollow(Node):
     def pose_callback(self, msg:Pose):
         self.pose = msg
 
+    def publishPoseMarker(self):
         # Publish marker for vizualisation in rviz
         marker = Marker()
         marker.header.frame_id = "/map"
@@ -68,6 +69,7 @@ class TurtleFollow(Node):
 
         # set shape, Arrow: 0; Cube: 1 ; Sphere: 2 ; Cylinder: 3
         marker.type = 0
+        marker.ns = "robot" + str(self.paramInt('robot_id'))
         marker.id = self.paramInt('robot_id')
 
         # Set the scale of the marker
@@ -154,6 +156,9 @@ class TurtleFollow(Node):
 
 
     def loop(self):
+        # Publish pose marker every 0.01s
+        self.publishPoseMarker()
+
         if len(self.queue) == 0:
             # self.velPublisher.publish(Twist()) # Stop moving
             return
