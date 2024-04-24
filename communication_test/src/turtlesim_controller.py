@@ -2,6 +2,7 @@
 import rclpy
 from rclpy.node import Node
 from os import getenv
+import threading
 
 import numpy as np
 
@@ -34,8 +35,9 @@ class TurtleFollow(Node):
 
         # Init variables
         self.pose = Pose()
-        self.pose.x = 5.44
-        self.pose.y = 5.44
+        self.pose.x = 5.544444561004639
+        self.pose.y = 5.544444561004639
+        threading.Timer(1.0, self.publishPoseMarker).start() # Publish the first marker 1s after starting to let rviz launch
         
         self.speedFactor = 0.2
 
@@ -156,13 +158,13 @@ class TurtleFollow(Node):
 
 
     def loop(self):
-        # Publish pose marker every 0.01s
-        self.publishPoseMarker()
 
         if len(self.queue) == 0:
             # self.velPublisher.publish(Twist()) # Stop moving
             return
         
+        # Publish pose marker every 0.01s if the turtle is moving
+        self.publishPoseMarker()
 
         vel_msg = Twist()
 

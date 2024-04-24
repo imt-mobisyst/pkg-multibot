@@ -6,8 +6,9 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
+        - /Grid1
+        - /Grid1/Offset1
         - /Marker1
-        - /Marker1/Status1
         - /Marker1/Topic1
       Splitter Ratio: 0.5
     Tree Height: 549
@@ -43,8 +44,8 @@ Visualization Manager:
       Name: Grid
       Normal Cell Count: 0
       Offset:
-        X: 0
-        Y: 0
+        X: 5.544444561004639
+        Y: 5.544444561004639
         Z: 0
       Plane: XY
       Plane Cell Count: 10
@@ -54,7 +55,9 @@ Visualization Manager:
       Enabled: true
       Name: Marker
       Namespaces:
-        "": true
+        robot1: true
+        robot2: true
+        robot3: true
       Topic:
         Depth: 20
         Durability Policy: Volatile
@@ -118,7 +121,7 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 28.469802856445312
+      Scale: 22.96525764465332
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz_default_plugins)
       X: 6.125910758972168
