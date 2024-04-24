@@ -15,13 +15,11 @@ from launch_ros.actions import Node
 
 def create_turtle_node(context, *args, **kwargs):
     local_dds_server  =  LaunchConfiguration('local_dds_server').perform(context)
-    nb_robots         =  int(LaunchConfiguration('nb_robots').perform(context))
     robot_id          =  int(LaunchConfiguration('robot_id').perform(context))
 
     # The ROS_DISCOVERY_SERVER variable must list the servers as a list with their ID as index
     # When running in local, we need to add multiple ";" to match the many IDs
     turtle_servers = (";"*(robot_id-1)) + local_dds_server
-    print(f"{turtle_servers=}")
 
     return [    # Start a turtlesim_node in the local network
         GroupAction([
@@ -44,7 +42,6 @@ def create_controller_node(context, *args, **kwargs):
     # The ROS_DISCOVERY_SERVER variable must list the servers as a list with their ID as index
     # When running in local, we need to add multiple ";" to match the many IDs
     controller_servers = (";"*(robot_id-1)) + local_dds_server + (";"*(nb_robots+1-robot_id)) + subnet_dds_server
-    print(f"{controller_servers=}")
 
     return [GroupAction([
         SetEnvironmentVariable(name='ROS_DISCOVERY_SERVER', value=controller_servers),
@@ -60,6 +57,11 @@ def create_controller_node(context, *args, **kwargs):
 
 def generate_launch_description():
 
+    # Get nb robots param from CLI
+    nb_robots_launch_arg = DeclareLaunchArgument(
+        "nb_robots", default_value=TextSubstitution(text="3")
+    )
+    
     # args that can be set from the command line or a default will be used
     local_dds_server_launch_arg = DeclareLaunchArgument(
         "local_dds_server", default_value=TextSubstitution(text="127.0.0.1:11811")
@@ -69,11 +71,7 @@ def generate_launch_description():
     )
     robot_id_launch_arg = DeclareLaunchArgument(
         "robot_id", default_value=TextSubstitution(text="1")
-    )
-    nb_robots_launch_arg = DeclareLaunchArgument(
-        "nb_robots", default_value=TextSubstitution(text="3")
-    )
-    
+    )    
 
 
     # Start a turtlesim_node in the local network

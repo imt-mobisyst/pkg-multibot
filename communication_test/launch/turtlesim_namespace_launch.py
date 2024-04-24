@@ -5,14 +5,19 @@ from ament_index_python import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import GroupAction
 from launch.actions import IncludeLaunchDescription
+from launch.actions import OpaqueFunction
+from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node, PushRosNamespace
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
-def generate_launch_description():
+def createTurtleNodes(context):
+
+    # Get nb robots
+    nb_robots = int(LaunchConfiguration('nb_robots').perform(context))
 
     # Create turtles with their own namespace 'robotX'
     turtles = []
-    for i in range(3):
+    for i in range(nb_robots):
         turtles.append(
             GroupAction([
                 PushRosNamespace(f'robot{i}'),
@@ -30,13 +35,34 @@ def generate_launch_description():
             ])
         )
 
+    return turtles
+
+
+def createOperatorNode(context):
+    # Get values
+    nb_robots = int(LaunchConfiguration('nb_robots').perform(context))
+
+    return [Node(
+        package='communication_test',
+        executable='operator.py',
+        name='operator',
+        parameters=[
+            {'nb_robots': nb_robots}
+        ]
+    )]
+
+def generate_launch_description():
+
+    # Create turtles with their own namespace 'robotX'
+    turtles = OpaqueFunction(function=createTurtleNodes)
+
     # Launch operator node only in the common network
     operator_node = Node(
         package='communication_test',
         executable='operator.py',
         name='operator',
         parameters=[
-            {'nb_robots': 3}
+            {'nb_robots': LaunchConfiguration('nb_robots')}
         ]
     )
 
@@ -50,7 +76,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         # Turtles
-        *turtles,
+        turtles,
         
         # Run operator node
         operator_node,

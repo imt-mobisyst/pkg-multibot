@@ -7,16 +7,18 @@ from launch.actions import DeclareLaunchArgument
 from launch.actions import GroupAction
 from launch.actions import IncludeLaunchDescription
 from launch.actions import SetEnvironmentVariable
+from launch.actions import OpaqueFunction
 from launch.substitutions import LaunchConfiguration
 from launch.substitutions import TextSubstitution
 from launch_ros.actions import Node
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
-def generate_launch_description():
+def createTurtleNodes(context):
+    # Get values
+    nb_robots = int(LaunchConfiguration('nb_robots').perform(context))
 
     turtles = []
-
-    for i in range(3):
+    for i in range(nb_robots):
         turtles.append(
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(
@@ -24,7 +26,7 @@ def generate_launch_description():
                         get_package_share_directory('communication_test'),
                         'launch/include/turtlesim_bridge_robot_launch.py')),
 
-                # Launch turtles in domain ID 10, 11 and 12
+                # Launch turtles in domain ID 10, 11, 12...
                 launch_arguments={
                     "bot_domain_id": str(10+i),
                     "operator_domain_id": "1"
@@ -32,13 +34,25 @@ def generate_launch_description():
             )
         )
 
+    return turtles
+
+def generate_launch_description():
+    
+    # Get nb robots param from CLI
+    nb_robots_launch_arg = DeclareLaunchArgument(
+        "nb_robots", default_value=TextSubstitution(text="3")
+    )
+
+    # Create turtles with their own domain ID and bridge
+    turtles = OpaqueFunction(function=createTurtleNodes)
+
     # Launch operator node in domain ID 1
     operator_node = Node(
         package='communication_test',
         executable='operator.py',
         name='operator',
         parameters=[
-            {'nb_robots': 3}
+            {'nb_robots': LaunchConfiguration('nb_robots')}
         ]
     )
 
@@ -51,8 +65,10 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
+        nb_robots_launch_arg,
+
         # Turtles with corresponding bridges
-        *turtles,
+        turtles,
         
         # Run operator in domain ID 1
         SetEnvironmentVariable(name='ROS_DOMAIN_ID', value="1"),
