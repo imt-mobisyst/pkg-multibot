@@ -153,13 +153,18 @@ Les 3 listeners devraient recevoir les messages publiés.
 ---
 
 > **Remarque :** Par défaut, ROS2 CLI créé un noeud pour découvrir le reste du réseau de noeuds. Pour que cela fonctionne, il faut que ROS2 soit configuré comme **"Super client"**.  
-Cela se fait grâce au fichier de configuration [super_client_configuration_file.xml](./config/super_client_configuration_file.xml) et la commande suivante :
+Cela se fait grâce au fichier de configuration [super_client_config.xml](./config/super_client_config.xml) et la commande suivante :
 > ```bash
-> export FASTRTPS_DEFAULT_PROFILES_FILE=path/to/super_client_configuration_file.xml
+> export FASTRTPS_DEFAULT_PROFILES_FILE=path/to/super_client_config.xml
 > ros2 daemon stop && ros2 daemon start # On redémarre le daemon pour s'assurer de la MAJ
 > ```
 > Attention cependant, vous aurez ainsi accès à tous les noeuds du graphe, **sans aucune partition du réseau**.
 > Pour sélectionner les serveurs DDS auxquels vous souhaitez vous connecter, vous pouvez commenter les `<RemoteServer>` non concernés.
+> Pour avoir accès uniquement au **réseau commun sur l'opérateur**, lancez les commandes suivantes :
+> ```bash
+> export FASTRTPS_DEFAULT_PROFILES_FILE=path/to/super_client_operator_config.xml
+> ros2 daemon stop && ros2 daemon start # On redémarre le daemon pour s'assurer de la MAJ
+> ```
 
 
 ### Test avec plusieurs turtlesim
