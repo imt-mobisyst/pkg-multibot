@@ -14,6 +14,9 @@ from launch_ros.actions import Node
 from launch_xml.launch_description_sources import XMLLaunchDescriptionSource
 
 def generate_launch_description():
+    is_same_machine_launch_arg = DeclareLaunchArgument(
+        "is_same_machine", default_value="True"
+    )
 
     # args that can be set from the command line or a default will be used
     bot_domain_id_launch_arg = DeclareLaunchArgument(
@@ -58,6 +61,7 @@ def generate_launch_description():
   
 
     return LaunchDescription([
+        is_same_machine_launch_arg,
         bot_domain_id_launch_arg,
         operator_domain_id_launch_arg,
 

@@ -62,7 +62,7 @@ def createTurtleNodes(context):
                         "subnet_dds_server": "127.0.0.1:" + subnetDDSport,
                         "robot_id": str(i+1),
                         'nb_robots': str(nb_robots),
-                        "is_local": str(True)
+                        "is_same_machine": str(True)
                     }.items()
                 )
             ])

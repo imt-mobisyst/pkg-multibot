@@ -50,7 +50,7 @@ def generate_launch_description():
                 "subnet_dds_server": LaunchConfiguration('operator_server'),
                 "robot_id": str(robot_id),
                 'nb_robots': LaunchConfiguration('nb_robots'),
-                "is_local": False
+                "is_same_machine": str(False)
             }.items()
         )
     ])

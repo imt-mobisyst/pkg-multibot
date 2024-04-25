@@ -15,15 +15,17 @@ from launch_ros.actions import Node
 def create_turtle_node(context, *args, **kwargs):
     local_dds_server  =  LaunchConfiguration('local_dds_server').perform(context)
     robot_id          =  int(LaunchConfiguration('robot_id').perform(context))
-    is_local          = LaunchConfiguration('is_local').perform(context) == "True"
+    is_same_machine          = LaunchConfiguration('is_same_machine').perform(context) == "True"
 
     # The ROS_DISCOVERY_SERVER variable must list the servers as a list with their ID as index
-    if is_local:
-        # When running in local, we need to add multiple ";" to match the many IDs
+    if is_same_machine:
+        # When running on the same machine, we need to add multiple ";" to match the many IDs
         turtle_servers = (";"*(robot_id-1)) + local_dds_server
+        turtle_args = []
     else:
         # When running on a kobuki, the local DDS server has ID 0
         turtle_servers = local_dds_server
+        turtle_args = ["-platform", "offscreen"]
 
     
     return [    # Start a turtlesim_node in the local network
@@ -33,7 +35,8 @@ def create_turtle_node(context, *args, **kwargs):
                 package='turtlesim',
                 executable='turtlesim_node',
                 namespace='',
-                name='turtle'
+                name='turtle',
+                arguments=turtle_args
             )
         ])
     ]
@@ -43,11 +46,11 @@ def create_controller_node(context, *args, **kwargs):
     subnet_dds_server =  LaunchConfiguration('subnet_dds_server').perform(context)
     nb_robots         =  int(LaunchConfiguration('nb_robots').perform(context))
     robot_id          =  int(LaunchConfiguration('robot_id').perform(context))
-    is_local          = LaunchConfiguration('is_local').perform(context) == "True"
+    is_same_machine          = LaunchConfiguration('is_same_machine').perform(context) == "True"
 
     # The ROS_DISCOVERY_SERVER variable must list the servers as a list with their ID as index
-    if is_local:
-        # When running in local, we need to add multiple ";" to match the many IDs
+    if is_same_machine:
+        # When running on the same machine, we need to add multiple ";" to match the many IDs
         controller_servers = (";"*(robot_id-1)) + local_dds_server + (";"*(nb_robots+1-robot_id)) + subnet_dds_server
     else:
         # When running on a Kobuki, the local DDS server has ID 0 and the common one has ID 1 
@@ -72,8 +75,8 @@ def generate_launch_description():
         "nb_robots", default_value=TextSubstitution(text="3")
     )
 
-    is_local_launch_arg = DeclareLaunchArgument(
-        "is_local", default_value="True"
+    is_same_machine_launch_arg = DeclareLaunchArgument(
+        "is_same_machine", default_value="True"
     )
     
     # args that can be set from the command line or a default will be used
@@ -101,7 +104,7 @@ def generate_launch_description():
         subnet_dds_server_launch_arg,
         robot_id_launch_arg,
         nb_robots_launch_arg,
-        is_local_launch_arg,
+        is_same_machine_launch_arg,
 
         turtlesim_node,
         controller_node,
