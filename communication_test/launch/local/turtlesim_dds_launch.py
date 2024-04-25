@@ -54,7 +54,7 @@ def createTurtleNodes(context):
                     PythonLaunchDescriptionSource(
                         os.path.join(
                             get_package_share_directory('communication_test'),
-                            'launch/include/local/turtlesim_dds_robot_launch.py')),
+                            'launch/include/robots/turtlesim_dds_robot_launch.py')),
 
                     # Launch turtles with the correct DDS configuration
                     launch_arguments={
