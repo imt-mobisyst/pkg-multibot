@@ -16,6 +16,7 @@ class TurtleFollow(Node):
 
     def __init__(self):
         super().__init__('turtle_follow')
+        self.get_logger().info("RUNNING on DDS \"" + getenv('ROS_DISCOVERY_SERVER') + "\"")
 
         # Declare ROS parameters
         self.declare_parameter('robot_id', 1)

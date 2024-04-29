@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import os
 import rclpy
 from rclpy.node import Node
 
@@ -10,6 +11,8 @@ class Operator(Node):
 
     def __init__(self):
         super().__init__('operator')
+
+        self.get_logger().info("RUNNING on DDS \"" + os.getenv('ROS_DISCOVERY_SERVER') + "\"")
 
         # Declare ROS parameters
         self.declare_parameter('nb_robots', 2)
