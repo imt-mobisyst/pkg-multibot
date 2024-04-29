@@ -27,6 +27,7 @@ def create_turtle_node(context, *args, **kwargs):
         turtle_servers = local_dds_server
         turtle_args = ["-platform", "offscreen"]
 
+    print("Launching turtlesim_node with DDS \"" + turtle_servers + "\"")
     
     return [    # Start a turtlesim_node in the local network
         GroupAction([
@@ -55,6 +56,8 @@ def create_controller_node(context, *args, **kwargs):
     else:
         # When running on a Kobuki, the local DDS server has ID 0 and the common one has ID 1 
         controller_servers = local_dds_server + ";" + subnet_dds_server
+
+    print("Launching turtlesim_controller with DDS \"" + controller_servers + "\"")
 
     return [GroupAction([
         SetEnvironmentVariable(name='ROS_DISCOVERY_SERVER', value=controller_servers),
