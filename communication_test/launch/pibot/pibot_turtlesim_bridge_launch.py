@@ -16,7 +16,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             os.path.join(
                 get_package_share_directory('communication_test'),
-                'launch/include/robots/turtlesim_bridge_robot_launch.py')),
+                'launch/includeturtlesimsturtlesim_bridge_robot_launch.py')),
 
         # Launch turtles in domain ID relative to their name
         launch_arguments={

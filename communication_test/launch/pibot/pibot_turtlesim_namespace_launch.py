@@ -21,7 +21,7 @@ def generate_launch_description():
             PythonLaunchDescriptionSource(
                 os.path.join(
                     get_package_share_directory('communication_test'),
-                    'launch/include/robots/turtlesim_namespace_robot_launch.py')),
+                    'launch/includeturtlesimsturtlesim_namespace_robot_launch.py')),
 
             # Launch turtles with the correct DDS configuration
             launch_arguments={
