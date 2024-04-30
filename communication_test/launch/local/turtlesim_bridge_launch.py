@@ -24,7 +24,7 @@ def createTurtleNodes(context):
                 PythonLaunchDescriptionSource(
                     os.path.join(
                         get_package_share_directory('communication_test'),
-                        'launch/includeturtlesimsturtlesim_bridge_robot_launch.py')),
+                        'launch/include/turtlesims/turtlesim_bridge_robot_launch.py')),
 
                 # Launch turtles in domain ID 10, 11, 12...
                 launch_arguments={
