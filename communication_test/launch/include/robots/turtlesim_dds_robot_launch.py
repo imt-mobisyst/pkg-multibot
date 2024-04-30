@@ -12,7 +12,7 @@ from launch.substitutions import LaunchConfiguration
 from launch.substitutions import TextSubstitution
 from launch_ros.actions import Node
 
-def create_turtle_node(context, *args, **kwargs):
+def create_turtle_nodes(context, *args, **kwargs):
     local_dds_server  =  LaunchConfiguration('local_dds_server').perform(context)
     robot_id          =  int(LaunchConfiguration('robot_id').perform(context))
     is_same_machine          = LaunchConfiguration('is_same_machine').perform(context) == "True"
@@ -38,6 +38,11 @@ def create_turtle_node(context, *args, **kwargs):
                 namespace='',
                 name='turtle',
                 arguments=turtle_args
+            ),
+            Node(
+                package='communication_test',
+                executable='turtle_mvt.py',
+                name='turtle_mvt'
             )
         ])
     ]
@@ -95,7 +100,7 @@ def generate_launch_description():
 
 
     # Start a turtlesim_node in the local network
-    turtlesim_node = OpaqueFunction(function=create_turtle_node)
+    turtlesim_node = OpaqueFunction(function=create_turtle_nodes)
 
     # Start a controller node in the common network (both DDS servers)
     controller_node = OpaqueFunction(function=create_controller_node)

@@ -49,6 +49,12 @@ def generate_launch_description():
         name='turtle'
     )
 
+    turtle_mvt_node = Node(        
+        package='communication_test',
+        executable='turtle_mvt.py',
+        name='turtle_mvt',
+    )
+
     controller_node = Node(
         package='communication_test',
         executable='turtlesim_controller.py',
@@ -70,5 +76,6 @@ def generate_launch_description():
         bridge_launch,
         
         turtlesim_node,
+        turtle_mvt_node,
         controller_node,
     ])

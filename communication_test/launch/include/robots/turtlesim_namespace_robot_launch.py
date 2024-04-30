@@ -9,20 +9,20 @@ def createTurtleNode(context):
     is_same_machine = LaunchConfiguration('is_same_machine').perform(context) == "True"
 
     if is_same_machine :
-        return Node(
+        return [Node(
             package='turtlesim',
             executable='turtlesim_node',
             namespace='',
             name='turtle',
-        )
+        )]
     else:
-        return Node(
+        return [Node(
             package='turtlesim',
             executable='turtlesim_node',
             namespace='',
             name='turtle',
             arguments=['-platform', 'offscreen']
-        )
+        )]
 
 def generate_launch_description():
 
@@ -39,7 +39,7 @@ def generate_launch_description():
     turtlesim_node = OpaqueFunction(function=createTurtleNode)
 
 
-    # Start a controller node in the common network (both DDS servers)
+    # Start a controller node
     controller_node = Node(
         package='communication_test',
         executable='turtlesim_controller.py',
@@ -47,6 +47,12 @@ def generate_launch_description():
         parameters=[
             {'robot_id': LaunchConfiguration('robot_id')}
         ]
+    )
+
+    movement_node = Node(
+        package='communication_test',
+        executable='turtle_mvt.py',
+        name='turtle_mvt',
     )
     
 
@@ -58,4 +64,5 @@ def generate_launch_description():
 
         turtlesim_node,
         controller_node,
+        movement_node
     ])
