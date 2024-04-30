@@ -96,7 +96,6 @@ Dans notre cas, on utilise un [Discovery server](https://docs.ros.org/en/iron/Tu
 
 Sur notre architecture multi-robots, on obtiendrait la configuration suivante :
 <div align="center"><img src="img/dds_architecture.png" width="850" title="Architecture FastDDS Discovery Server"></div>
-![Architecture DDS](./img/dds_architecture.png)
 
 
 ### Test simple avec un talker et listener
