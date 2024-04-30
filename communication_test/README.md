@@ -4,14 +4,20 @@
 
 On utilise la librairie [domain_bridge](https://github.com/ros2/domain_bridge/blob/main/doc/design.md) qui permet de lancer plusieurs noeuds dans un même processus et ainsi pouvoir "bridge" des topics d'un DOMAIN_ID vers un autre.
 
-![domain_brige example](https://github.com/ros2/domain_bridge/raw/main/doc/topic_example.png)
+<div align="center"><img src="https://github.com/ros2/domain_bridge/raw/main/doc/topic_example.png" width="850" title="Exemple de la librairie domain_brige"></div>
 
 Pour l'installer : 
 ```bash
 apt install ros-iron-domain-bridge
 ```
 
+Sur notre architecture multi-robots, on obtiendrait la configuration suivante :
+<div align="center"><img src="img/domain_id_architecture.png" width="850" title="Exemple d'architecture multi domain ID"></div>
+
+
+
 > **Remarque :** La librairie ne semble plus maintenue : [dernier commit](https://github.com/ros2/domain_bridge/commit/64e34de40218909b91057c368c10d4ce584af612) le 2 janvier 2023. Peut-être faudrait-il regarder [DDS Router](https://github.com/eProsima/DDS-Router) ou bien essayer de reproduire son fonctionnement au sein de nos noeuds de communication.
+
 
 ### Test simple avec un talker et listener
 
@@ -85,7 +91,13 @@ DDS est le protocole utilisé par ROS2 pour la communication entre les noeuds. U
 
 Dans notre cas, on utilise un [Discovery server](https://docs.ros.org/en/iron/Tutorials/Advanced/Discovery-Server/Discovery-Server.html) du protocole Fast DDS, afin de simuler des "routeurs" et ainsi isoler des sous réseaux DDS. Exemple :
 
-![Virtual discovery partitions](https://docs.ros.org/en/iron/_images/ds_partition_example.svg "Exemple de partitionnement DDS")
+<div align="center"><img src="https://docs.ros.org/en/iron/_images/ds_partition_example.svg" width="850" title="Exemple de partitionnement DDS"></div>
+
+
+Sur notre architecture multi-robots, on obtiendrait la configuration suivante :
+<div align="center"><img src="img/dds_architecture.png" width="850" title="Architecture FastDDS Discovery Server"></div>
+![Architecture DDS](./img/dds_architecture.png)
+
 
 ### Test simple avec un talker et listener
 
