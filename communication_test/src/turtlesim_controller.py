@@ -12,14 +12,18 @@ from turtlesim.msg import Pose
 from std_msgs.msg import Int8
 from visualization_msgs.msg import Marker
 
-class TurtleFollow(Node):
+class TurtleController(Node):
 
     def __init__(self):
-        super().__init__('turtle_follow')
-        self.get_logger().info("RUNNING on DDS \"" + getenv('ROS_DISCOVERY_SERVER') + "\"")
+        super().__init__('turtle_controller')
+
+        # Log DDS server
+        if(getenv('ROS_DISCOVERY_SERVER') is not None):
+            self.get_logger().info("RUNNING on DDS \"" + getenv('ROS_DISCOVERY_SERVER') + "\"")
 
         # Declare ROS parameters
         self.declare_parameter('robot_id', 1)
+        self.get_logger().info(f"Robot {self.paramInt('robot_id')} started")
 
         # Init subscriptions
         self.create_subscription(PoseStamped, '/goal_pose', self.target_callback, 10)
@@ -161,7 +165,6 @@ class TurtleFollow(Node):
     def loop(self):
 
         if len(self.queue) == 0:
-            # self.velPublisher.publish(Twist()) # Stop moving
             return
         
         # Publish pose marker every 0.01s if the turtle is moving
@@ -173,7 +176,6 @@ class TurtleFollow(Node):
         if self.euclidean_distance(self.queue[0]) >= self.distanceTolerance:
 
             # Linear velocity in the x-axis.
-            # vel_msg.linear.x = self.linear_vel(self.queue[0]) * self.speedFactor
             vel_msg.linear.x = 4.0 * self.speedFactor
             vel_msg.linear.y = 0.0
             vel_msg.linear.z = 0.0
@@ -197,7 +199,7 @@ class TurtleFollow(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = TurtleFollow()
+    node = TurtleController()
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
