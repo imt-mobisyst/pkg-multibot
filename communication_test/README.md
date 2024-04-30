@@ -167,7 +167,7 @@ Cela se fait grâce au fichier de configuration [super_client_config.xml](./conf
 > ```
 
 
-### Test avec plusieurs turtlesim
+### Test avec plusieurs turtlesim sur une même machine
 
 
 Chaque "robot" hébergera un serveur DDS "local" permettant la communication de ses noeuds internes. Les noeuds nécessitant de communiquer avec l'extérieur (autres robots/opérateur) se connecteront en plus au serveur DDS de l'opérateur.
@@ -216,6 +216,26 @@ Pour envoyer des points à atteindre, on utilisera le bouton `2D Goal Pose` de R
 ```bash
 ros2 topic pub /goal_pose geometry_msgs/msg/PoseStamped "{pose: {position: {x: 9, y: 9.0, z: 0.0}}}" --once
 ```
+
+### Test avec plusieurs turtlesim sur des machines différentes *(pibot)*
+
+Sur chaque *pibot* on installe turtlesim :
+```bash
+sudo apt install ros-iron-turtlesim
+```
+
+On les mettra tous sur le `ROS_DOMAIN_ID=99`. On donnera une IP statique au PC opérateur (ici *`10.89.5.90`*).
+
+Sur le PC opérateur :
+```bash
+ros2 launch communication_test pibot_dds_operator.py nb_robots:="2" common_dds_ip:="10.89.5.90" common_dds_port:="11811"
+```
+
+Sur chaque *pibot* :
+```bash
+ros2 launch communication_test pibot_turtlesim_dds_launch.py nb_robots:=2 operator_server:="10.89.5.90:11811"
+```
+
 
 
 ## Séparation des robots avec namespaces
