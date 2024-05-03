@@ -1,108 +1,108 @@
-# Test communication entre plusieurs robots
+# Implementation demo of multi robot communication with ROS2
 
-## Communication multi DOMAIN_ID
+This package is a ROS2 package that implements the different solutions explained in the repository's root README.
 
-On utilise la librairie [domain_bridge](https://github.com/ros2/domain_bridge/blob/main/doc/design.md) qui permet de lancer plusieurs noeuds dans un même processus et ainsi pouvoir "bridge" des topics d'un DOMAIN_ID vers un autre.
+## Multi DOMAIN_ID communication
 
-<div align="center"><img src="https://github.com/ros2/domain_bridge/raw/main/doc/topic_example.png" width="850" title="Exemple de la librairie domain_brige"></div>
+We will be using the [domain_bridge](https://github.com/ros2/domain_bridge/blob/main/doc/design.md) library that allows us to run multiple nodes in the same OS process, in order to "bridge" topics/services/actions from one DOMAIN_ID to another one.
 
-Pour l'installer : 
+<div align="center"><img src="https://github.com/ros2/domain_bridge/raw/main/doc/topic_example.png" width="850" title="Example for the domain_brige library"></div>
+
+To install it : 
 ```bash
 apt install ros-iron-domain-bridge
 ```
 
-Sur notre architecture multi-robots, on obtiendrait la configuration suivante :
-<div align="center"><img src="img/domain_id_architecture.png" width="850" title="Exemple d'architecture multi domain ID"></div>
+
+With our multi-robot architecture, we would have the following configuration :
+<div align="center"><img src="img/domain_id_architecture.png" width="850" title="Multi domain ID architecture example"></div>
 
 
 
-> **Remarque :** La librairie ne semble plus maintenue : [dernier commit](https://github.com/ros2/domain_bridge/commit/64e34de40218909b91057c368c10d4ce584af612) le 2 janvier 2023. Peut-être faudrait-il regarder [DDS Router](https://github.com/eProsima/DDS-Router) ou bien essayer de reproduire son fonctionnement au sein de nos noeuds de communication.
+> **Note :** The library doesn't seem to be maintained any more : [last commit](https://github.com/ros2/domain_bridge/commit/64e34de40218909b91057c368c10d4ce584af612) on January 2nd 2023. Maybe have a look at [DDS Router](https://github.com/eProsima/DDS-Router) or try to reproduce how it works inside our own communication nodes.
 
 
-### Test simple avec un talker et listener
+### Simple test with a talker and a listener
 
-Il suffit de créer un fichier de configuration qui indique quels topics transmettre, de quel `ROS_DOMAIN_ID` et vers quel `ROS_DOMAIN_ID` *(cf [talker_bridge_config.yaml](./config/talker_bridge_config.yaml))*
-
+We only need to create a configuration file, telling the library which topics/services/actions need to be transmitted, from which `ROS_DOMAIN_ID` and to which `ROS_DOMAIN_ID` *(see [talker_bridge_config.yaml](./config/talker_bridge_config.yaml))*
 Pour lancer le bridge, on utilise la commande suivante :
 
 ```bash
 ros2 run domain_bridge domain_bridge <path_to>/bridge_config.yaml
 ```
 
-> On peut lancer cette commande dans un terminal dont le `ROS_DOMAIN_ID` est quelconque
+> We can run this command from any terminal, regardless of the `ROS_DOMAIN_ID`
 
-Dans un autre terminal, on lance le noeud `talker` :
+In another terminal, start the `talker` node :
 
 ```bash
 ROS_DOMAIN_ID=2 ros2 run demo_nodes_py talker
 ```
 
-Dans un autre terminal, on lance le noeud `listener` :
+In another terminal, start the `listener` node :
 
 ```bash
 ROS_DOMAIN_ID=3 ros2 run demo_nodes_py listener
 ```
 
 
-### Test avec plusieurs turtlesim
+### Test with multiple turtlesim
 
-Chaque "robot" sera associé à un domain ID unique *(`bot_domain_id`)*. Dans chaque domain ID, on aura un `turtlesim_node` et un `turtlesim_controller` (qui permettra de déplacer la turtle vers les points).
+Each "robot" will be linked to a unique domain ID *(`bot_domain_id`)*. In each domain ID, there will be a `turtlesim_node` and a `turtlesim_controller` (which will control the movement of the turtle towards the goal poses).
 
-Il suffira de lancer le launchfile suivant qui s'occupera de tout lancer (`turtle`, `operator` et `rviz`) :
+To start the demo, you can use the following command, that will take care of starting everything (`turtle`, `operator` et `rviz`) :
 ```bash
 ros2 launch communication_test turtlesim_bridge_launch.py
 ```
 ---
 
-Si vous souhaitez cependant lancer tout cela à la main, voici les commandes :
+However, if you want to manually start the nodes yourself, here are the commands :
 
-Lancement des `turtle` dans des terminaux différents (les noeuds sont lancés automatiquement dans le bon `ROS_DOMAIN_ID` donné en argument du launchfile) :
+Starting the `turtle` in different terminals (nodes will be started with the correct `ROS_DOMAIN_ID` given as an argument):
 
 ```bash
 ros2 launch communication_test turtlesim_bridge_robot_launch.py bot_domain_id:="10" operator_domain_id:="1"
 ros2 launch communication_test turtlesim_bridge_robot_launch.py bot_domain_id:="11" operator_domain_id:="1"
 ```
 
-
-Des noeuds de bridge sont lancés automatiquement par les launchfile pour transmettre les topics nécessaires aux noeuds dans l'`operator_domain_id`. On lancera donc le noeud opérateur (qui s'occupe de gérer la priorité entre les turtle) dans ce domaine :
+Bridge nodes will be started by the launchfiles to transmit the topics needed by nodes running in the `operator_domain_id`. Then, we'll start the operator node (which is responsible for managing priority between turtles) in this domain :
 
 ```bash
 ROS_DOMAIN_ID=1 ros2 run communication_test operator.py --ros-args -p nb_robots:=2
 ```
 
-Lancement de rviz dans le `ROS_DOMAIN_ID` de l'opérateur :
+Running `rviz` in the operator's `ROS_DOMAIN_ID` :
 ```bash
 ROS_DOMAIN_ID=1 ros2 launch communication_test rviz_launch.py
 ```
 
 ---
-
-Pour envoyer des points à atteindre, on utilisera le bouton `2D Goal Pose` de Rviz ou bien la commande suivante :
+In order to send goal points for the turtles to go to, you can press the `2D Goal Pose` in Rviz or run the following command :
 ```bash
 ROS_DOMAIN_ID=1 ros2 topic pub /goal_pose geometry_msgs/msg/PoseStamped "{pose: {position: {x: 9, y: 9.0, z: 0.0}}}" --once
 ```
 
-> Remarque : Au bout d'un certain temps, les noeuds "disparaissaient" : pas de crash, process qui tourne toujours, mais `ros2 node list` et `ros2 topic list` complétement vides. La seule solution qui a semblé marcher est de changer le DDS de **eProsima Fast DDS** vers **Eclipse Cyclone DDS**
+> Note : After some time, nodes were "disappearing" : they had not crashed, the processes were still running, but `ros2 node list` and `ros2 topic list` returned empty lists. The only solution that seemed to fix it was to change the DDS provider from **eProsima Fast DDS** to **Eclipse Cyclone DDS**
 
 
-## Partitionnement des réseaux avec FastDDS server
+## Network isolation withc FastDDS Discovery server
 
-DDS est le protocole utilisé par ROS2 pour la communication entre les noeuds. Une partie de ce protocole consiste à chercher sur le réseau avec quels éléments un noeud est capable de communiquer, c'est le "discovery protocol".
+DDS is the protocol used by ROS2 for communicating between nodes. One aspect of this protocol is to look for elements that a node can communicate with on the newtwork. It's the "Discovery protocol".
 
-Dans notre cas, on utilise un [Discovery server](https://docs.ros.org/en/iron/Tutorials/Advanced/Discovery-Server/Discovery-Server.html) du protocole Fast DDS, afin de simuler des "routeurs" et ainsi isoler des sous réseaux DDS. Exemple :
+In our use case, we'll use Fast DDS [Discovery server](https://docs.ros.org/en/iron/Tutorials/Advanced/Discovery-Server/Discovery-Server.html), which works similarly to a router and allows to isolate DDS subnets. Example :
 
-<div align="center"><img src="https://docs.ros.org/en/iron/_images/ds_partition_example.svg" width="850" title="Exemple de partitionnement DDS"></div>
-
-
-Sur notre architecture multi-robots, on obtiendrait la configuration suivante :
-<div align="center"><img src="img/dds_architecture.png" width="850" title="Architecture FastDDS Discovery Server"></div>
+<div align="center"><img src="https://docs.ros.org/en/iron/_images/ds_partition_example.svg" width="850" title="DDS Network isolation example"></div>
 
 
-### Test simple avec un talker et listener
+With our multi-robot architecture, we would have the following configuration :
+<div align="center"><img src="img/dds_architecture.png" width="850" title="FastDDS Discovery Server architecture"></div>
 
-On lancera plusieurs serveurs DDS : 
-- un pour isoler un réseau "local", dont le port est `11811`. Celui-ci représentera celui qui serait sur l'un des PC d'un robot.
-- un pour le réseau commun à tous les robots, dont le port est `11812`. Celui-ci représentera celui qui serait sur le PC opérateur.
+
+### Simple test with a talker and a listener
+
+We are going to start multiple DDS Discovery servers :
+- one to isolate a "local" network, which port is `11811`. This one will emulate one that would be on a robot computer.
+- one on the common network between robots, which port is `11812`. This one will emulate one that would be on the operator computer.
 
 ```bash
 fastdds discovery -i 0 -l 127.0.0.1 -p 11811 # Local
@@ -111,97 +111,101 @@ fastdds discovery -i 1 -l 127.0.0.1 -p 11812 # Commun
 
 ---
 
-**Test 1 :** On vérifie qu'un `talker` en local peut être écouté par un noeud en local et également un noeud en commun MAIS pas par un noeud de l'opérateur
+
+**Test 1 :** We check that a local `talker` node can be listened by a "local" node and a "common" node BUT not on a node on the operator
 ```bash
-# Simule un noeud local sur le robot
+# Emulates a local node on the robot
 export ROS_DISCOVERY_SERVER="127.0.0.1:11811"
 ros2 run demo_nodes_py talker
 ```
 ```bash
-# Simule un noeud local sur le robot
+# Emulates a local node on the robot
 export ROS_DISCOVERY_SERVER="127.0.0.1:11811"
 ros2 run demo_nodes_py listener
 ```
 ```bash
-# Simule un noeud subnet sur le robot
+# Emulates a subnet node on the robot
 export ROS_DISCOVERY_SERVER="127.0.0.1:11811;127.0.0.1:11812"
 ros2 run demo_nodes_py listener
 ```
 ```bash
-# Simule un noeud de l'opérateur
+# # Emulates a node on the operator
 export ROS_DISCOVERY_SERVER=";127.0.0.1:11812"
 ros2 run demo_nodes_py listener
 ```
 
-Les 2 premiers `listeners` devraient recevoir les messages publiés, mais pas le noeud "opérateur.
+The first 2 `listeners` should receive the published messages, but not the "operator" node.
 
 ---
 
-**Test 2 :** On vérifie qu'un `talker` dans le réseau commun peut être écouté par un noeud en local et également un noeud en commun
+**Test 2 :** We check that a `talker` in the common network can be listened by a local node and also another node in the common network
 ```bash
-# Simule un noeud subnet sur le robot
+# Emulates a subnet node on the robot
 export ROS_DISCOVERY_SERVER="127.0.0.1:11811;127.0.0.1:11812"
 ros2 run demo_nodes_py talker
 ```
 ```bash
-# Simule un noeud local sur le robot
+# Emulates a local node on the robot
 export ROS_DISCOVERY_SERVER="127.0.0.1:11811"
 ros2 run demo_nodes_py listener
 ```
 ```bash
-# Simule un autre noeud subnet sur le robot
+# Emulates another subnet node on the robot
 export ROS_DISCOVERY_SERVER="127.0.0.1:11811;127.0.0.1:11812"
 ros2 run demo_nodes_py listener
 ```
 ```bash
-# Simule un noeud de l'opérateur
+# Emulates a node on the operator
 export ROS_DISCOVERY_SERVER=";127.0.0.1:11812"
 ros2 run demo_nodes_py listener
 ```
 
-Les 3 listeners devraient recevoir les messages publiés.
+All 3 listeners should receive the published messages.
 
 ---
 
-> **Remarque :** Par défaut, ROS2 CLI créé un noeud pour découvrir le reste du réseau de noeuds. Pour que cela fonctionne, il faut que ROS2 soit configuré comme **"Super client"**.  
-Cela se fait grâce au fichier de configuration [super_client_config.xml](./config/super_client_config.xml) et la commande suivante :
+
+> **Note :** By default, the ROS2 CLI creates a node in order to listen for other nodes/topics in the network. For this to work with the DDS Discovery server architecture, we need to configure ROS2 as a **"Super client"**.  
+This can be done thanks to the [super_client_config.xml](./config/super_client_config.xml) configuration file and the following command :
 > ```bash
 > export FASTRTPS_DEFAULT_PROFILES_FILE=path/to/super_client_config.xml
-> ros2 daemon stop && ros2 daemon start # On redémarre le daemon pour s'assurer de la MAJ
+> ros2 daemon stop && ros2 daemon start # We restart the daemon to take the changes into account
 > ```
-> Attention cependant, vous aurez ainsi accès à tous les noeuds du graphe, **sans aucune partition du réseau**.
-> Pour sélectionner les serveurs DDS auxquels vous souhaitez vous connecter, vous pouvez commenter les `<RemoteServer>` non concernés.
-> Pour avoir accès uniquement au **réseau commun sur l'opérateur**, lancez les commandes suivantes :
+> However, be careful because you will now have access to ALL nodes in the graph, **without any isolation of the network**.  
+> In order to choose the discovery servers you want to connect to, you can comment the `<RemoteServer>` that don't interest you.  
+> If you only want access to the **common network on the operator**, run the following commands :
 > ```bash
 > export FASTRTPS_DEFAULT_PROFILES_FILE=path/to/super_client_operator_config.xml
-> ros2 daemon stop && ros2 daemon start # On redémarre le daemon pour s'assurer de la MAJ
+> ros2 daemon stop && ros2 daemon start # We restart the daemon to take the changes into account
 > ```
 
 
-### Test avec plusieurs turtlesim sur une même machine
+### Test with multiple turtlesim on the same computer
+
+Each robot will host its own "local" DDS Discovery server, allowing communication between its internal nodes. Nodes that need to communicate with the outside elements (other robots/operator) will also connect to the operator's DDS Discovery server.
 
 
-Chaque "robot" hébergera un serveur DDS "local" permettant la communication de ses noeuds internes. Les noeuds nécessitant de communiquer avec l'extérieur (autres robots/opérateur) se connecteront en plus au serveur DDS de l'opérateur.
-
-Il suffira de lancer le launchfile suivant qui s'occupera de tout lancer (`turtle`, `operator` et `rviz`) :
+To start the demo, you can use the following command, that will take care of starting everything (`turtle`, `operator` et `rviz`) :
 ```bash
 ros2 launch communication_test turtlesim_dds_launch.py
 ```
+
 ---
 
-Si vous souhaitez cependant lancer tout cela à la main, voici la les commandes :
+However, if you want to manually start the nodes yourself, here are the commands :
 
-Lancement des serveurs DDS :
+Starting the DDS Discovery servers :
 ```bash
-fastdds discovery -i 0 -l 127.0.0.1 -p 11811 # Serveur DDS local du robot 1
-fastdds discovery -i 1 -l 127.0.0.1 -p 11812 # Serveur DDS local du robot 2
-fastdds discovery -i 2 -l 127.0.0.1 -p 11813 # Serveur DDS local du robot 3
-fastdds discovery -i 3 -l 127.0.0.1 -p 11814 # Serveur DDS commun à tous, sur l'opérateur
+fastdds discovery -i 0 -l 127.0.0.1 -p 11811 # Local DDS discovery server for robot 1
+fastdds discovery -i 1 -l 127.0.0.1 -p 11812 # Local DDS discovery server for robot 1
+fastdds discovery -i 2 -l 127.0.0.1 -p 11813 # Local DDS discovery server for robot 1
+fastdds discovery -i 3 -l 127.0.0.1 -p 11814 # Common DDS discovery server, on the operator
 ```
 
-> **Remarque :** Ici on utilise des ports différents pour simuler les machines différentes. En pratique, chaque robot n'hébergera qu'un seul serveur DDS local, et le dernier (commun) sera sur l'opérateur.
+> **Note :** Here, in this demo, we use different ports to emulate different machines. In reality, each robot will only host one local DDS Discovery server, and the last one will be hosted on the operator.
 
-Lancement des `turtle` (`turtlesim` et `turtle_controller`) dans des terminaux différents (les noeuds sont lancés automatiquement en se connectant aux bons serveurs DDS) :
+
+Starting the `turtle` (`turtlesim` et `turtle_controller`) in different terminals (nodes will be started connecting automatically to the correct DDS Discovery server(s)) :
 
 ```bash
 ros2 launch communication_test turtlesim_dds_robot_launch.py local_dds_server:="127.0.0.1:11811" subnet_dds_server:="127.0.0.1:11814" nb_robots:="3" robot_id:="1"
@@ -209,13 +213,13 @@ ros2 launch communication_test turtlesim_dds_robot_launch.py local_dds_server:="
 ros2 launch communication_test turtlesim_dds_robot_launch.py local_dds_server:="127.0.0.1:11813" subnet_dds_server:="127.0.0.1:11814" nb_robots:="3" robot_id:="3"
 ```
 
-Lancement du noeud opérateur :
+Starting the operator node :
 ```bash
 export ROS_DISCOVERY_SERVER=";;;127.0.0.1:11814"
 ros2 run communication_test operator.py --ros-args -p nb_robots:=3
 ```
 
-Lancement de rviz :
+Starting rviz :
 ```bash
 export ROS_DISCOVERY_SERVER=";;;127.0.0.1:11814"
 ros2 launch communication_test rviz_launch.py
@@ -223,37 +227,37 @@ ros2 launch communication_test rviz_launch.py
 
 ---
 
-Pour envoyer des points à atteindre, on utilisera le bouton `2D Goal Pose` de Rviz ou bien la commande suivante :
+In order to send goal points for the turtles to go to, you can press the `2D Goal Pose` in Rviz or run the following command :
 ```bash
 ros2 topic pub /goal_pose geometry_msgs/msg/PoseStamped "{pose: {position: {x: 9, y: 9.0, z: 0.0}}}" --once
 ```
 
-### Test avec plusieurs turtlesim sur des machines différentes *(pibot)*
+### Test with multiple turtlesim on different computers *(pibot)*
 
-Sur chaque *pibot* on installe turtlesim :
+First we need to install the `turtlesim` library on each *pibot* :
 ```bash
 sudo apt install ros-iron-turtlesim
 ```
 
-On les mettra tous sur le `ROS_DOMAIN_ID=99`. On donnera une IP statique au PC opérateur (ici *`10.89.5.90`*).
+They will all be setup on `ROS_DOMAIN_ID=99`. The operator PC will have a static IP address (here it's *`10.89.5.90`*).
 
-Sur le PC opérateur :
+On the operator PC :
 ```bash
 ros2 launch communication_test pibot_dds_operator.py nb_robots:="2" common_dds_ip:="10.89.5.90" common_dds_port:="11811"
 ```
 
-Sur chaque *pibot* :
+On each *pibot* :
 ```bash
 ros2 launch communication_test pibot_turtlesim_dds_launch.py nb_robots:=2 operator_server:="10.89.5.90:11811"
 ```
 
 
 
-## Séparation des robots avec namespaces
+## Robot separation using namespaces
 
-Les namespaces permettent d'ajouter un prefix à tous les noeuds, topics, services... d'un launchfile. Ils permettent ainsi d'éviter les collisions de données entre les données de robots différents.
+Namespacing allow to add a prefix before every node, topic, service... in a launchfile. That way, they allow to avoid conflicts between data from different robots.
 
-Il suffira de lancer le launchfile suivant qui s'occupera de tout lancer (`turtle`, `operator` et `rviz`) :
+To start the demo, you can use the following command, that will take care of starting everything (`turtle`, `operator` et `rviz`) :
 ```bash
 ros2 launch communication_test turtlesim_namespace_launch.py
 ```
