@@ -7,10 +7,13 @@ This repository's goal is to study the **coordination of a robot fleet** using *
 1. [Scénario](#1-scenario)
 1. [Comparison criteria](#2-comparison-criteria)
 1. [Communication methods](#3-communication-methods)
-1. [Studying the communication methods](#4-studying-the-communication-methods)
-1. [Comparing the communication methods](#5-comparing-the-communication-methods)
-1. [State of the art notes](#6-state-of-the-art-notes)
-1. [References](#7-references)
+    1. [Namespacing](#namespacing)
+    1. [Different domain IDs](#different-domain-ids)
+    1. [DDS Discovery servers](#dds-discovery-servers)
+    1. [DDS Partitions](#dds-partitions)
+1. [Comparing the communication methods](#4-comparing-the-communication-methods)
+1. [State of the art notes](#5-state-of-the-art-notes)
+1. [References](#6-references)
 
 
 ## 1. Scenario
@@ -44,33 +47,13 @@ To compare the different methods and architectures, we'll use different criteria
 
 Here is the list of the different communication methods we will study :
 
-### Working
-
 - Namespacing
-- Different domain IDs (centralized or distributed)
-- DDS Discovery servers (centralized or distributed)
-
-### Promising
-
-- [DDS partitions](https://docs.ros.org/en/iron/Tutorials/Advanced/FastDDS-Configuration.html#using-partitions-within-the-topic) for each topic
-- [Security](https://github.com/ros2/sros2/blob/master/SROS2_Windows.md) inside ROS2 to prevent communication if no certificate
-
-### Ideas to check
-
-- [DDS domain tag](https://community.rti.com/static/documentation/connext-dds/6.0.1/doc/manuals/connext_dds/html_files/RTI_ConnextDDS_CoreLibraries_UsersManual/Content/UsersManual/ChoosingDomainTag.htm) (only CycloneDDS) that drops messages from the same DOMAIN_ID if nodes don't have the same domain tag
-    > Is it possible for a node to be on multiple `tag` at the same time / switch when publishing ?
-- *Modifying to the DDS RMW implementations to get access to Publisher/Subscriber and modify partitions dynamically (see [this](https://discourse.ros.org/t/restricting-communication-between-robots/2931/31))*
-
-### Others
-
-- Custom communication outside of ROS2 :
-    > MQTT, Lora, Zigbee, Zenoh, ad hoc multi-hop with babel protocol
-
-- Hubs ?? (see [this][1])
-
-## 4. Studying the communication methods
+- Different domain IDs
+- DDS Discovery servers
+- DDS Partitions
 
 ### Namespacing
+> See working demo [here](communication_test/README.md#robot-separation-using-namespaces)
 
 **Namespaces** are prefixes to node names, topics, actions and services. They allow to have multiple elements with the same name but different prefix. 
 
@@ -81,6 +64,7 @@ In a multi-robot scenario, namespacing is the easiest solution to seperate each 
 
 
 ### Different domain IDs
+> See working demo [here](communication_test/README.md#multi-domain_id-communication)
 
 ROS2 uses DDS (Data Distribution Service) as the default middleware for communication. DDS allows nodes to discover other nodes that are on the same network. In order to create different logical networks, DDS provides a feature called the **domain ID**. Each node is allowed to communicate to nodes that are on the same ID, but can't communicate with nodes on other domain IDs.
 
@@ -93,6 +77,7 @@ In a multi-robot scenario, assigning a different `ROS_DOMAIN_ID` to each robot a
 
 
 ### DDS Discovery servers
+> See working demo [here](communication_test/README.md#network-isolation-with-fastdds-discovery-server)
 
 As stated before, DDS is the protocol used by ROS2 for communicating between nodes. One aspect of this protocol is to look for elements that a node can communicate with on the newtwork. It's the "Discovery protocol".
 
@@ -106,12 +91,12 @@ In our multi-robot scenario, we could use this Discovery server to isolate nodes
 
 ### DDS partitions
 
-As stated before, DDS is the protocol used by ROS2 for communicating between nodes. DDS introduced the concept of partitions : each partition is defined by a string, and only elements in the same partition can communicate. 
+As stated before, DDS is the protocol used by ROS2 for communicating between nodes. DDS introduced the concept of [partitions](https://docs.ros.org/en/iron/Tutorials/Advanced/FastDDS-Configuration.html#using-partitions-within-the-topic) : each partition is defined by a string, and only elements in the same partition can communicate. 
 
 Contrary to the DOMAIN_ID, nodes still receive the broadcast discovery messages (since they are on the same DOMAIN_ID they have the same UDP port) but drop them if they don't have a common partition.
 
 Partitions can be applied to specific nodes, but also more precisely publishers/subscribers. To configure this, you can create an
- xml file and apply it by setting the `FASTRTPS_DEFAULT_PROFILES_FILE=/path/to/file.xml` env variable.
+xml file and apply it by setting the `FASTRTPS_DEFAULT_PROFILES_FILE=/path/to/file.xml` env variable.
 
 In our multi-robot scenario, we could have one partition for each robot (`robotX`). Topics that need to stay local would be 
 published to that partition and topics that need to be shared across robots would be published in the `common` partition.
@@ -119,9 +104,22 @@ published to that partition and topics that need to be shared across robots woul
 
 // TODO: Explain the criterias
 
+### Others to check
+
+- [Security](https://github.com/ros2/sros2/blob/master/SROS2_Windows.md) inside ROS2 to prevent communication if no certificate
 
 
-## 5. Comparing the communication methods
+- [DDS domain tag](https://community.rti.com/static/documentation/connext-dds/6.0.1/doc/manuals/connext_dds/html_files/RTI_ConnextDDS_CoreLibraries_UsersManual/Content/UsersManual/ChoosingDomainTag.htm) (only CycloneDDS) that drops messages from the same DOMAIN_ID if nodes don't have the same domain tag
+    > Is it possible for a node to be on multiple `tag` at the same time / switch when publishing ?
+- *Modifying to the DDS RMW implementations to get access to Publisher/Subscriber and modify partitions dynamically (see [this](https://discourse.ros.org/t/restricting-communication-between-robots/2931/31))*
+
+
+- Custom communication outside of ROS2 :
+    > MQTT, Lora, Zigbee, Zenoh, ad hoc multi-hop with babel protocol
+
+- Hubs ?? (see [this][1])
+
+## 4. Comparing the communication methods
 
 <table>
     <thead>
@@ -262,7 +260,7 @@ Finally, the two previous architectures assume that all robots are on a **common
 
 
 
-## 6. State of the art notes
+## 5. State of the art notes
 
 ### Network types
 - Local : works ok but compromise between range and bandwidth/delay, especially with an important number of robots
@@ -298,7 +296,7 @@ Finally, the two previous architectures assume that all robots are on a **common
 
 
 
-## 7. References
+## 6. References
 
 ### ROS(2) specific
 
