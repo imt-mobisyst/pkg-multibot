@@ -2,8 +2,18 @@
 
 This repository's goal is to study the **coordination of a robot fleet** using **ROS2**. We will study different communication methods and architectures to achieve a specific scenario, and compare them based on different criteria.
 
+## Table of contents
 
-## Scenario
+1. [Scénario](#1-scenario)
+1. [Comparison criteria](#2-comparison-criteria)
+1. [Communication methods](#3-communication-methods)
+1. [Studying the communication methods](#4-studying-the-communication-methods)
+1. [Comparing the communication methods](#5-comparing-the-communication-methods)
+1. [State of the art notes](#6-state-of-the-art-notes)
+1. [References](#7-references)
+
+
+## 1. Scenario
 
 We want to be able to control an **heterogenous fleet of robots** (for example robots from different vendors).
 
@@ -14,7 +24,7 @@ As a bonus, it would be interesting to see how well the architecture is able to 
 At the end, it would also be interesting to study how the fleet could share information to create a common map with multi robot SLAM algorithms.
 
 
-## Comparison criteria
+## 2. Comparison criteria 
 
 To compare the different methods and architectures, we'll use different criteria :
 
@@ -30,7 +40,7 @@ To compare the different methods and architectures, we'll use different criteria
 - **Ease of debugging :** Is it simple to check for nodes / topics on a specific robot ?
 
 
-## Communication methods
+## 3. Communication methods
 
 Here is the list of the different communication methods we will study :
 
@@ -58,7 +68,60 @@ Here is the list of the different communication methods we will study :
 
 - Hubs ?? (see [this][1])
 
-## Comparing the communication methods
+## 4. Studying the communication methods
+
+### Namespacing
+
+**Namespaces** are prefixes to node names, topics, actions and services. They allow to have multiple elements with the same name but different prefix. 
+
+In a multi-robot scenario, namespacing is the easiest solution to seperate each robot with a unique namespace, in order for robots to not have name conflicts when running the same nodes and using the same topics. An example of this is to prefix the `cmd_vel` topic for robots (`robot1/cmd_vel` and `robot2/cmd_vel`), to prevent them from having the same velocity command.
+
+
+// TODO: Explain the criterias
+
+
+### Different domain IDs
+
+ROS2 uses DDS (Data Distribution Service) as the default middleware for communication. DDS allows nodes to discover other nodes that are on the same network. In order to create different logical networks, DDS provides a feature called the **domain ID**. Each node is allowed to communicate to nodes that are on the same ID, but can't communicate with nodes on other domain IDs.
+
+In ROS2, the default domain ID is 0, but it can be configured using the `ROS_DOMAIN_ID` env variable (between 0 and 101 inclusive). The domain ID is then mapped to a UDP port, thus creating application isolation.
+
+In a multi-robot scenario, assigning a different `ROS_DOMAIN_ID` to each robot allows to completely isolate them from the others. However, using the [domain_bridge](https://github.com/ros2/domain_bridge/blob/main/doc/design.md) library, we can create a bridge between different domain IDs, and specify which topics should be broadcasted towards another domain ID (which would be shared between robots).
+
+
+// TODO: Explain the criterias
+
+
+### DDS Discovery servers
+
+As stated before, DDS is the protocol used by ROS2 for communicating between nodes. One aspect of this protocol is to look for elements that a node can communicate with on the newtwork. It's the "Discovery protocol".
+
+Fast DDS is one of the DDS middlewares, and provides a [Discovery server](https://docs.ros.org/en/iron/Tutorials/Advanced/Discovery-Server/Discovery-Server.html), which works similarly to a router and allows to isolate DDS subnets. Each node can choose which DDS Discovery servers (it can be more than 1) it connects to using the `ROS_DISCOVERY_SERVER` env variable.
+
+In our multi-robot scenario, we could use this Discovery server to isolate nodes running on the robot, by connecting them to a DDS Discovery server running locally. Nodes that need to communicate to other robots would be connect both to their local DDS server and either a global one or another robot's one.
+
+
+// TODO: Explain the criterias
+
+
+### DDS partitions
+
+As stated before, DDS is the protocol used by ROS2 for communicating between nodes. DDS introduced the concept of partitions : each partition is defined by a string, and only elements in the same partition can communicate. 
+
+Contrary to the DOMAIN_ID, nodes still receive the broadcast discovery messages (since they are on the same DOMAIN_ID they have the same UDP port) but drop them if they don't have a common partition.
+
+Partitions can be applied to specific nodes, but also more precisely publishers/subscribers. To configure this, you can create an
+ xml file and apply it by setting the `FASTRTPS_DEFAULT_PROFILES_FILE=/path/to/file.xml` env variable.
+
+In our multi-robot scenario, we could have one partition for each robot (`robotX`). Topics that need to stay local would be 
+published to that partition and topics that need to be shared across robots would be published in the `common` partition.
+
+
+// TODO: Explain the criterias
+
+
+
+## 5. Comparing the communication methods
 
 <table>
     <thead>
@@ -199,7 +262,7 @@ Finally, the two previous architectures assume that all robots are on a **common
 
 
 
-## State of the art notes
+## 6. State of the art notes
 
 ### Network types
 - Local : works ok but compromise between range and bandwidth/delay, especially with an important number of robots
@@ -235,7 +298,7 @@ Finally, the two previous architectures assume that all robots are on a **common
 
 
 
-## References
+## 7. References
 
 ### ROS(2) specific
 
