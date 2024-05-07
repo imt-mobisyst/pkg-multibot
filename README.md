@@ -1,6 +1,6 @@
 # pkg-multibot
 
-This repository's goal is to study the **coordination of a robot fleet** using **ROS2**. We will study different architectures to achieve a specific scenario, and compare them based on different criteria.
+This repository's goal is to study the **coordination of a robot fleet** using **ROS2**. We will study different communication methods and architectures to achieve a specific scenario, and compare them based on different criteria.
 
 
 ## Scenario
@@ -16,7 +16,7 @@ At the end, it would also be interesting to study how the fleet could share info
 
 ## Comparison criteria
 
-To compare the different methods, we'll use different criteria :
+To compare the different methods and architectures, we'll use different criteria :
 
 - **Dynamism :** Does the architecture allow to dynamically add a robot to the fleet ? (dynamic identification...)
 - **Resilience :** Does the architecture continue to work when there are failures (of the robots or the operator) ? 
@@ -27,11 +27,12 @@ To compare the different methods, we'll use different criteria :
 - **Computability :** Does the system require a lot of computing power (both on the robots and the operator) ?
 - **Ease of simulation :** How easy is it to reproduce this communication architecture in a simulation ?
 - **Ease of programming :** Does this architecture require the programmer to make a lot of configuration on each robot to allow them to communicate ?
+- **Ease of debugging :** Is it simple to check for nodes / topics on a specific robot ?
 
 
-## Architectures
+## Communication methods
 
-Here is the list of the different architectures we will study :
+Here is the list of the different communication methods we will study :
 
 ### Working
 
@@ -57,12 +58,151 @@ Here is the list of the different architectures we will study :
 
 - Hubs ?? (see [this][1])
 
+## Comparing the communication methods
+
+<table>
+    <thead>
+        <tr>
+            <th id="hidden"></th>
+            <th colspan="9" style="text-align:center">Criteria</th>
+        </tr>
+        <tr>
+            <th>Method</th>
+            <th>Dynamism</th>
+            <th>Reliability</th>
+            <th>Isolation</th>
+            <th>Network Usage</th>
+            <th>Computability</th>
+            <th>Ease of simulation</th>
+            <th>Ease of programming</th>
+            <th>Ease of debugging</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th>Namespaces</th>
+            <td>❔</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <th>Domain ID</th>
+            <td>❔</td>
+            <td>🟠</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>🟠</td>
+            <td>❌</td>
+            <td>🟠</td>
+            <td>🟠</td>
+        </tr>
+        <tr>
+            <th>DDS Discovery server</th>
+            <td>❔</td>
+            <td>✅</td>
+            <td>🟠</td>
+            <td>✅</td>
+            <td>🟠</td>
+            <td>🟠</td>
+            <td>🟠</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <th>DDS Partitions</th>
+            <td>❔</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>❔</td>
+            <td>🟠</td>
+            <td>❌</td>
+        </tr>
+    <tbody>
+</table>
+
+> ***Legend :***  
+> ✅ : Good / Easy  
+> ❌ : Bad / Difficult  
+> 🟠 : In between / Needs configuration to work  
+> ❔ : Unknown for the moment  
+
+### Other criteria
+
+Here, we only compared the different communication methods, without taking into consideration the global architecture of the system.
+
+The system can have a :
+- **centralized architecture :** there is an entity, that centralizes the information and sends back information to all robots. That entity has running nodes and is on the common network between robots.
+- **distributed architecture :** there is no central entity, each robot communicates informations to all other robots.
+- **ad-hoc architecture :** there is no central entity, each robot communicates informations to its neighbours
+
+A centralized architecture has the benefit of being pretty easy to design and implement in the code : each robot sends informations (sensors...), and the central computer gathers them to send back instructions to the robots.
+However, if the central computer fails, all the communication is stopped and this causes the entire fleet to be down.
+
+On the contrary, a distributed architecture is much more **resilient** to failure : as robots are all interconnected, if one fails, the others can still communicate. However, this is harder to design and implement, especially when robots have to take a decision together.
+
+Finally, the two previous architectures assume that all robots are on a **common network**. However, when having lots of robots on the same network, we can experience bandwidth problems, which affects the effectiveness of the communication. The ad-hoc architecture can help with these issues, by enabling peer-to-peer (P2P) communication between robots, so that they can communicate locally with their neighbours. However, this prevents them from having a global organization, but rather local groups that communicate together. Furthermore, this is more costly, as every robot needs to have the equipment to be able to do such communication. 
+
+
+<table>
+    <thead>
+        <tr>
+            <th id="hidden"></th>
+            <th colspan="6" style="text-align:center">Criteria</th>
+        </tr>
+        <tr>
+            <th>Architecture</th>
+            <th>Resilience</th>
+            <th>Scalability</th>
+            <th>Organization</th>
+            <th>Cost</th>
+            <th>Ease of programming</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th>Centralized</th>
+            <td>🟠</td>
+            <td>❌</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <th>Distributed</th>
+            <td>✅</td>
+            <td>❌</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>🟠</td>
+        </tr>
+        <tr>
+            <th>Ad-hoc</th>
+            <td>✅</td>
+            <td>✅</td>
+            <td>🟠</td>
+            <td>🟠</td>
+            <td>❌</td>
+        </tr>
+    <tbody>
+</table>
+
+> **Note :** All of these issues (bandwidth, network range...) are pretty hard to simulate
+
+
+
+
 
 
 ## State of the art notes
 
 ### Network types
-- Local : works ok but compromise between distance an range and bandwidth/delay, especially with an important number of robots
+- Local : works ok but compromise between range and bandwidth/delay, especially with an important number of robots
 - Cellular : works ok, even with lots of robots, but costly and less configurable
 - Peer-to-peer : cools but still recent -> harder to find equipment
     - 4G LTE Device-to-Device (D2D) allows local communication
@@ -79,17 +219,20 @@ Here is the list of the different architectures we will study :
 
 ### Libraries / Logiciels
 
-- [awesome-ros2](https://github.com/fkromer/awesome-ros2) : repo avec plein de liens de librairies/docs/demo... pour ROS2  
-    > Exemples de liens utiles :
-    > - Benchmark : [ros2_benchmarking](https://github.com/piappl/ros2_benchmarking) ou [performance_test](https://gitlab.com/ApexAI/performance_test/)
-    > - Unity : [Robotics hub](https://github.com/Unity-Technologies/Unity-Robotics-Hub) our [ROS2 for Unity](https://github.com/RobotecAI/ros2-for-unity)
+- [awesome-ros2](https://github.com/fkromer/awesome-ros2) : repository full of links for libraries/docs/demo... for ROS2  
+    > Useful liks :
+    > - Benchmark : [ros2_benchmarking](https://github.com/piappl/ros2_benchmarking) or [performance_test](https://gitlab.com/ApexAI/performance_test/)
+    > - Unity : [Robotics hub](https://github.com/Unity-Technologies/Unity-Robotics-Hub) or [ROS2 for Unity](https://github.com/RobotecAI/ros2-for-unity)
     > - [swarm example](https://github.com/Adlink-ROS/adlink_ddsbot)
 
 
-- Librairie [ROS2swarm](https://github.com/ROS2swarm/ROS2swarm/)
+- [ROS2swarm](https://github.com/ROS2swarm/ROS2swarm/) library
 
 
-- [Ansible](https://docs.ansible.com/) pour déployer plus facilement les noeuds sur des flottes
+- [Ansible](https://docs.ansible.com/) to easily deploy software on multiple robots
+
+
+
 
 
 ## References
@@ -142,3 +285,19 @@ Here is the list of the different architectures we will study :
 
 
 [1]: https://www.researchgate.net/publication/339112401_A_ROS2_based_communication_architecture_for_control_in_collaborative_and_intelligent_automation_systems
+
+<style>
+table {
+  border-collapse:collapse;
+}
+
+td,th {
+  border: 1px solid #000;
+  margin: 0;
+  padding: 0.5em;
+  text-align: center;
+}
+th#hidden{
+    border: none;
+}
+</style>
