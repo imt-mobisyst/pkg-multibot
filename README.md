@@ -2,15 +2,19 @@
 
 This repository's goal is to study the **coordination of a robot fleet** using **ROS2**. We will study different communication methods and architectures to achieve a specific scenario, and compare them based on different criteria.
 
+Although multi-robots research has been a subject for many years now (late 80s), there is still no standard on how to
+architecture communication between them using ROS2. This readme's goal is to show the main communications methods that
+exist, their advantages and drawbacks, so that you can choose the one that best fits your needs.
+
 ## Table of contents
 
 1. [Scénario](#1-scenario)
 1. [Comparison criteria](#2-comparison-criteria)
 1. [Communication methods](#3-communication-methods)
-    1. [Namespacing](#namespacing)
-    1. [Different domain IDs](#different-domain-ids)
-    1. [DDS Discovery servers](#dds-discovery-servers)
-    1. [DDS Partitions](#dds-partitions)
+    - [Namespacing](#namespacing)
+    - [Different domain IDs](#different-domain-ids)
+    - [DDS Discovery servers](#dds-discovery-servers)
+    - [DDS Partitions](#dds-partitions)
 1. [Comparing the communication methods](#4-comparing-the-communication-methods)
 1. [State of the art notes](#5-state-of-the-art-notes)
 1. [References](#6-references)
@@ -20,7 +24,10 @@ This repository's goal is to study the **coordination of a robot fleet** using *
 
 We want to be able to control an **heterogenous fleet of robots** (for example robots from different vendors).
 
-First, we'll consider that all the robots evolve in a known map. The operator would be able to send a goal pose, and an auction/bid system would assign the task to only one of the robots (based on its position and its waypoints queue). This auction system could either be centralized, with an entity listening all the bids and choosing the best one, or distributed, with each robot comparing its bid with the others.
+First, we'll consider that all the robots evolve in a known map. The operator would be able to send a goal pose, and an
+auction/bid system would assign the task to only one of the robots (based on its position and its waypoints queue). This
+auction system could either be centralized, with an entity listening all the bids and choosing the best one, or distributed,
+with each robot comparing its bid with the others.
 
 As a bonus, it would be interesting to see how well the architecture is able to adapt to new robots dynamically added to the fleet or robot failures.
 
@@ -57,7 +64,9 @@ Here is the list of the different communication methods we will study :
 
 **Namespaces** are prefixes to node names, topics, actions and services. They allow to have multiple elements with the same name but different prefix. 
 
-In a multi-robot scenario, namespacing is the easiest solution to seperate each robot with a unique namespace, in order for robots to not have name conflicts when running the same nodes and using the same topics. An example of this is to prefix the `cmd_vel` topic for robots (`robot1/cmd_vel` and `robot2/cmd_vel`), to prevent them from having the same velocity command.
+In a multi-robot scenario, namespacing is the easiest solution to seperate each robot with a unique namespace, in order for robots
+to not have name conflicts when running the same nodes and using the same topics. An example of this is to prefix the `cmd_vel`
+topic for robots (`robot1/cmd_vel` and `robot2/cmd_vel`), to prevent them from having the same velocity command.
 
 
 // TODO: Explain the criterias
@@ -70,7 +79,9 @@ ROS2 uses DDS (Data Distribution Service) as the default middleware for communic
 
 In ROS2, the default domain ID is 0, but it can be configured using the `ROS_DOMAIN_ID` env variable (between 0 and 101 inclusive). The domain ID is then mapped to a UDP port, thus creating application isolation.
 
-In a multi-robot scenario, assigning a different `ROS_DOMAIN_ID` to each robot allows to completely isolate them from the others. However, using the [domain_bridge](https://github.com/ros2/domain_bridge/blob/main/doc/design.md) library, we can create a bridge between different domain IDs, and specify which topics should be broadcasted towards another domain ID (which would be shared between robots).
+In a multi-robot scenario, assigning a different `ROS_DOMAIN_ID` to each robot allows to completely isolate them from the others. 
+However, using the [domain_bridge](https://github.com/ros2/domain_bridge/blob/main/doc/design.md) library, we can create a bridge
+between different domain IDs, and specify which topics should be broadcasted towards another domain ID (which would be shared between robots).
 
 
 // TODO: Explain the criterias
@@ -79,11 +90,15 @@ In a multi-robot scenario, assigning a different `ROS_DOMAIN_ID` to each robot a
 ### DDS Discovery servers
 > See working demo [here](communication_test/README.md#network-isolation-with-fastdds-discovery-server)
 
-As stated before, DDS is the protocol used by ROS2 for communicating between nodes. One aspect of this protocol is to look for elements that a node can communicate with on the newtwork. It's the "Discovery protocol".
+As stated before, DDS is the protocol used by ROS2 for communicating between nodes. One aspect of this protocol is to look for
+elements that a node can communicate with on the newtwork. It's the "Discovery protocol".
 
-Fast DDS is one of the DDS middlewares, and provides a [Discovery server](https://docs.ros.org/en/iron/Tutorials/Advanced/Discovery-Server/Discovery-Server.html), which works similarly to a router and allows to isolate DDS subnets. Each node can choose which DDS Discovery servers (it can be more than 1) it connects to using the `ROS_DISCOVERY_SERVER` env variable.
+Fast DDS is one of the DDS middlewares, and provides a [Discovery server](https://docs.ros.org/en/iron/Tutorials/Advanced/Discovery-Server/Discovery-Server.html), which works similarly to a router and allows to isolate DDS subnets.
+Each node can choose which DDS Discovery servers (it can be more than 1) it connects to using the `ROS_DISCOVERY_SERVER` env variable.
 
-In our multi-robot scenario, we could use this Discovery server to isolate nodes running on the robot, by connecting them to a DDS Discovery server running locally. Nodes that need to communicate to other robots would be connect both to their local DDS server and either a global one or another robot's one.
+In our multi-robot scenario, we could use this Discovery server to isolate nodes running on the robot, by connecting them to a DDS
+Discovery server running locally. Nodes that need to communicate to other robots would be connect both to their local DDS server
+and either a global one or another robot's one.
 
 
 // TODO: Explain the criterias
@@ -93,7 +108,8 @@ In our multi-robot scenario, we could use this Discovery server to isolate nodes
 
 As stated before, DDS is the protocol used by ROS2 for communicating between nodes. DDS introduced the concept of [partitions](https://docs.ros.org/en/iron/Tutorials/Advanced/FastDDS-Configuration.html#using-partitions-within-the-topic) : each partition is defined by a string, and only elements in the same partition can communicate. 
 
-Contrary to the DOMAIN_ID, nodes still receive the broadcast discovery messages (since they are on the same DOMAIN_ID they have the same UDP port) but drop them if they don't have a common partition.
+Contrary to the DOMAIN_ID, nodes still receive the broadcast discovery messages (since they are on the same DOMAIN_ID they have
+the same UDP port) but drop them if they don't have a common partition.
 
 Partitions can be applied to specific nodes, but also more precisely publishers/subscribers. To configure this, you can create an
 xml file and apply it by setting the `FASTRTPS_DEFAULT_PROFILES_FILE=/path/to/file.xml` env variable.
@@ -142,7 +158,7 @@ published to that partition and topics that need to be shared across robots woul
     <tbody>
         <tr>
             <th>Namespaces</th>
-            <td>❔</td>
+            <td>🟠</td>
             <td>✅</td>
             <td>❌</td>
             <td>❌</td>
@@ -153,7 +169,7 @@ published to that partition and topics that need to be shared across robots woul
         </tr>
         <tr>
             <th>Domain ID</th>
-            <td>❔</td>
+            <td>🟠</td>
             <td>🟠</td>
             <td>✅</td>
             <td>✅</td>
@@ -164,7 +180,7 @@ published to that partition and topics that need to be shared across robots woul
         </tr>
         <tr>
             <th>DDS Discovery server</th>
-            <td>❔</td>
+            <td>🟠</td>
             <td>✅</td>
             <td>🟠</td>
             <td>✅</td>
@@ -175,7 +191,7 @@ published to that partition and topics that need to be shared across robots woul
         </tr>
         <tr>
             <th>DDS Partitions</th>
-            <td>❔</td>
+            <td>🟠</td>
             <td>✅</td>
             <td>✅</td>
             <td>✅</td>
@@ -198,16 +214,24 @@ published to that partition and topics that need to be shared across robots woul
 Here, we only compared the different communication methods, without taking into consideration the global architecture of the system.
 
 The system can have a :
-- **centralized architecture :** there is an entity, that centralizes the information and sends back information to all robots. That entity has running nodes and is on the common network between robots.
+- **centralized architecture :** there is an entity, that centralizes the information and sends back information to all robots. 
+That entity has running nodes and is on the common network between robots.
 - **distributed architecture :** there is no central entity, each robot communicates informations to all other robots.
 - **ad-hoc architecture :** there is no central entity, each robot communicates informations to its neighbours
 
-A centralized architecture has the benefit of being pretty easy to design and implement in the code : each robot sends informations (sensors...), and the central computer gathers them to send back instructions to the robots.
+A centralized architecture has the benefit of being pretty easy to design and implement in the code : each robot sends 
+informations (sensors...), and the central computer gathers them to send back instructions to the robots.
 However, if the central computer fails, all the communication is stopped and this causes the entire fleet to be down.
 
-On the contrary, a distributed architecture is much more **resilient** to failure : as robots are all interconnected, if one fails, the others can still communicate. However, this is harder to design and implement, especially when robots have to take a decision together.
+On the contrary, a distributed architecture is much more **resilient** to failure : as robots are all interconnected, if one 
+fails, the others can still communicate. However, this is harder to design and implement, especially when robots have to take a 
+decision together.
 
-Finally, the two previous architectures assume that all robots are on a **common network**. However, when having lots of robots on the same network, we can experience bandwidth problems, which affects the effectiveness of the communication. The ad-hoc architecture can help with these issues, by enabling peer-to-peer (P2P) communication between robots, so that they can communicate locally with their neighbours. However, this prevents them from having a global organization, but rather local groups that communicate together. Furthermore, this is more costly, as every robot needs to have the equipment to be able to do such communication. 
+Finally, the two previous architectures assume that all robots are on a **common network**. However, when having lots of robots on 
+the same network, we can experience bandwidth problems, which affects the effectiveness of the communication. The ad-hoc 
+architecture can help with these issues, by enabling peer-to-peer (P2P) communication between robots, so that they can communicate 
+locally with their neighbours. However, this prevents them from having a global organization, but rather local groups that 
+communicate together. Furthermore, this is more costly, as every robot needs to have the equipment to be able to do such communication. 
 
 
 <table>
