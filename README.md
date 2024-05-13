@@ -255,43 +255,44 @@ the `{"","*"}` partitions)
         <tr>
             <th>Domain ID</th>
             <td>🟠</td>
-            <td>🟠</td>
+            <td>🟨</td>
             <td>✅</td>
             <td>✅</td>
             <td>🟠</td>
-            <td>❌</td>
+            <td>❌❔</td>
             <td>🟠</td>
-            <td>🟠</td>
+            <td>🟨</td>
         </tr>
         <tr>
             <th>DDS Discovery server</th>
             <td>🟠</td>
             <td>✅</td>
-            <td>🟠</td>
+            <td>🟨</td>
             <td>✅</td>
-            <td>🟠</td>
+            <td>🟨</td>
             <td>🟠❔</td>
             <td>🟠</td>
             <td>❌</td>
         </tr>
         <tr>
             <th>DDS Partitions</th>
+            <td>🟠❔<br>Maybe possible</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>🟨❔</td>
+            <td>✅</td>
             <td>🟠❔</td>
-            <td>✅</td>
-            <td>✅</td>
-            <td>❔</td>
-            <td>✅</td>
-            <td>❔</td>
             <td>🟠</td>
-            <td>❌❔</td>
+            <td>🟠❔</td>
         </tr>
     <tbody>
 </table>
 
 > ***Legend :***  
 > ✅ : Good / Easy  
+> 🟨 : Fair  
+> 🟠 : Poor / Needs configuration to work  
 > ❌ : Bad / Difficult  
-> 🟠 : In between / Needs configuration to work  
 > ❔ : Unknown for the moment  
 
 ## 5. Comparing the different architectures
@@ -355,10 +356,10 @@ do such communication.
         </tr>
         <tr>
             <th>Distributed</th>
-            <td>✅</td>
+            <td>🟨</td>
             <td>❌</td>
             <td>✅</td>
-            <td>✅</td>
+            <td>🟨</td>
             <td>🟠</td>
         </tr>
         <tr>
