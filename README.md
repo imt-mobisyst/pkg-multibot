@@ -98,7 +98,8 @@ A discovery server is described by :
 - its **IP address**
 - its **port**
 - its **ID**
-> **Note :** This solution is similar to the *"multi-master"* solution that existed in ROS1, as we're using ip addresses to connect
+> [!NOTE] 
+> This solution is similar to the *"multi-master"* solution that existed in ROS1, as we're using ip addresses to connect
 > multiple robots
 
 In our multi-robot scenario, we could use this Discovery server to isolate nodes running on the robot, by connecting them to a DDS
@@ -221,10 +222,10 @@ the `{"","*"}` partitions)
 
 ### Results
 
-<table>
+<table style="margin-top:5px;">
     <thead>
-        <tr>
-            <th id="hidden"></th>
+        <tr style="border:none;">
+            <th style="border: none;"></th>
             <th colspan="9" style="text-align:center">Criteria</th>
         </tr>
         <tr>
@@ -295,7 +296,8 @@ the `{"","*"}` partitions)
 
 ## 5. Comparing the different architectures
 
-Above, we only compared the different communication methods, without taking into consideration the global architecture of the system.
+Above, we only compared the different technical communication methods using ROS2, without taking into consideration the global 
+architecture of the system.
 
 The system can have a :
 - **centralized architecture :** there is an entity, that centralizes the information and sends back information to all robots. 
@@ -303,28 +305,34 @@ That entity has running nodes and is on the common network between robots.
 - **distributed architecture :** there is no central entity, each robot communicates informations to all other robots.
 - **ad-hoc architecture :** there is no central entity, each robot communicates informations to its neighbours
 
+> The names of these architectures might be different in the litterature
+
+> [!NOTE]
+> Any of the previous communication methods can be adapted to work with these architectures
+
 ### Pros and cons
 
-A centralized architecture has the benefit of being pretty easy to design and implement in the code : each robot sends 
-informations (sensors...), and the central computer gathers them to send back instructions to the robots.
+A **centralized architecture** has the benefit of being pretty easy to design and implement in the code : each robot sends 
+informations (sensors...), and the **central computer** gathers them to send back instructions to the robots.
 However, if the central computer fails, all the communication is stopped and this causes the entire fleet to be down.
 
-On the contrary, a distributed architecture is much more **resilient** to failure : as robots are all interconnected, if one 
-fails, the others can still communicate. However, this is harder to design and implement, especially when robots have to take a 
-decision together.
+On the contrary, a **distributed architecture** is much more **resilient** to failure : as **robots are all interconnected**, if 
+one fails, the others can still communicate. However, this is harder to design and implement, especially when robots have
+to take a decision together. Finally, if the router that the robots are connected to dies, all communication is interrupted.
 
 Finally, the two previous architectures assume that all robots are on a **common network**. However, when having lots of robots on 
-the same network, we can experience bandwidth problems, which affects the effectiveness of the communication. The ad-hoc 
-architecture can help with these issues, by enabling peer-to-peer (P2P) communication between robots, so that they can communicate 
-locally with their neighbours. However, this prevents them from having a global organization, but rather local groups that 
-communicate together. Furthermore, this is more costly, as every robot needs to have the equipment to be able to do such communication. 
+the same network, we can experience bandwidth problems, which affects the effectiveness of the communication. The **ad-hoc 
+architecture** can help with these issues, by enabling **peer-to-peer (P2P) communication** between robots, so that they can 
+**communicate locally** with their neighbours. However, this prevents them from having a global organization, but rather local
+groups that communicate together. Furthermore, this is more costly, as every robot needs to have the equipment to be able to
+do such communication. 
 
 ### Results
 
 <table>
     <thead>
-        <tr>
-            <th id="hidden"></th>
+        <tr style="border:none;">
+            <th style="border: none;"></th>
             <th colspan="6" style="text-align:center">Criteria</th>
         </tr>
         <tr>
@@ -364,9 +372,8 @@ communicate together. Furthermore, this is more costly, as every robot needs to 
     <tbody>
 </table>
 
-> **Note :** All of these issues (bandwidth, network range...) are pretty hard to simulate
-
-
+> [!NOTE]
+> All of these issues (bandwidth, network range...) are pretty hard to simulate
 
 
 
@@ -389,7 +396,7 @@ communicate together. Furthermore, this is more costly, as every robot needs to 
 - *Argos : simulator with ROS1 bridge but not ROS2*
 
 
-### Libraries / Logiciels
+### Libraries / Software
 
 - [awesome-ros2](https://github.com/fkromer/awesome-ros2) : repository full of links for libraries/docs/demo... for ROS2  
     > Useful liks :
@@ -457,19 +464,3 @@ communicate together. Furthermore, this is more costly, as every robot needs to 
 
 
 [1]: https://www.researchgate.net/publication/339112401_A_ROS2_based_communication_architecture_for_control_in_collaborative_and_intelligent_automation_systems
-
-<style>
-table {
-  border-collapse:collapse;
-}
-
-td,th {
-  border: 1px solid #000;
-  margin: 0;
-  padding: 0.5em;
-  text-align: center;
-}
-th#hidden{
-    border: none;
-}
-</style>
