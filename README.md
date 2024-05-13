@@ -69,6 +69,9 @@ In a multi-robot scenario, namespacing is the easiest solution to seperate each 
 to not have name conflicts when running the same nodes and using the same topics. An example of this is to prefix the `cmd_vel`
 topic for robots (`robot1/cmd_vel` and `robot2/cmd_vel`), to prevent them from having the same velocity command.
 
+With our multi-robot architecture, we would have a configuration like the following :
+<div align="center"><img src="docs/img/namespacing_architecture.png" width="850" title="Namespacing architecture example"></div>
+
 
 ### Different domain IDs
 > See working demo [here](communication_test/README.md#multi-domain_id-communication)
