@@ -233,9 +233,9 @@ and IDs of the DDS Discovery servers you want to connect to.
 ### DDS partitions
 
 - **Dynamism :** You can add robots and their partition can be set dynamically ([To check : if possible using ROS2](https://fast-dds.docs.eprosima.com/en/latest/fastdds/dds_layer/domain/domainParticipant/partition.html#partitions) ?)
-    > [!WARNING]
-    > The DDS partitions should not be modified too often, because these QoS modifications are propagated to the network
-    > (see [this](https://community.rti.com/forum-topic/fast-publishing-different-partitons))
+> [!WARNING]
+> The DDS partitions should not be modified too often, because these QoS modifications are propagated to the network
+> (see [this](https://community.rti.com/forum-topic/fast-publishing-different-partitons))
 - **Reliability :** No losses in the communication
 - **Isolation :** Only what is specified in the bridge configuration file is shared to the corresponding partitions. You can 
 choose to send some topics only to the operator PC and some only to other robots.
