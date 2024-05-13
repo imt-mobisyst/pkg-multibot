@@ -218,7 +218,7 @@ After that, only nodes that should communicate (publisher/subscriber) will send 
 - **Ease of programming :** Set the `ROS_DISCOVERY_SERVER` environment variable before starting the nodes in the launchfile 
 (depending on whether they can communicate with the shared network or not).
 Creating the `ROS_DISCOVERY_SERVER` environment variable takes multiple lines and is not easily readable since the IP address 
-needs to be in the correct place in the list, based on the server ID *(example : `;;10.89.5.110:11811` for a server with ID=3)*
+needs to be in the correct place in the list, based on the server ID *(example : `;;10.89.5.110:11811` for a server with ID=2)*
 - **Ease of debugging :** By default, your ROS2 CLI will not have access to any information, even if the `ROS_DISCOVERY_SERVER` is 
 correctly set. For it to work with the DDS Discovery server architecture, we need to configure ROS2 as a **"Super client"** (so 
 that it discovers everything on the network). This can be done with an XML configuration file specifying the IP addresses, ports 
