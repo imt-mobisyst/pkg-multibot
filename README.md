@@ -8,7 +8,7 @@ exist, their advantages and drawbacks, so that you can choose the one that best 
 
 ## Table of contents
 
-1. [Scénario](#1-scenario)
+1. [Scenario](#1-scenario)
 1. [Comparison criteria](#2-comparison-criteria)
 1. [Communication methods](#3-communication-methods)
     - [Namespacing](#namespacing)
@@ -146,6 +146,8 @@ With our multi-robot architecture, we would have the following configuration :
 
 ### Others to check
 
+- DDSrouter (+ HusarnetVPN)
+
 - [Security](https://github.com/ros2/sros2/blob/master/SROS2_Windows.md) inside ROS2 to prevent communication if the correct
 certificate is not given
 
@@ -223,13 +225,17 @@ that it discovers everything on the network). This can be done with an XML confi
 and IDs of the DDS Discovery servers you want to connect to.
 
 
-
-To see the nodes/topics running on a specific robot, you must first export the `ROS_DOMAIN_ID` environment variable to the robot 
-ID. Then you can use the basic ROS2 debug tools (`ros2 node list`, `ros2 topic list`, `rqt_graph`, `rviz`...)
+> [!NOTE]
+> It might be possible to change the ROS_DISCOVERY_SERVER env variable at runtime
+> (see [this](https://readthedocs.org/projects/eprosima-fast-rtps/downloads/pdf/latest/#paragraph*.600))  
+> This woud allow the operator nodes to only send messages to specific robots if needed
 
 ### DDS partitions
 
 - **Dynamism :** You can add robots and their partition can be set dynamically ([To check : if possible using ROS2](https://fast-dds.docs.eprosima.com/en/latest/fastdds/dds_layer/domain/domainParticipant/partition.html#partitions) ?)
+    > [!WARNING]
+    > The DDS partitions should not be modified too often, because these QoS modifications are propagated to the network
+    > (see [this](https://community.rti.com/forum-topic/fast-publishing-different-partitons))
 - **Reliability :** No losses in the communication
 - **Isolation :** Only what is specified in the bridge configuration file is shared to the corresponding partitions. You can 
 choose to send some topics only to the operator PC and some only to other robots.
@@ -242,6 +248,8 @@ nodes in the launchfile (1 line).
 the `{"","*"}` partitions)
 
 ### Results
+
+Here are the results, based on the above explanations for each method.
 
 <table style="margin-top:5px;">
     <thead>
@@ -286,7 +294,7 @@ the `{"","*"}` partitions)
         </tr>
         <tr>
             <th>DDS Discovery server</th>
-            <td>🟠</td>
+            <td>🟨</td>
             <td>✅</td>
             <td>🟨</td>
             <td>✅</td>
