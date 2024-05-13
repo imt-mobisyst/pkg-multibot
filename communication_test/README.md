@@ -6,18 +6,12 @@ This package is a ROS2 package that implements the different solutions explained
 
 We will be using the [domain_bridge](https://github.com/ros2/domain_bridge/blob/main/doc/design.md) library that allows us to run multiple nodes in the same OS process, in order to "bridge" topics/services/actions from one DOMAIN_ID to another one.
 
-<div align="center"><img src="https://github.com/ros2/domain_bridge/raw/main/doc/topic_example.png" width="850" title="Example for the domain_brige library"></div>
+<div align="center"><img src="../docs/img/domain_bridge.png" width="850" title="Example for the domain_brige library"></div>
 
 To install it : 
 ```bash
 apt install ros-iron-domain-bridge
 ```
-
-
-With our multi-robot architecture, we would have the following configuration :
-<div align="center"><img src="img/domain_id_architecture.png" width="850" title="Multi domain ID architecture example"></div>
-
-
 
 > **Note :** The library doesn't seem to be maintained any more : [last commit](https://github.com/ros2/domain_bridge/commit/64e34de40218909b91057c368c10d4ce584af612) on January 2nd 2023. Maybe have a look at [DDS Router](https://github.com/eProsima/DDS-Router) or try to reproduce how it works inside our own communication nodes.
 
@@ -89,13 +83,7 @@ ROS_DOMAIN_ID=1 ros2 topic pub /goal_pose geometry_msgs/msg/PoseStamped "{pose: 
 
 DDS is the protocol used by ROS2 for communicating between nodes. One aspect of this protocol is to look for elements that a node can communicate with on the newtwork. It's the "Discovery protocol".
 
-In our use case, we'll use Fast DDS [Discovery server](https://docs.ros.org/en/iron/Tutorials/Advanced/Discovery-Server/Discovery-Server.html), which works similarly to a router and allows to isolate DDS subnets. Example :
-
-<div align="center"><img src="https://docs.ros.org/en/iron/_images/ds_partition_example.svg" width="850" title="DDS Network isolation example"></div>
-
-
-With our multi-robot architecture, we would have the following configuration :
-<div align="center"><img src="img/dds_architecture.png" width="850" title="FastDDS Discovery Server architecture"></div>
+In our use case, we'll use Fast DDS [Discovery server](https://docs.ros.org/en/iron/Tutorials/Advanced/Discovery-Server/Discovery-Server.html), which works similarly to a router and allows to isolate DDS subnets.
 
 
 ### Simple test with a talker and a listener

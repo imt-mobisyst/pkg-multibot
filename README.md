@@ -18,7 +18,7 @@ exist, their advantages and drawbacks, so that you can choose the one that best 
 1. [Comparing the communication methods](#4-comparing-the-communication-methods)
 1. [Comparing the different architectures](#5-comparing-the-different-architectures)
 1. [State of the art notes](#6-state-of-the-art-notes)
-1. [References](#6-references)
+1. [References](#7-references)
 
 
 ## 1. Scenario
@@ -83,6 +83,12 @@ In a multi-robot scenario, assigning a different `ROS_DOMAIN_ID` to each robot a
 However, using the [domain_bridge](https://github.com/ros2/domain_bridge/blob/main/doc/design.md) library, we can create a bridge
 between different domain IDs, and specify which topics should be broadcasted towards another domain ID (which would be shared between robots).
 
+This library allows us to run multiple nodes in the same OS process, in order to share data and "bridge" topics/services/actions from one DOMAIN_ID to another one.
+<div align="center"><img src="docs/img/domain_bridge.png" width="850" title="Example for the domain_brige library"></div>
+
+
+With our multi-robot architecture, we would have the following configuration :
+<div align="center"><img src="docs/img/domain_id_architecture.png" width="850" title="Multi domain ID architecture example"></div>
 
 
 ### DDS Discovery servers
@@ -93,6 +99,10 @@ elements that a node can communicate with on the newtwork. It's the "Discovery p
 
 Fast DDS, one of the DDS middlewares, provides a [Discovery server](https://docs.ros.org/en/iron/Tutorials/Advanced/Discovery-Server/Discovery-Server.html), which works similarly to a router and allows to isolate DDS subnets.
 Each node can choose which DDS Discovery servers (it can be more than 1) it connects to using the `ROS_DISCOVERY_SERVER` env variable.
+
+<div align="center"><img src="https://docs.ros.org/en/iron/_images/ds_partition_example.svg" width="850" title="DDS Network isolation example"></div>
+
+> Listener 1 discovers topics from Talker 1 & 2 but Listener 2 only discovers topics from Talker 1
 
 A discovery server is described by :
 - its **IP address**
@@ -107,6 +117,9 @@ Discovery server running locally. Nodes that also need to communicate to other r
 and either a global one or another robot's one.
 
 
+With our multi-robot architecture, we would have the following configuration :
+<div align="center"><img src="docs/img/dds_architecture.png" width="850" title="FastDDS Discovery Server architecture"></div>
+
 ### DDS partitions
 
 As stated before, DDS is the protocol used by ROS2 for communicating between nodes. DDS introduced the concept of
@@ -116,11 +129,16 @@ each partition is defined by a **string**, and only elements in the same partiti
 Contrary to the DOMAIN_ID, nodes still receive the broadcast discovery messages (since they are on the same DOMAIN_ID they have
 the same UDP port) but drop them if they don't have a partition in common.
 
-Partitions can be applied to specific nodes, but also more precisely **publishers/subscribers**. To configure this, you can create
-an **XML file** and apply it by setting the `FASTRTPS_DEFAULT_PROFILES_FILE=/path/to/file.xml` env variable.
+Partitions can be applied to specific nodes, but also more precisely **publishers/subscribers** *(DataReaders/DataWriters in DDS 
+terms)*. To configure this, you can create an **XML file** and apply it by setting the `FASTRTPS_DEFAULT_PROFILES_FILE=/path/to/file.xml` env variable.
+
+<div align="center"><img src="docs/img/dds_partitions.png" width="850" title="DDS partitions"></div>
 
 In our multi-robot scenario, we could have **one partition for each robot** (`robotX`). Topics that need to stay local would be 
 published to that partition and topics that need to be shared across robots would be published in the `shared` partition.
+
+With our multi-robot architecture, we would have the following configuration :
+<div align="center"><img src="docs/img/dds_partitions_architecture.png" width="850" title="FastDDS Discovery Server architecture"></div>
 
 
 ### Others to check
@@ -131,7 +149,7 @@ certificate is not given
 
 - [DDS domain tag](https://community.rti.com/static/documentation/connext-dds/6.0.1/doc/manuals/connext_dds/html_files/RTI_ConnextDDS_CoreLibraries_UsersManual/Content/UsersManual/ChoosingDomainTag.htm) (only CycloneDDS) that drops messages from the same DOMAIN_ID if nodes don't have the same domain tag
     > Is it possible for a node to be on multiple `tag` at the same time / switch when publishing ?
-- *Modifying to the DDS RMW implementations to get access to Publisher/Subscriber and modify partitions dynamically (see [this](https://discourse.ros.org/t/restricting-communication-between-robots/2931/31))*
+- *Modifying the DDS RMW implementations to get access to Publisher/Subscriber and modify partitions dynamically (see [this](https://discourse.ros.org/t/restricting-communication-between-robots/2931/31))*
 
 
 - Custom communication outside of ROS2 (but how to simulate) :
