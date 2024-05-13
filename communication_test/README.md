@@ -18,7 +18,7 @@ apt install ros-iron-domain-bridge
 
 ### Simple test with a talker and a listener
 
-We only need to create a configuration file, telling the library which topics/services/actions need to be transmitted, from which `ROS_DOMAIN_ID` and to which `ROS_DOMAIN_ID` *(see [talker_bridge_config.yaml](./config/talker_bridge_config.yaml))*
+We only need to create a configuration file, telling the library which topics/services/actions need to be transmitted, from which `ROS_DOMAIN_ID` and to which `ROS_DOMAIN_ID` *(see [talker_bridge_config.yaml](./config/domain_bridge/talker_bridge_config.yaml))*
 Pour lancer le bridge, on utilise la commande suivante :
 
 ```bash
@@ -154,7 +154,7 @@ All 3 listeners should receive the published messages.
 
 
 > **Note :** By default, the ROS2 CLI creates a node in order to listen for other nodes/topics in the network. For this to work with the DDS Discovery server architecture, we need to configure ROS2 as a **"Super client"**.  
-This can be done thanks to the [super_client_config.xml](./config/super_client_config.xml) configuration file and the following command :
+This can be done thanks to the [super_client_config.xml](./config/dds_server/super_client_config.xml) configuration file and the following command :
 > ```bash
 > export FASTRTPS_DEFAULT_PROFILES_FILE=path/to/super_client_config.xml
 > ros2 daemon stop && ros2 daemon start # We restart the daemon to take the changes into account
