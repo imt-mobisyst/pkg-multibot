@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<profiles xmlns="http://www.eprosima.com/XMLSchemas/fastRTPS_Profiles">
+
+    <!-- default publisher profile -->
+    <publisher profile_name="default_publisher" is_default_profile="true">
+        <qos>
+            <partition>
+                <names>
+                    <name>*</name>
+                    <name />
+                </names>
+            </partition>
+        </qos>
+    </publisher>
+
+    <!-- default subscriber profile -->
+    <subscriber profile_name="default_subscriber" is_default_profile="true">
+        <qos>
+            <partition>
+                <names>
+                    <name>*</name>
+                    <name />
+                </names>
+            </partition>
+        </qos>
+    </subscriber>
+
+</profiles>

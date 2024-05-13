@@ -2,6 +2,19 @@
 
 This package is a ROS2 package that implements the different solutions explained in the repository's root README.
 
+
+
+## Robot separation using namespaces
+
+Namespacing allow to add a prefix before every node, topic, service... in a launchfile. That way, they allow to avoid conflicts between data from different robots.
+
+To start the demo, you can use the following command, that will take care of starting everything (`turtle`, `operator` et `rviz`) :
+```bash
+ros2 launch communication_test turtlesim_namespace_launch.py
+```
+
+
+
 ## Multi DOMAIN_ID communication
 
 We will be using the [domain_bridge](https://github.com/ros2/domain_bridge/blob/main/doc/design.md) library that allows us to run multiple nodes in the same OS process, in order to "bridge" topics/services/actions from one DOMAIN_ID to another one.
@@ -19,7 +32,7 @@ apt install ros-iron-domain-bridge
 ### Simple test with a talker and a listener
 
 We only need to create a configuration file, telling the library which topics/services/actions need to be transmitted, from which `ROS_DOMAIN_ID` and to which `ROS_DOMAIN_ID` *(see [talker_bridge_config.yaml](./config/domain_bridge/talker_bridge_config.yaml))*
-Pour lancer le bridge, on utilise la commande suivante :
+To start the bridge, we use the following command :
 
 ```bash
 ros2 run domain_bridge domain_bridge <path_to>/bridge_config.yaml
@@ -30,13 +43,13 @@ ros2 run domain_bridge domain_bridge <path_to>/bridge_config.yaml
 In another terminal, start the `talker` node :
 
 ```bash
-ROS_DOMAIN_ID=2 ros2 run demo_nodes_py talker
+ROS_DOMAIN_ID=2 ros2 run demo_nodes_cpp talker
 ```
 
 In another terminal, start the `listener` node :
 
 ```bash
-ROS_DOMAIN_ID=3 ros2 run demo_nodes_py listener
+ROS_DOMAIN_ID=3 ros2 run demo_nodes_cpp listener
 ```
 
 
@@ -79,6 +92,7 @@ ROS_DOMAIN_ID=1 ros2 topic pub /goal_pose geometry_msgs/msg/PoseStamped "{pose: 
 > Note : After some time, nodes were "disappearing" : they had not crashed, the processes were still running, but `ros2 node list` and `ros2 topic list` returned empty lists. The only solution that seemed to fix it was to change the DDS provider from **eProsima Fast DDS** to **Eclipse Cyclone DDS**
 
 
+
 ## Network isolation with FastDDS Discovery server
 
 DDS is the protocol used by ROS2 for communicating between nodes. One aspect of this protocol is to look for elements that a node can communicate with on the newtwork. It's the "Discovery protocol".
@@ -104,22 +118,22 @@ fastdds discovery -i 1 -l 127.0.0.1 -p 11812 # Commun
 ```bash
 # Emulates a local node on the robot
 export ROS_DISCOVERY_SERVER="127.0.0.1:11811"
-ros2 run demo_nodes_py talker
+ros2 run demo_nodes_cpp talker
 ```
 ```bash
 # Emulates a local node on the robot
 export ROS_DISCOVERY_SERVER="127.0.0.1:11811"
-ros2 run demo_nodes_py listener
+ros2 run demo_nodes_cpp listener
 ```
 ```bash
 # Emulates a subnet node on the robot
 export ROS_DISCOVERY_SERVER="127.0.0.1:11811;127.0.0.1:11812"
-ros2 run demo_nodes_py listener
+ros2 run demo_nodes_cpp listener
 ```
 ```bash
 # # Emulates a node on the operator
 export ROS_DISCOVERY_SERVER=";127.0.0.1:11812"
-ros2 run demo_nodes_py listener
+ros2 run demo_nodes_cpp listener
 ```
 
 The first 2 `listeners` should receive the published messages, but not the "operator" node.
@@ -130,22 +144,22 @@ The first 2 `listeners` should receive the published messages, but not the "oper
 ```bash
 # Emulates a subnet node on the robot
 export ROS_DISCOVERY_SERVER="127.0.0.1:11811;127.0.0.1:11812"
-ros2 run demo_nodes_py talker
+ros2 run demo_nodes_cpp talker
 ```
 ```bash
 # Emulates a local node on the robot
 export ROS_DISCOVERY_SERVER="127.0.0.1:11811"
-ros2 run demo_nodes_py listener
+ros2 run demo_nodes_cpp listener
 ```
 ```bash
 # Emulates another subnet node on the robot
 export ROS_DISCOVERY_SERVER="127.0.0.1:11811;127.0.0.1:11812"
-ros2 run demo_nodes_py listener
+ros2 run demo_nodes_cpp listener
 ```
 ```bash
 # Emulates a node on the operator
 export ROS_DISCOVERY_SERVER=";127.0.0.1:11812"
-ros2 run demo_nodes_py listener
+ros2 run demo_nodes_cpp listener
 ```
 
 All 3 listeners should receive the published messages.
@@ -241,11 +255,59 @@ ros2 launch communication_test pibot_turtlesim_dds_launch.py nb_robots:=2 operat
 
 
 
-## Robot separation using namespaces
+## Robot isolation using DDS partitions
 
-Namespacing allow to add a prefix before every node, topic, service... in a launchfile. That way, they allow to avoid conflicts between data from different robots.
+DDS is the protocol used by ROS2 for communicating between nodes. DDS introduced a way to isolate DataWriters (Publishers)
+and DataReaders (Subscribers) called [DDS partitions](https://fast-dds.docs.eprosima.com/en/latest/fastdds/dds_layer/domain/domainParticipant/partition.html#partitions)
 
-To start the demo, you can use the following command, that will take care of starting everything (`turtle`, `operator` et `rviz`) :
+For a Publisher to communicate with a Subscriber, they have to belong at least to one common partition.
+
+### Simple test with a talker and a listener
+
+In a first terminal, run a first talker (in the `chatter1` topic):
 ```bash
-ros2 launch communication_test turtlesim_namespace_launch.py
+export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+export RMW_FASTRTPS_USE_QOS_FROM_XML=1
+export FASTRTPS_DEFAULT_PROFILES_FILE=path/to/talker_config.xml
+ros2 run demo_nodes_cpp talker --ros-args -r chatter:=chatter1
+```
+
+In a second terminal, run a second talker (in the `chatter2` topic):
+```bash
+export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+export RMW_FASTRTPS_USE_QOS_FROM_XML=1
+export FASTRTPS_DEFAULT_PROFILES_FILE=path/to/talker_config.xml
+ros2 run demo_nodes_cpp talker --ros-args -r chatter:=chatter2
+```
+
+In a third terminal, run a first listener (to the `chatter1` topic):
+```bash
+export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+export RMW_FASTRTPS_USE_QOS_FROM_XML=1
+export FASTRTPS_DEFAULT_PROFILES_FILE=path/to/listener_config.xml
+ros2 run demo_nodes_cpp listener --ros-args -r chatter:=chatter1
+```
+
+In a last terminal, run a second listener (to the `chatter2` topic):
+```bash
+export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+export RMW_FASTRTPS_USE_QOS_FROM_XML=1
+export FASTRTPS_DEFAULT_PROFILES_FILE=path/to/listener_config.xml
+ros2 run demo_nodes_cpp listener --ros-args -r chatter:=chatter2
+```
+
+> Only the first listener should receive data, since the second one doesn't have a partition in common with the publisher.
+
+---
+
+All of the nodes and topics will be visible with `ros2 node list` and `ros2 topic list`
+
+However, `ros2 topic echo <topic_name>` will only work on data published on the default partition (`""`). If you want to
+echo topics published on other partitions, just use the configuration file that connects to every partition (`"*"`) except 
+the default one (`""`) :
+```bash
+export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+export RMW_FASTRTPS_USE_QOS_FROM_XML=1
+export FASTRTPS_DEFAULT_PROFILES_FILE=path/to/cli_config.xml
+ros2 topic echo /chatter2
 ```
