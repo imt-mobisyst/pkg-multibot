@@ -17,7 +17,7 @@ class ParasitNode(Node):
         if(self.paramString('ip_address') == ''):
             self.get_logger().error("`ip_address` ROS2 parameter must be defined for ParasitNode")
             self.destroy_node()
-            return
+            exit()
 
         # Init publishers
         self.publisher = self.create_publisher(String, '/announcement', 10)
