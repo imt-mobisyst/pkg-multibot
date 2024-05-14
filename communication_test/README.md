@@ -10,7 +10,7 @@ Namespacing allow to add a prefix before every node, topic, service... in a laun
 
 To start the demo, you can use the following command, that will take care of starting everything (`turtle`, `operator` et `rviz`) :
 ```bash
-ros2 launch communication_test turtlesim_namespace_launch.py
+ros2 launch communication_test turtlesim_namespace_launch.py nb_robots:="3"
 ```
 
 
@@ -59,7 +59,7 @@ Each "robot" will be linked to a unique domain ID *(`bot_domain_id`)*. In each d
 
 To start the demo, you can use the following command, that will take care of starting everything (`turtle`, `operator` et `rviz`) :
 ```bash
-ros2 launch communication_test turtlesim_bridge_launch.py
+ros2 launch communication_test turtlesim_bridge_launch.py nb_robots:="3"
 ```
 ---
 
@@ -189,7 +189,7 @@ Each robot will host its own "local" DDS Discovery server, allowing communicatio
 
 To start the demo, you can use the following command, that will take care of starting everything (`turtle`, `operator` et `rviz`) :
 ```bash
-ros2 launch communication_test turtlesim_dds_launch.py
+ros2 launch communication_test turtlesim_dds_launch.py nb_robots:="3"
 ```
 
 ---
@@ -319,8 +319,31 @@ Each "robot" will have its own DDS partition (`robotX`). Their nodes will be com
 
 To start the demo, you can use the following command, that will take care of starting everything (`turtle`, `operator` et `rviz`) :
 ```bash
-ros2 launch communication_test turtlesim_partition_launch.py
+ros2 launch communication_test turtlesim_partition_launch.py nb_robots:="3"
 ```
 
 ---
 
+However, if you want to manually start the nodes yourself, here are the commands :
+
+Starting the `turtle` (`turtlesim` et `turtle_controller`) in different terminals (nodes will be started with the created config files to use their own partition `robotX` and the `shared` partition):
+```bash
+ros2 launch communication_test turtlesim_partition_robot_launch.py nb_robots:="3" robot_id:="1"
+ros2 launch communication_test turtlesim_partition_robot_launch.py nb_robots:="3" robot_id:="2"
+ros2 launch communication_test turtlesim_partition_robot_launch.py nb_robots:="3" robot_id:="3"
+```
+
+
+Starting the operator node :
+```bash
+export RMW_FASTRTPS_USE_QOS_FROM_XML=1
+export FASTRTPS_DEFAULT_PROFILES_FILE=path/to/operator_config.xml
+ros2 run communication_test operator.py --ros-args -p nb_robots:=3
+```
+
+Starting rviz :
+```bash
+export RMW_FASTRTPS_USE_QOS_FROM_XML=1
+export FASTRTPS_DEFAULT_PROFILES_FILE=path/to/operator_config.xml
+ros2 launch communication_test rviz_launch.py
+```
