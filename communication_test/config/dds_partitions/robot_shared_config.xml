@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<profiles xmlns="http://www.eprosima.com/XMLSchemas/fastRTPS_Profiles">
+
+    <!-- Default publisher profile -->
+    <publisher profile_name="default_publisher" is_default_profile="true">
+        <qos>
+            <partition>
+                <names>
+                    <name>%robotX%</name>
+                </names>
+            </partition>
+            <reliability>
+                <kind>RELIABLE</kind>
+                <max_blocking_time>
+                    <sec>1</sec>
+                    <nanosec>0</nanosec>
+                </max_blocking_time>
+            </reliability>
+        </qos>
+    </publisher>
+
+    <!-- Default subscriber profile -->
+    <subscriber profile_name="default_subscriber" is_default_profile="true">
+        <qos>
+            <partition>
+                <names>
+                    <name>%robotX%</name>
+                </names>
+            </partition>
+            <reliability>
+                <kind>RELIABLE</kind>
+                <max_blocking_time>
+                    <sec>1</sec>
+                    <nanosec>0</nanosec>
+                </max_blocking_time>
+            </reliability>
+        </qos>
+    </subscriber>
+
+
+
+
+    <!-- Shared partition -->
+
+    <subscriber profile_name="/assignedRobot">
+        <qos>
+            <partition>
+                <names>
+                    <name>shared</name>
+                </names>
+            </partition>
+        </qos>
+    </subscriber>
+    
+    
+    <subscriber profile_name="/goal_pose"> 
+        <qos>
+            <partition>
+                <names>
+                    <name>shared</name>
+                </names>
+            </partition>
+        </qos>
+    </subscriber>
+
+    <publisher profile_name="/distanceToTarget">
+        <qos>
+            <partition>
+                <names>
+                    <name>shared</name>
+                </names>
+            </partition>
+        </qos>
+    </publisher>
+    <publisher profile_name="/turtle_marker">
+        <qos>
+            <partition>
+                <names>
+                    <name>shared</name>
+                </names>
+            </partition>
+        </qos>
+    </publisher>
+
+
+</profiles>

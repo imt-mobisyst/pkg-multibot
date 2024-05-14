@@ -53,7 +53,7 @@ ROS_DOMAIN_ID=3 ros2 run demo_nodes_cpp listener
 ```
 
 
-### Test with multiple turtlesim
+### Test with multiple turtlesim on the same computer
 
 Each "robot" will be linked to a unique domain ID *(`bot_domain_id`)*. In each domain ID, there will be a `turtlesim_node` and a `turtlesim_controller` (which will control the movement of the turtle towards the goal poses).
 
@@ -311,3 +311,16 @@ export RMW_FASTRTPS_USE_QOS_FROM_XML=1
 export FASTRTPS_DEFAULT_PROFILES_FILE=path/to/cli_config.xml
 ros2 topic echo /chatter2
 ```
+
+
+### Test with multiple turtlesim on the same computer
+
+Each "robot" will have its own DDS partition (`robotX`). Their nodes will be communicating through topics with that partition. Topics that need to be shared across robots will be in the `shared` partition
+
+To start the demo, you can use the following command, that will take care of starting everything (`turtle`, `operator` et `rviz`) :
+```bash
+ros2 launch communication_test turtlesim_partition_launch.py
+```
+
+---
+
