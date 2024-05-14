@@ -9,8 +9,8 @@ from geometry_msgs.msg import PoseStamped
 
 class Operator(Node):
 
-    def __init__(self):
-        super().__init__('operator')
+    def __init__(self, name='operator'):
+        super().__init__(name)
 
         # Log DDS server
         if(getenv('ROS_DISCOVERY_SERVER') is not None):
@@ -19,7 +19,7 @@ class Operator(Node):
         # Declare ROS parameters
         self.declare_parameter('nb_robots', 2)
 
-        print(f"Init node with {self.paramInt('nb_robots')} robot(s)")
+        print(f"Init node with {self.getNbRobots()} robot(s)")
 
         # Init subscriber
         self.create_subscription(PoseStamped, '/goal_pose', self.target_callback, 10)
@@ -43,7 +43,7 @@ class Operator(Node):
         self.distanceDict[msg.robot_id] = msg.distance
 
         # Check if all distances have been received
-        if(len(self.distanceDict) == self.paramInt('nb_robots')):
+        if(len(self.distanceDict) == self.getNbRobots()):
 
             sortedDistances = sorted(self.distanceDict.items(), key=lambda x:x[1])
             closestRobotId = sortedDistances[0][0]
@@ -62,7 +62,8 @@ class Operator(Node):
     def paramInt(self, name):
         return self.get_parameter(name).get_parameter_value().integer_value
 
-
+    def getNbRobots(self):
+        return self.paramInt('nb_robots')
 
 
 

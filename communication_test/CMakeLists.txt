@@ -35,6 +35,8 @@ install(DIRECTORY
 # Python scripts
 install( PROGRAMS 
   src/static_operator.py
+  src/dynamic_operator.py
+  src/parasit.py
   src/turtlesim_controller.py
   src/turtle_mvt.py
 DESTINATION lib/${PROJECT_NAME})
