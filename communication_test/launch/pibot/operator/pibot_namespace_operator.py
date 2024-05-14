@@ -24,7 +24,7 @@ def generate_launch_description():
         # Operator node
         Node(
             package='communication_test',
-            executable='operator.py',
+            executable='static_operator.py',
             name='operator',
             parameters=[
                 {'nb_robots': LaunchConfiguration('nb_robots')}

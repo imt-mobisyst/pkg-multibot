@@ -46,7 +46,7 @@ def createOperatorNode(context):
 
     return [Node(
         package='communication_test',
-        executable='operator.py',
+        executable='static_operator.py',
         name='operator',
         parameters=[
             {'nb_robots': nb_robots}
@@ -65,7 +65,7 @@ def generate_launch_description():
     # Launch operator node only in the common network
     operator_node = Node(
         package='communication_test',
-        executable='operator.py',
+        executable='static_operator.py',
         name='operator',
         parameters=[
             {'nb_robots': LaunchConfiguration('nb_robots')}

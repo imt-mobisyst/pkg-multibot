@@ -49,7 +49,7 @@ def generate_launch_description():
     # Launch operator node in domain ID 1
     operator_node = Node(
         package='communication_test',
-        executable='operator.py',
+        executable='static_operator.py',
         name='operator',
         parameters=[
             {'nb_robots': LaunchConfiguration('nb_robots')}

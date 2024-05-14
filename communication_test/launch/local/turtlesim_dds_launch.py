@@ -85,7 +85,7 @@ def launchOperator(context):
         # Operator node
         Node(
             package='communication_test',
-            executable='operator.py',
+            executable='static_operator.py',
             name='operator',
             parameters=[
                 {'nb_robots': nb_robots}

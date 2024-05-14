@@ -75,7 +75,7 @@ ros2 launch communication_test turtlesim_bridge_robot_launch.py bot_domain_id:="
 Bridge nodes will be started by the launchfiles to transmit the topics needed by nodes running in the `operator_domain_id`. Then, we'll start the operator node (which is responsible for managing priority between turtles) in this domain :
 
 ```bash
-ROS_DOMAIN_ID=1 ros2 run communication_test operator.py --ros-args -p nb_robots:=2
+ROS_DOMAIN_ID=1 ros2 run communication_test static_operator.py --ros-args -p nb_robots:=2
 ```
 
 Running `rviz` in the operator's `ROS_DOMAIN_ID` :
@@ -218,7 +218,7 @@ ros2 launch communication_test turtlesim_dds_robot_launch.py local_dds_server:="
 Starting the operator node :
 ```bash
 export ROS_DISCOVERY_SERVER=";;;127.0.0.1:11814"
-ros2 run communication_test operator.py --ros-args -p nb_robots:=3
+ros2 run communication_test static_operator.py --ros-args -p nb_robots:=3
 ```
 
 Starting rviz :
@@ -338,7 +338,7 @@ Starting the operator node :
 ```bash
 export RMW_FASTRTPS_USE_QOS_FROM_XML=1
 export FASTRTPS_DEFAULT_PROFILES_FILE=path/to/operator_config.xml
-ros2 run communication_test operator.py --ros-args -p nb_robots:=3
+ros2 run communication_test static_operator.py --ros-args -p nb_robots:=3
 ```
 
 Starting rviz :
