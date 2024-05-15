@@ -1,17 +1,12 @@
 #!/usr/bin/python3
-from os import getenv
-import numpy as np, time
 import rclpy
 from rclpy.executors import MultiThreadedExecutor
 
-from geometry_msgs.msg import Point, Pose, Twist
+from geometry_msgs.msg import Point, Pose
 from nav_msgs.msg import Odometry
 
 from include.robot_mvt import RobotMovement
 from include.helpers import getEulerFromQuaternion
-
-from nav2_msgs.action import NavigateToPose
-from rclpy.action.server import ServerGoalHandle
 
 class StageRobotMovement(RobotMovement):
 

@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 from os import getenv
 import time
-from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 from rclpy.action import ActionServer
 from rclpy.action.server import ServerGoalHandle
@@ -143,7 +142,7 @@ class RobotMovement(Node):
 
         # Stop robot
         self.velPublisher.publish(Twist())
-        
+
         # Finish action
         goal_handle.succeed()
 
