@@ -16,14 +16,14 @@ class TurtleController(RobotController):
         # Init turtlesim specific subscriptions
         self.create_subscription(Pose, 'turtle1/pose', self.pose_callback, 10)
 
-
         # Init variables
+        self.pose = Pose()
         threading.Timer(1.0, self.publishPoseMarker).start() # Publish the first marker 1s after starting to let rviz launch
 
 
     def pose_callback(self, msg:Pose):
         # If not moved since last callback, do nothing
-        if(msg.x == self.pose.x and msg.y == self.pose.y and msg.theta == self.pose.theta):
+        if(self.pose is not None and msg.x == self.pose.x and msg.y == self.pose.y and msg.theta == self.pose.theta):
             return
         
         # If moved, update pose and marker
