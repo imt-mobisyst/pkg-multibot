@@ -141,7 +141,9 @@ class RobotMovement(Node):
 
             time.sleep(0.01)
 
-
+        # Stop robot
+        self.velPublisher.publish(Twist())
+        
         # Finish action
         goal_handle.succeed()
 

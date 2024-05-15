@@ -42,7 +42,7 @@ class StageRobotController(RobotController):
         return p
 
     def getRobotAngle(self):
-        return getEulerFromQuaternion(self.pose.orientation)['roll']
+        return getEulerFromQuaternion(self.pose.orientation)['yaw']
 
 
 

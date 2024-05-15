@@ -1,13 +1,17 @@
 #!/usr/bin/python3
 from os import getenv
+import numpy as np, time
 import rclpy
 from rclpy.executors import MultiThreadedExecutor
 
-from geometry_msgs.msg import Point, Pose
+from geometry_msgs.msg import Point, Pose, Twist
 from nav_msgs.msg import Odometry
 
 from include.robot_mvt import RobotMovement
 from include.helpers import getEulerFromQuaternion
+
+from nav2_msgs.action import NavigateToPose
+from rclpy.action.server import ServerGoalHandle
 
 class StageRobotMovement(RobotMovement):
 
@@ -19,6 +23,9 @@ class StageRobotMovement(RobotMovement):
 
         # Init variables
         self.pose = Pose()
+
+        self.speedFactor = 0.1
+        self.distanceTolerance = 0.1
 
 
 
@@ -33,7 +40,7 @@ class StageRobotMovement(RobotMovement):
         return p
 
     def getRobotAngle(self) -> float:
-        return getEulerFromQuaternion(self.pose.orientation)['roll']
+        return getEulerFromQuaternion(self.pose.orientation)['yaw']
 
 
 
