@@ -17,7 +17,7 @@ exist, their advantages and drawbacks, so that you can choose the one that best 
     - [DDS Partitions](#dds-partitions)
 1. [Comparing the communication methods](#4-comparing-the-communication-methods)
 1. [Comparing the different architectures](#5-comparing-the-different-architectures)
-1. [State of the art notes](#6-state-of-the-art-notes)
+1. [Useful resources](#6-useful-resources)
 1. [References](#7-references)
 
 
@@ -199,6 +199,9 @@ the bridges in the launchfile (with a specific configuration file)
 environment variable to the robot ID. Then you can use the basic ROS2 debug tools (`ros2 node list`, `ros2 topic list`, 
 `rqt_graph`, `rviz`...).
 
+> [!NOTE]
+> There is a limited number of possible `ROS_DOMAIN_ID` values. If your fleet is really big (more than 100 robots), you might
+> encounter collision between robots.
 
 ### DDS Discovery servers
 
@@ -329,6 +332,13 @@ Here are the results, based on the above explanations for each method.
 > ❌ : Bad / Difficult  
 > ❔ : Unknown for the moment  
 
+### Conclusion
+
+Each solution has its advantages and drawbacks, there is no perfect solution. You should select the method that best fits your 
+needs, and event **combine** some of them to achieve your goal
+(see [this](https://discourse.ros.org/t/restricting-communication-between-robots/2931/32))
+
+
 ## 5. Comparing the different architectures
 
 Above, we only compared the different technical communication methods using ROS2, without taking into consideration the global 
@@ -413,20 +423,16 @@ do such communication.
 
 
 
-## 6. State of the art notes
-
-### Network types
-- Local : works ok but compromise between range and bandwidth/delay, especially with an important number of robots
-- Cellular : works ok, even with lots of robots, but costly and less configurable
-- Peer-to-peer : cools but still recent -> harder to find equipment
-    - 4G LTE Device-to-Device (D2D) allows local communication
-    - 5G Ultra-Reliable Low Latency Communications (URLLC), centralized or decentralized
+## 6. Useful resources
 
 ### Simulators
-- [MAES](https://link.springer.com/article/10.1007/s10015-023-00895-7) : multirobots simulator made with Unity, but maximum 5 robots via ROS2
-- [Stage](https://github.com/tuw-robotics/stage_ros2/tree/humble)
-- [Webots](https://cyberbotics.com/)
+- [Stage](https://github.com/tuw-robotics/stage_ros2/tree/humble) : 2D simple simulator
+- [MAES](https://link.springer.com/article/10.1007/s10015-023-00895-7) : 3D simple multirobots simulator made with Unity, but maximum 5 robots via ROS2
+- [Webots](https://cyberbotics.com/) : 3D simulator
+
+
 ---
+
 - *[LGSVL](https://github.com/lgsvl/simulator) for autonomous cars (not maintained anymore)*
 - *Argos : simulator with ROS1 bridge but not ROS2*
 
@@ -444,8 +450,6 @@ do such communication.
 
 
 - [Ansible](https://docs.ansible.com/) to easily deploy software on multiple robots
-
-
 
 
 
