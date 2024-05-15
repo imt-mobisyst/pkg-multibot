@@ -21,6 +21,7 @@ class TurtleMovement(RobotMovement):
         self.create_subscription(Pose, 'turtle1/pose', self.pose_callback, 10)
 
         # Init variables
+        self.pose = Pose()
         self.pose.x = 5.544444561004639
         self.pose.y = 5.544444561004639
 

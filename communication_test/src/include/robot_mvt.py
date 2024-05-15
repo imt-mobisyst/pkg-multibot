@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 from os import getenv
 import time
-import rclpy
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 from rclpy.action import ActionServer
@@ -24,6 +23,10 @@ class RobotMovement(Node):
         # Declare ROS parameters
         self.declare_parameter('robot_id', 1)
         self.get_logger().info(f"Robot {self.paramInt('robot_id')} started")
+
+        # Log DDS server
+        if(getenv('ROS_DISCOVERY_SERVER') is not None):
+            self.get_logger().info("RUNNING on DDS \"" + getenv('ROS_DISCOVERY_SERVER') + "\"")
 
         # Start action server
         self._action_server = ActionServer(

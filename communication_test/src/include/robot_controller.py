@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import rclpy
+from os import getenv
 from rclpy.node import Node
 from rclpy.action import ActionClient
 
@@ -21,6 +21,10 @@ class RobotController(Node):
         # Declare ROS parameters
         self.declare_parameter('robot_id', 1)
         self.get_logger().info(f"Robot {self.paramInt('robot_id')} started")
+
+        # Log DDS server
+        if(getenv('ROS_DISCOVERY_SERVER') is not None):
+            self.get_logger().info("RUNNING on DDS \"" + getenv('ROS_DISCOVERY_SERVER') + "\"")
 
         # Init subscriptions
         self.create_subscription(PoseStamped, '/goal_pose', self.target_callback, 10)

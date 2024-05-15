@@ -39,7 +39,9 @@ DESTINATION lib/${PROJECT_NAME})
 # Python scripts
 install( PROGRAMS
   src/turtlesim_controller.py
+  src/stage_controller.py
   src/turtle_mvt.py
+  src/stage_mvt.py
   src/static_operator.py
   src/dynamic_operator.py
   src/parasit.py

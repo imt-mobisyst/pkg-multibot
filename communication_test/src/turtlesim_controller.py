@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 import rclpy
-from os import getenv
 import threading
 
 
@@ -14,18 +13,11 @@ class TurtleController(RobotController):
     def __init__(self):
         super().__init__('turtle_controller')
 
-        # Log DDS server
-        if(getenv('ROS_DISCOVERY_SERVER') is not None):
-            self.get_logger().info("RUNNING on DDS \"" + getenv('ROS_DISCOVERY_SERVER') + "\"")
-
         # Init turtlesim specific subscriptions
         self.create_subscription(Pose, 'turtle1/pose', self.pose_callback, 10)
 
 
         # Init variables
-        self.pose = Pose()
-        self.pose.x = 5.544444561004639
-        self.pose.y = 5.544444561004639
         threading.Timer(1.0, self.publishPoseMarker).start() # Publish the first marker 1s after starting to let rviz launch
 
 
