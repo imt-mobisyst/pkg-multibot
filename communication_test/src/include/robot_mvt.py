@@ -8,7 +8,7 @@ from rclpy.action.server import ServerGoalHandle
 
 import numpy as np
 
-from geometry_msgs.msg import PoseStamped, Twist, Point, Quaternion
+from geometry_msgs.msg import PoseStamped, Twist, Point
 from turtlesim.msg import Pose
 
 from nav2_msgs.action import NavigateToPose
@@ -42,6 +42,7 @@ class RobotMovement(Node):
         self.pose = Pose()
        
         self.speedFactor = 0.2
+        self.angleTolerance = np.pi / 180.0
         self.distanceTolerance = 0.01
 
         self.targetPos = None
@@ -97,7 +98,7 @@ class RobotMovement(Node):
         self.targetPos:Point = request.pose.pose.position
 
         # First rotate approximately to the correct rotation
-        while np.abs(self.getRobotAngle() - self.steering_angle(self.targetPos)) >= np.pi / 180.0:
+        while np.abs(self.getRobotAngle() - self.steering_angle(self.targetPos)) >= self.angleTolerance:
             vel_msg = Twist()
 
             # Angular velocity in the z-axis.
