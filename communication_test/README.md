@@ -80,7 +80,7 @@ ROS_DOMAIN_ID=1 ros2 run communication_test static_operator.py --ros-args -p nb_
 
 Running `rviz` in the operator's `ROS_DOMAIN_ID` :
 ```bash
-ROS_DOMAIN_ID=1 ros2 launch communication_test rviz_launch.py
+ROS_DOMAIN_ID=1 ros2 launch communication_test rviz_turtlesim_launch.py
 ```
 
 ---
@@ -224,7 +224,7 @@ ros2 run communication_test static_operator.py --ros-args -p nb_robots:=3
 Starting rviz :
 ```bash
 export ROS_DISCOVERY_SERVER=";;;127.0.0.1:11814"
-ros2 launch communication_test rviz_launch.py
+ros2 launch communication_test rviz_turtlesim_launch.py
 ```
 
 ---
@@ -345,5 +345,5 @@ Starting rviz :
 ```bash
 export RMW_FASTRTPS_USE_QOS_FROM_XML=1
 export FASTRTPS_DEFAULT_PROFILES_FILE=path/to/operator_config.xml
-ros2 launch communication_test rviz_launch.py
+ros2 launch communication_test rviz_turtlesim_launch.py
 ```

@@ -24,7 +24,6 @@ class StageRobotController(RobotController):
 
 
     def pose_callback(self, msg:Odometry):
-        self.get_logger().info("CALLBACK" + str(msg.pose.pose.position.x))
         newPose = msg.pose.pose
         # If not moved since last callback, do nothing
         if(self.pose and newPose.position.x == self.pose.position.x and newPose.position.y == self.pose.position.y and getEulerFromQuaternion(newPose.orientation)['roll'] == getEulerFromQuaternion(self.pose.orientation)['roll']):
