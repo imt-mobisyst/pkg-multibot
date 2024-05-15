@@ -427,12 +427,11 @@ do such communication.
 
 ### Simulators
 - [Stage](https://github.com/tuw-robotics/stage_ros2/tree/humble) : 2D simple simulator
-- [MAES](https://link.springer.com/article/10.1007/s10015-023-00895-7) : 3D simple multirobots simulator made with Unity, but maximum 5 robots via ROS2
 - [Webots](https://cyberbotics.com/) : 3D simulator
-
 
 ---
 
+- [MAES](https://link.springer.com/article/10.1007/s10015-023-00895-7) : 3D simple multirobots simulator made with Unity, but maximum 5 robots via ROS2 *(works in Galactic but doesn't seem to work in Iron)*
 - *[LGSVL](https://github.com/lgsvl/simulator) for autonomous cars (not maintained anymore)*
 - *Argos : simulator with ROS1 bridge but not ROS2*
 
