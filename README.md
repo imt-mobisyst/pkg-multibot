@@ -154,7 +154,6 @@ certificate is not given
 
 - [DDS domain tag](https://community.rti.com/static/documentation/connext-dds/6.0.1/doc/manuals/connext_dds/html_files/RTI_ConnextDDS_CoreLibraries_UsersManual/Content/UsersManual/ChoosingDomainTag.htm) (only CycloneDDS) that drops messages from the same DOMAIN_ID if nodes don't have the same domain tag
     > Is it possible for a node to be on multiple `tag` at the same time / switch when publishing ?
-- *Modifying the DDS RMW implementations to get access to Publisher/Subscriber and modify partitions dynamically (see [this](https://discourse.ros.org/t/restricting-communication-between-robots/2931/31))*
 
 
 - Custom communication outside of ROS2 (but how to simulate) :
@@ -232,10 +231,7 @@ and IDs of the DDS Discovery servers you want to connect to.
 
 ### DDS partitions
 
-- **Dynamism :** You can add robots and their partition can be set dynamically ([To check : if possible using ROS2](https://fast-dds.docs.eprosima.com/en/latest/fastdds/dds_layer/domain/domainParticipant/partition.html#partitions) ?)
-> [!WARNING]
-> The DDS partitions should not be modified too often, because these QoS modifications are propagated to the network
-> (see [this](https://community.rti.com/forum-topic/fast-publishing-different-partitons))
+- **Dynamism :** You can add robots and their local partition can be their IP address because they are unique
 - **Reliability :** No losses in the communication
 - **Isolation :** Only what is specified in the bridge configuration file is shared to the corresponding partitions. You can 
 choose to send some topics only to the operator PC and some only to other robots.
@@ -246,6 +242,15 @@ choose to send some topics only to the operator PC and some only to other robots
 nodes in the launchfile (1 line).
 - **Ease of debugging :** To check. An XML configuration file might be needed (the basic one would be to listen/publish to
 the `{"","*"}` partitions)
+
+> [!NOTE]
+> In theory, DDS partitions can be changed dynamically at runtime
+> (see [this](https://readthedocs.org/projects/eprosima-fast-rtps/downloads/pdf/latest/#subsubsection*.434)).
+> This would allow the operator nodes to only send messages to specific robots if needed and also set their local partition
+> dynamically by talking to the operator to get a unique ID.  
+> However, ROS2 abstracts some of the configuration, and we can't do it anymore.
+> You could maybe modify the DDS RMW implementations to get access to Publisher/Subscriber and modify partitions dynamically
+> (see [this](https://discourse.ros.org/t/restricting-communication-between-robots/2931/31)) but it seems overcomplicated
 
 ### Results
 
@@ -305,7 +310,7 @@ Here are the results, based on the above explanations for each method.
         </tr>
         <tr>
             <th>DDS Partitions</th>
-            <td>🟠❔<br>Maybe possible</td>
+            <td>🟨</td>
             <td>✅</td>
             <td>✅</td>
             <td>🟨❔</td>
