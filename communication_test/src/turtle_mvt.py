@@ -9,10 +9,12 @@ from rclpy.action.server import ServerGoalHandle
 
 import numpy as np
 
-from geometry_msgs.msg import PoseStamped, Twist, Point
+from geometry_msgs.msg import PoseStamped, Twist, Point, Quaternion
 from turtlesim.msg import Pose
 
 from nav2_msgs.action import NavigateToPose
+
+from include.helpers import getQuaternionFromEuler
 
 class TurtleMovement(Node):
 
@@ -55,15 +57,6 @@ class TurtleMovement(Node):
         return self.get_parameter(name).get_parameter_value().integer_value
 
 
-    def get_quaternion_from_euler(self, roll, pitch, yaw):
-        qx = np.sin(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) - np.cos(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
-        qy = np.cos(roll/2) * np.sin(pitch/2) * np.cos(yaw/2) + np.sin(roll/2) * np.cos(pitch/2) * np.sin(yaw/2)
-        qz = np.cos(roll/2) * np.cos(pitch/2) * np.sin(yaw/2) - np.sin(roll/2) * np.sin(pitch/2) * np.cos(yaw/2)
-        qw = np.cos(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) + np.sin(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
-        
-        return [qx, qy, qz, qw]
-
-
     def pose_callback(self, msg:Pose):
         self.pose = msg
 
@@ -97,11 +90,7 @@ class TurtleMovement(Node):
         feedback_msg.current_pose.pose.position.y = self.pose.y
         feedback_msg.current_pose.pose.position.z = 0.0
         feedback_msg.current_pose.pose.orientation.y = self.pose.y
-        q = self.get_quaternion_from_euler(0, 0, self.pose.theta)
-        feedback_msg.current_pose.pose.orientation.x = q[0]
-        feedback_msg.current_pose.pose.orientation.y = q[1]
-        feedback_msg.current_pose.pose.orientation.z = q[2]
-        feedback_msg.current_pose.pose.orientation.w = q[3]
+        feedback_msg.current_pose.pose.orientation = getQuaternionFromEuler(0, 0, self.pose.theta)
 
         feedback_msg.distance_remaining = self.euclidean_distance(self.targetPos)
         

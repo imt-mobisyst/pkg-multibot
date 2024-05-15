@@ -11,6 +11,8 @@ from std_msgs.msg import Int8
 from visualization_msgs.msg import Marker
 from nav2_msgs.action import NavigateToPose
 
+from include.helpers import getQuaternionFromEuler
+
 class RobotController(Node):
 
     def __init__(self, name='robot_controller'):
@@ -54,15 +56,6 @@ class RobotController(Node):
 
 
 
-    def get_quaternion_from_euler(self, roll, pitch, yaw):
-        qx = np.sin(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) - np.cos(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
-        qy = np.cos(roll/2) * np.sin(pitch/2) * np.cos(yaw/2) + np.sin(roll/2) * np.cos(pitch/2) * np.sin(yaw/2)
-        qz = np.cos(roll/2) * np.cos(pitch/2) * np.sin(yaw/2) - np.sin(roll/2) * np.sin(pitch/2) * np.cos(yaw/2)
-        qw = np.cos(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) + np.sin(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
-        
-        return [qx, qy, qz, qw]
-
-
     def publishPoseMarker(self):
         # Publish marker for vizualisation in rviz
         marker = Marker()
@@ -86,12 +79,8 @@ class RobotController(Node):
         marker.color.a = 1.0
 
         # Set the pose of the marker
-        q = self.get_quaternion_from_euler(0, 0, self.getRobotAngle())
         marker.pose.position = self.getRobotPosition()
-        marker.pose.orientation.x = q[0]
-        marker.pose.orientation.y = q[1]
-        marker.pose.orientation.z = q[2]
-        marker.pose.orientation.w = q[3]
+        marker.pose.orientation = getQuaternionFromEuler(0, 0, self.getRobotAngle())
 
         self.markerPublisher.publish(marker)
 
