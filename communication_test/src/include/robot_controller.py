@@ -176,18 +176,3 @@ class RobotController(Node):
             self.robotMoving = True
             # If not already moving, go to first position in the queue
             self.send_goal()
-
-
-
-
-
-
-def main(args=None):
-    rclpy.init(args=args)
-    node = RobotController()
-    rclpy.spin(node)
-    node.destroy_node()
-    rclpy.shutdown()
-
-if __name__ == '__main__':
-    main()
