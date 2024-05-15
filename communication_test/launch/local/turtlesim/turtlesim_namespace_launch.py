@@ -39,20 +39,6 @@ def createTurtleNodes(context):
 
     return turtles
 
-
-def createOperatorNode(context):
-    # Get values
-    nb_robots = int(LaunchConfiguration('nb_robots').perform(context))
-
-    return [Node(
-        package='communication_test',
-        executable='static_operator.py',
-        name='operator',
-        parameters=[
-            {'nb_robots': nb_robots}
-        ]
-    )]
-
 def generate_launch_description():
     # Get nb robots param from CLI
     nb_robots_launch_arg = DeclareLaunchArgument(
