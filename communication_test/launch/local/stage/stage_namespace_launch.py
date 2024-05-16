@@ -67,16 +67,30 @@ def generate_launch_description():
         }.items()
     )
 
+    load_map = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                get_package_share_directory('communication_test'),
+                'launch/include/load_map.py')),
+        launch_arguments={
+            "map_file": os.path.join(get_package_share_directory('communication_test'), 'config', 'maps', 'cave', 'map.yaml')
+        }.items()
+    )
+
     return LaunchDescription([
+        # Rviz with specific config
+        # rviz_node,
+
         # Launch stage simulator with 3 robots
         simulator,
 
         # Turtles
         *turtles,
-        
+
         # Run operator node
         operator_node,
+
+        # Load map
+        load_map,
         
-        # Rviz with specific config
-        rviz_node
     ])
