@@ -23,16 +23,33 @@ exist, their advantages and drawbacks, so that you can choose the one that best 
 
 ## 1. Scenario
 
-We want to be able to control an **heterogenous fleet of robots** (for example robots from different vendors).
+We want to be able to control an **heterogenous fleet of robots** (for example robots from different vendors) in an 
+industrial environment.
 
-First, we'll consider that all the robots evolve in a known map. The operator would be able to send a goal pose, and an
-auction/bid system would assign the task to only one of the robots (based on its position and its waypoints queue). This
-auction system could either be centralized, with an entity listening all the bids and choosing the best one, or distributed,
-with each robot comparing its bid with the others.
+We will consider the following situation :  
+In a warehouse, there are **2 arrivals of packages**. At random time intervals, packages arrive at each arrival zone.
+Each package has a **specific color**, and for each color there is a corresponding **deposit zone** in the map.
 
-As a bonus, it would be interesting to see how well the architecture is able to adapt to new robots dynamically added to the fleet or robot failures.
+We will consider 2 possible **tasks** for the robots :
+- **Store :** Once a package arrives at a pickup spot, a robot will be selected to carry the package to the correct deposit zone, **depending on its color**.
+- **Retrieve :** An operator can send a request to retrieve a package from a specific color. A robot will be selected to go to the correct storing position, and bring back a package to the **retrieval zone**
 
-At the end, it would also be interesting to study how the fleet could share information to create a common map with multi robot SLAM algorithms.
+There will be 3 robots working together, coordinating, in order to achieve these tasks in the shortest time possible.
+
+This coordination will be achieved thanks to an auction/bid system, that would assign the task to the best robot (based on
+its position and its waypoints queue). This auction system could either be centralized, with an entity listening all
+the bids and choosing the best one, or distributed, with each robot comparing its bid with the others.
+
+First we'll consider that once a task is assigned to a robot, it can't abandon it and give it to another robot. However,
+we could later add an **intermediate zone**, where robots would drop the package they are currently carrying to move to
+another task, and another robot would be assigned that package, if that solution is globally better for the fleet.
+
+As a bonus, it would be interesting to see how well the architecture is able to adapt to new robots dynamically added to the
+fleet or robot failures.
+Robot failures would be simulated by sending a message containing the robot ID on a global topic.
+
+First, we'll consider that all the robots evolve in a known map. At the end, it would also be interesting to study how the
+fleet could share information to create a common map with multi robot SLAM algorithms.
 
 
 ## 2. Comparison criteria 
