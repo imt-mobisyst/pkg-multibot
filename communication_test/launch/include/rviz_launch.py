@@ -9,10 +9,14 @@ from launch.substitutions import TextSubstitution, LaunchConfiguration
 
 def rviz(context):
     config_file  =  LaunchConfiguration('config').perform(context)
+
+    path = config_file if config_file.startswith('/') else os.path.join(get_package_share_directory('communication_test'), config_file)
+
     return [Node(
         package='rviz2',
         executable='rviz2',
-        arguments=['-d' + config_file]
+        namespace= LaunchConfiguration('namespace'),
+        arguments=['-d' + path]
     )]
 
 def generate_launch_description():
@@ -20,7 +24,11 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument(
             "config",
-            default_value=TextSubstitution(text=os.path.join(get_package_share_directory('communication_test'), 'config', 'turtlesim.rviz'))
+            default_value=TextSubstitution(text=os.path.join('config', 'turtlesim.rviz'))
+        ),
+        DeclareLaunchArgument(
+            "namespace",
+            default_value=TextSubstitution(text='')
         ),
         # Rviz with specific config
         OpaqueFunction(function=rviz)
