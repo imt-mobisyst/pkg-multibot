@@ -31,8 +31,8 @@ class RobotMovement(Node):
         self._action_server = ActionServer(
             self,
             NavigateToPose,
-            'moveToPose',
-            self.moveToPoseCallback)
+            'navigate_to_pose',
+            self.navigateToPoseCallback)
 
         # Init publishers
         self.velPublisher = self.create_publisher(Twist, vel_topic, 10)
@@ -90,7 +90,7 @@ class RobotMovement(Node):
 
         return feedback_msg
 
-    def moveToPoseCallback(self, goal_handle:ServerGoalHandle):
+    def navigateToPoseCallback(self, goal_handle:ServerGoalHandle):
         self.get_logger().info('Executing goal...')
 
         request:NavigateToPose = goal_handle.request

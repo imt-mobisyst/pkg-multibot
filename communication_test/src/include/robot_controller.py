@@ -35,7 +35,7 @@ class RobotController(Node):
         self.markerPublisher = self.create_publisher(Marker, '/turtle_marker', 10)
 
         # Init action client
-        self.action_client = ActionClient(self, NavigateToPose, 'moveToPose')
+        self.action_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
 
         # Init loop
         self.create_timer(1/60.0, self.loop)
