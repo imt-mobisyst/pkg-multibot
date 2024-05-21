@@ -15,11 +15,11 @@ exist, their advantages and drawbacks, so that you can choose the one that best 
     - [Different domain IDs](#different-domain-ids)
     - [DDS Discovery servers](#dds-discovery-servers)
     - [DDS Partitions](#dds-partitions)
-2. [Comparing the communication methods](#4-comparing-the-communication-methods)
-3. [Quality of service options](#5-quality-of-service-options)
-4. [Comparing the different architectures](#6-comparing-the-different-architectures)
-5. [Useful resources](#7-useful-resources)
-6. [References](#8-references)
+1. [Comparing the communication methods](#4-comparing-the-communication-methods)
+1. [Comparing the different architectures](#5-comparing-the-different-architectures)
+1. [Quality of service options](#6-quality-of-service-options)
+1. [Useful resources](#7-useful-resources)
+1. [References](#8-references)
 
 
 ## 1. Scenario
@@ -358,50 +358,7 @@ Each solution has its advantages and drawbacks, there is no perfect solution. Yo
 needs, and event **combine** some of them to achieve your goal
 (see [this](https://discourse.ros.org/t/restricting-communication-between-robots/2931/32))
 
-
-## 5. Quality of service options
-
-Quality of Service Policies allows to further specify the quality of the communication between nodes, in order to reduce
-network traffic by not resending data that is not needed when it's lost.
-
-> See [Documentation](https://community.rti.com/static/documentation/connext-dds/6.0.1/doc/manuals/connext_dds/getting_started/cpp11/intro_qos.html)
-
-The 2 most important QoS options are
-- **Reliability :** Should the arrival of each sample be guaranteed, or the risk of missing a sample acceptable?
-  - `BEST_EFFORT` : Do not send data reliably. If samples are lost, they are **not resent**.
-  - `RELIABLE` : **Resend** lost samples, depending on the History QoS Policy and Resource Limits QoS Policy.
-- **History :** How much data should be stored for reliability and durability purposes?
-  - kind : 
-    - `KEEP_LAST` : Only keep the last `DEPTH` values to resend
-    - `KEEP_ALL` : Keep all failed messages in a queue to resend
-  - `DEPTH` : How many samples to keep per instance if Keep Last is specified
-
-### Other policies
-
-When setting the history policy to `KEEP_LAST`, it could overflow the device's memory. The following policies allow to control how much is kept from a device point a view.
-
-- **Resource Limits :** What is the maximum allowed size of a DataWriter’s or DataReader’s queue due to memory constraints?
-- **Durability :** Should data be stored and automatically sent to new DataReaders as they start up?
-    > *Historical samples = samples that were written before the DataReader was discovered by the DataWriter*
-  - `VOLATILE` : Do not save or deliver historical DDS samples.
-  - `TRANSIENT_LOCAL` : Save and deliver historical DDS samples if the DataWriter still exists.
-  - `TRANSIENT_DURABILITY` : Save and deliver historical DDS samples to store samples in volatile memory.
-  - `PERSISTENT_DURABILITY` : Save and deliver historical DDS samples to store samples in non-volatile memory.
-- **Deadline :** How do we detect that streaming data is being sent at an acceptable rate?
-  - notify the application when a publisher/subscriber sends/receives data within a specific time `PERIOD`
-
-### When to use them ?
-
-- **Streaming data** that does not need reliability at all *(ex: sensor data...)*
-- **State data**, where DataReaders generally want to reliably receive the latest state and can accept missing some state updates when the state is changing rapidly
-- **Event and Alarm** data that needs guaranteed delivery of every sample
-
-<div align="center"><img src="docs/img/reliability_summary.png" width="850" title="Reliability summary"></div>
-
-<div align="center"><img src="docs/img/qos_summary.png" width="850" title="QoS Summary"></div>
-
-
-## 6. Comparing the different architectures
+## 5. Comparing the different architectures
 
 Above, we only compared the different technical communication methods using ROS2, without taking into consideration the global 
 architecture of the system.
@@ -481,6 +438,49 @@ do such communication.
 
 > [!NOTE]
 > All of these issues (bandwidth, network range...) are pretty hard to simulate
+
+## 6. Quality of service options
+
+Quality of Service Policies allows to further specify the quality of the communication between nodes, in order to reduce
+network traffic by not resending data that is not needed when it's lost.
+
+> See [Documentation](https://community.rti.com/static/documentation/connext-dds/6.0.1/doc/manuals/connext_dds/getting_started/cpp11/intro_qos.html)
+
+The 2 most important QoS options are
+- **Reliability :** Should the arrival of each sample be guaranteed, or the risk of missing a sample acceptable?
+  - `BEST_EFFORT` : Do not send data reliably. If samples are lost, they are **not resent**.
+  - `RELIABLE` : **Resend** lost samples, depending on the History QoS Policy and Resource Limits QoS Policy.
+- **History :** How much data should be stored for reliability and durability purposes?
+  - kind : 
+    - `KEEP_LAST` : Only keep the last `DEPTH` values to resend
+    - `KEEP_ALL` : Keep all failed messages in a queue to resend
+  - `DEPTH` : How many samples to keep per instance if Keep Last is specified
+
+### Other policies
+
+When setting the history policy to `KEEP_LAST`, it could overflow the device's memory. The following policies allow to control how much is kept from a device point a view.
+
+- **Resource Limits :** What is the maximum allowed size of a DataWriter’s or DataReader’s queue due to memory constraints?
+- **Durability :** Should data be stored and automatically sent to new DataReaders as they start up?
+    > *Historical samples = samples that were written before the DataReader was discovered by the DataWriter*
+  - `VOLATILE` : Do not save or deliver historical DDS samples.
+  - `TRANSIENT_LOCAL` : Save and deliver historical DDS samples if the DataWriter still exists.
+  - `TRANSIENT_DURABILITY` : Save and deliver historical DDS samples to store samples in volatile memory.
+  - `PERSISTENT_DURABILITY` : Save and deliver historical DDS samples to store samples in non-volatile memory.
+- **Deadline :** How do we detect that streaming data is being sent at an acceptable rate?
+  - notify the application when a publisher/subscriber sends/receives data within a specific time `PERIOD`
+
+### When to use them ?
+
+- **Streaming data** that does not need reliability at all *(ex: sensor data...)*
+- **State data**, where DataReaders generally want to reliably receive the latest state and can accept missing some state updates when the state is changing rapidly
+- **Event and Alarm** data that needs guaranteed delivery of every sample
+
+<div align="center"><img src="docs/img/reliability_summary.png" width="850" title="Reliability summary"></div>
+
+<div align="center"><img src="docs/img/qos_summary.png" width="850" title="QoS Summary"></div>
+
+
 
 
 
