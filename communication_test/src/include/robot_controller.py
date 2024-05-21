@@ -138,6 +138,7 @@ class RobotController(Node):
         # Create msg
         goal_msg = NavigateToPose.Goal()
         goal_msg.pose = PoseStamped()
+        goal_msg.pose.header.frame_id = 'map'
         goal_msg.pose.pose.position = self.queue[0] # Go to the first element in the queue
 
         # Connect to action server
