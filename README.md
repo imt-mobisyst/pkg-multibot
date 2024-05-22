@@ -441,8 +441,13 @@ do such communication.
 
 ## 6. Quality of service options
 
-Quality of Service Policies allows to further specify the quality of the communication between nodes, in order to reduce
+Quality of Service Policies allows to further specify the quality of the DDS communication between nodes, in order to reduce
 network traffic by not resending data that is not needed when it's lost.
+
+> [!NOTE]
+> All of the following options are DDS QoS options but can be configured inside ROS2. However, there are more policies, such
+> as `Partition`, `GroupData`... that are only accessible at the DDS level (by changing the default configuration file
+> `FASTRTPS_DEFAULT_PROFILES_FILE`)
 
 > See [Documentation](https://community.rti.com/static/documentation/connext-dds/6.0.1/doc/manuals/connext_dds/getting_started/cpp11/intro_qos.html)
 
