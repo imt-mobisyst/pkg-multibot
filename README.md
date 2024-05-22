@@ -485,9 +485,11 @@ When setting the history policy to `KEEP_LAST`, it could overflow the device's m
 
 <div align="center"><img src="docs/img/qos_summary.png" width="850" title="QoS Summary"></div>
 
+> The durability of an Event/Alarm data depends on your system, whether a late joining subscriber should have access to
+> previously published data and whether the data must remain avaiable even if the original publisher is no longer active
 
-
-
+You should first design your system depending on the type of data that is communicated, and then add Resource Limits QoS
+policies to make sure this configuration works for your system.
 
 
 ## 7. Useful resources
