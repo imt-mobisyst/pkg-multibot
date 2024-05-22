@@ -41,6 +41,7 @@ install( PROGRAMS
   src/stage_controller.py
   src/turtle_mvt.py
   src/stage_mvt.py
+  src/stage_init_pose.py
   src/static_operator.py
   src/dynamic_operator.py
   src/parasit.py
