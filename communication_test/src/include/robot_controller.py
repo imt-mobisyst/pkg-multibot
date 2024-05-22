@@ -93,8 +93,8 @@ class RobotController(Node):
         self.targetPos = msg.pose.position
 
         # Calculate cost (total distance) to go to that position
-        initPose = self.getRobotPosition() if len(self.queue) == 0 else self.queue[-1]
-        totalDistance = self.totalQueueDistance() + self.euclidean_distance(self.targetPos, initPose)
+        initPos = self.getRobotPosition() if len(self.queue) == 0 else self.queue[-1]
+        totalDistance = self.totalQueueDistance() + self.euclidean_distance(self.targetPos, initPos)
 
         # Send it to the operator to see which turtle gets assigned to it
         res = DistanceToTarget()
@@ -107,7 +107,7 @@ class RobotController(Node):
         assignedRobotId = int(msg.data)
         print(f"msg assigned robot {msg}")
 
-        if(assignedRobotId == self.paramInt('robot_id')):# If the robot assigned is this one, tell it to move
+        if(assignedRobotId == self.paramInt('robot_id') and self.targetPos is not None):# If the robot assigned is this one, tell it to move
             self.queue.append(self.targetPos)
         
         # If the robot assigned is not this one OR the position has been added to queue => reset
@@ -115,12 +115,12 @@ class RobotController(Node):
 
     
 
-    def euclidean_distance(self, targetPos, initPose=None):
+    def euclidean_distance(self, targetPos, initPos=None):
         """Euclidean distance between current pose and the goal."""
-        if initPose is None:
-            initPose = self.getRobotPosition()
+        if initPos is None:
+            initPos = self.getRobotPosition()
 
-        return np.sqrt(np.square(targetPos.y - initPose.y) + np.square(targetPos.x - initPose.x))
+        return np.sqrt(np.square(targetPos.y - initPos.y) + np.square(targetPos.x - initPos.x))
 
 
     def totalQueueDistance(self):
@@ -135,6 +135,9 @@ class RobotController(Node):
         return dist
             
     def send_goal(self):
+        if(len(self.queue) == 0):
+            return
+
         # Create msg
         goal_msg = NavigateToPose.Goal()
         goal_msg.pose = PoseStamped()
@@ -151,8 +154,12 @@ class RobotController(Node):
     def goal_response_callback(self, future):
         goal_handle = future.result()
         if not goal_handle.accepted:
-            self.get_logger().info('Goal rejected. Retrying...')
-            self.send_goal()
+            if(len(self.queue) == 0):
+                self.get_logger().info('Goal rejected')
+            else:
+                self.get_logger().info('Goal rejected. Retrying...')
+                self.send_goal()
+
             return
 
         self.get_logger().info('Goal accepted :)')
@@ -166,11 +173,15 @@ class RobotController(Node):
 
         # If successfully arrived at the point
         if(result.error_code == 0):
+            self.get_logger().info(str(self.queue))
             self.queue.pop(0) # Remove first pos from the queue
             self.robotMoving = False
         else:
-            self.get_logger().info('Goal failed. Retrying...')
-            self.send_goal()
+            if(len(self.queue) == 0):
+                self.get_logger().info('Goal failed')
+            else:
+                self.get_logger().info('Goal failed. Retrying...')
+                self.send_goal()
             
         
 
