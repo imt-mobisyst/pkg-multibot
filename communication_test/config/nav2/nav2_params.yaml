@@ -191,7 +191,7 @@ local_costmap:
       use_sim_time: True
       update_frequency: 5.0
       publish_frequency: 2.0
-      global_frame: odom
+      global_frame: map
       robot_base_frame: base_link
       rolling_window: true
       width: 3
@@ -215,7 +215,7 @@ local_costmap:
         observation_sources: scan
         scan:
           sensor_frame: laser
-          topic: scan
+          topic: <robot_namespace>/scan
           max_obstacle_height: 2.0
           clearing: True
           marking: True
@@ -253,7 +253,7 @@ global_costmap:
         observation_sources: scan
         scan:
           sensor_frame: laser
-          topic: scan
+          topic: <robot_namespace>/scan
           max_obstacle_height: 2.0
           clearing: True
           marking: True
