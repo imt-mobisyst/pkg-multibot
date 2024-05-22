@@ -1,6 +1,6 @@
 # pkg-multibot
 
-This repository's goal is to study the **coordination of a robot fleet** using **ROS2**. We will study different communication methods and architectures to achieve a specific scenario, and compare them based on different criteria.
+This repository's goal is to study the **coordination of a robot fleet** using **ROS2** (Iron). We will study different communication methods and architectures to achieve a specific scenario, and compare them based on different criteria.
 
 Although multi-robots research has been a subject for many years now (late 80s), there is still no standard on how to
 architecture communication between them using ROS2. This readme's goal is to show the main communications methods that
