@@ -43,7 +43,7 @@ def generate_launch_description():
                             'launch/nav/localization_launch.py')),
             launch_arguments={
                 "namespace": LaunchConfiguration('namespace'),
-                'map': os.path.join(get_package_share_directory('communication_test'), 'config', 'maps', 'cave', 'map.yaml'),
+                'map': os.path.join(get_package_share_directory('communication_test'), 'world', 'maps', 'cave', 'cave.yaml'),
                 'params_file': os.path.join(get_package_share_directory('communication_test'), 'config', 'nav2', 'nav2_params.yaml'),
                 'autostart': 'True',
                 'use_sim_time': 'True'

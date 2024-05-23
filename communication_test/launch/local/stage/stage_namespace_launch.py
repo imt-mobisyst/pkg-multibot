@@ -18,8 +18,8 @@ def generate_launch_description():
     simulator = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
-                get_package_share_directory('stage_ros2'),
-                'launch/stage.launch.py')),
+                get_package_share_directory('communication_test'),
+                'launch/include/stage/stage.launch.py')),
         launch_arguments={
             'world':'cave_three_robots',
             'enforce_prefixes':'true',

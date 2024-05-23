@@ -1,4 +1,4 @@
-image: map.png
+image: cave.png
 mode: trinary
 resolution: 0.032
 origin: [-8, -8, 0]

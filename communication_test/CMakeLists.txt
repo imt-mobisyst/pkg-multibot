@@ -23,10 +23,11 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-# Install launch files.
+# Install launch files, config and world files
 install(DIRECTORY
   launch
   config
+  world
   DESTINATION share/${PROJECT_NAME}/
 )
 
