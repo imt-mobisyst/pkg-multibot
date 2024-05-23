@@ -154,12 +154,8 @@ class RobotController(Node):
     def goal_response_callback(self, future):
         goal_handle = future.result()
         if not goal_handle.accepted:
-            if(len(self.queue) == 0):
-                self.get_logger().info('Goal rejected')
-            else:
-                self.get_logger().info('Goal rejected. Retrying...')
-                self.send_goal()
-
+            self.get_logger().info('Goal rejected')
+            self.queue.pop(0) # Remove first pos from the queue
             return
 
         self.get_logger().info('Goal accepted :)')
