@@ -15,13 +15,17 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description():
 
+    map_launch_arg = DeclareLaunchArgument(
+        'map', default_value='warehouse'
+    )
+
     simulator = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
                 get_package_share_directory('communication_test'),
                 'launch/include/stage/stage.launch.py')),
         launch_arguments={
-            'world':'cave_three_robots',
+            'world': LaunchConfiguration('map'),
             'enforce_prefixes':'true',
             'one_tf_tree':'false'
         }.items()
@@ -40,7 +44,8 @@ def generate_launch_description():
                 # Launch turtles with the correct DDS configuration
                 launch_arguments={
                     'namespace': f"robot_{i}",
-                    'robot_id': str(i)
+                    'robot_id': str(i),
+                    'map': LaunchConfiguration('map')
                 }.items()
             )
         )
@@ -69,6 +74,8 @@ def generate_launch_description():
 
 
     return LaunchDescription([
+        map_launch_arg,
+
         # Rviz with specific config
         # rviz_node,
 

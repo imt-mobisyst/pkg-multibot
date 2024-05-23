@@ -5,7 +5,7 @@ from launch.actions import DeclareLaunchArgument, GroupAction
 from launch.substitutions import LaunchConfiguration
 from launch.substitutions import TextSubstitution
 from launch_ros.actions import Node, PushRosNamespace
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, OpaqueFunction, SetLaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
@@ -20,6 +20,10 @@ def generate_launch_description():
         "namespace", default_value=''
     )
 
+    map_launch_arg = DeclareLaunchArgument(
+        'map', default_value='warehouse'
+    )
+
     # Start a controller node
     controller_node = GroupAction([
         PushRosNamespace(LaunchConfiguration('namespace')),
@@ -28,11 +32,22 @@ def generate_launch_description():
             executable='stage_controller.py',
             name='stage_controller',
             parameters=[
-                {'robot_id': LaunchConfiguration('robot_id')}
+                {
+                    'robot_id': LaunchConfiguration('robot_id'),
+                    'world': LaunchConfiguration('map')
+                }
             ]
         )
     ])
+
+    def map_path(context):
+        map = LaunchConfiguration('map').perform(context)
+
+        file = [os.path.join(get_package_share_directory('communication_test'), 'world', 'maps', map, 'map.yaml')]
+
+        return [SetLaunchConfiguration('map_file', file)]
     
+    map_path_arg = OpaqueFunction(function=map_path)
 
     localization = GroupAction([
         PushRosNamespace(LaunchConfiguration('namespace')),
@@ -43,7 +58,7 @@ def generate_launch_description():
                             'launch/nav/localization_launch.py')),
             launch_arguments={
                 "namespace": LaunchConfiguration('namespace'),
-                'map': os.path.join(get_package_share_directory('communication_test'), 'world', 'maps', 'cave', 'cave.yaml'),
+                'map': LaunchConfiguration('map_file'),
                 'params_file': os.path.join(get_package_share_directory('communication_test'), 'config', 'nav2', 'nav2_params.yaml'),
                 'autostart': 'True',
                 'use_sim_time': 'True'
@@ -71,6 +86,8 @@ def generate_launch_description():
     return LaunchDescription([
         robot_id_launch_arg,
         namespace_launch_arg,
+        map_launch_arg,
+        map_path_arg,
 
         controller_node,
 

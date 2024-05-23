@@ -1,0 +1,7 @@
+image: warehouse.png
+mode: trinary
+resolution: 0.032
+origin: [-8, -8, 0]
+negate: 0
+occupied_thresh: 0.695
+free_thresh: 0.9

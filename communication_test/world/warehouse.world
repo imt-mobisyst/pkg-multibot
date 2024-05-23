@@ -1,0 +1,113 @@
+# cave.world
+# simple cave environment with a pioneer robot based on the basic world file examples of 
+# Richard Vaughan Richard Vaughan, Andrew Howard, Luis Riazuelo
+# Authors: Markus Bader
+
+include "include/robots.inc"
+
+# set the resolution of the underlying raytrace model in meters
+resolution 0.02
+
+# simulation timestep in milliseconds
+interval_sim 100  
+
+define floorplan model
+(
+  # sombre, sensible, artistic
+  color "gray30"
+
+  # most maps will need a bounding box
+  boundary 0
+
+  gui_nose 0
+  gui_grid 0
+
+  gui_outline 0
+  gripper_return 0
+  fiducial_return 0
+  laser_return 1
+)
+
+# configure the GUI window
+window
+(
+  size [ 681 681 ] # in pixels
+  scale 20.883   # pixels per meter
+  center [ 4.144  -5.251 ]
+  rotate [ 0.000  0.000 ]
+
+  show_data 1              # 1=on 0=off
+)
+
+# load an environment bitmap
+floorplan
+( 
+  name "warehouse"
+  size [16.000 16.000 0.800]
+  pose [0.000 0.000 0.000 0.000]
+  bitmap "maps/warehouse/warehouse.png"
+  gui_move 0
+)
+
+# define a block
+define my_block model
+(
+  size [0.500 0.500 0.500]
+  gui_nose 0
+)
+
+# define a spot to pick up packages
+define spot model
+(
+  size [2 2 0]
+
+  gui_nose 0
+  gui_move 0
+
+  boundary 0
+
+  laser_return 0
+
+  color "gray90"
+)
+
+# throw in a block
+my_block( pose [ 0.76 -1.140 0.000 180.000 ] color "green")
+
+# throw in pickup spots
+spot(pose [-6.998 6.998 0.0 0.0])
+spot(pose [6.998 -6.998 0.0 0.0])
+
+# throw in deposit spots
+spot(pose [6.250 6.25 0.0 0.0] color "LightSkyBlue")
+spot(pose [6.250 2.40 0.0 0.0] color "LightCoral")
+spot(pose [-3.70 2.75 0.0 0.0] color "LightGoldenrod")
+spot(pose [-1.896 -5.0 0.0 0.0] color "LightGreen")
+
+# throw in a robot
+pioneer2dx_with_laser 
+(
+  # can refer to the robot by this name
+  name "robot_0"
+  color "red" 
+  pose [ -4.000 -6.000 0.001 0.000 ] # Spawn at z=0.001 to be above pickup/deposit spots
+)
+
+
+# throw in a robot
+pioneer2dx_with_laser 
+(
+  # can refer to the robot by this name
+  name "robot_1"
+  color "GreenYellow" 
+  pose [ -3.000 5.000 0.001 90.000 ] # Spawn at z=0.001 to be above pickup/deposit spots
+)
+
+# throw in a robot
+pioneer2dx_with_laser 
+(
+  # can refer to the robot by this name
+  name "robot_2"
+  color "GreenBlue" 
+  pose [ 6.000 2.500 0.001 180.000 ] # Spawn at z=0.001 to be above pickup/deposit spots
+)
