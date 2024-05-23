@@ -2,6 +2,7 @@
 from os import getenv
 from rclpy.node import Node
 from rclpy.action import ActionClient
+from rclpy.qos import QoSProfile, DurabilityPolicy, HistoryPolicy
 
 import numpy as np
 
@@ -32,7 +33,11 @@ class RobotController(Node):
 
         # Init publishers
         self.distanceToTargetPublisher = self.create_publisher(DistanceToTarget, '/distanceToTarget', 10)
-        self.markerPublisher = self.create_publisher(Marker, '/turtle_marker', 10)
+        self.markerPublisher = self.create_publisher(Marker, '/turtle_marker', QoSProfile(
+            durability=DurabilityPolicy.TRANSIENT_LOCAL,
+            history=HistoryPolicy.KEEP_LAST,
+            depth=3)
+        )
 
         # Init action client
         self.action_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')

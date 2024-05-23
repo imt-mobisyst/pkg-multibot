@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 import rclpy
-import threading
 
 
 from include.robot_controller import RobotController
@@ -18,7 +17,6 @@ class TurtleController(RobotController):
 
         # Init variables
         self.pose = Pose()
-        threading.Timer(1.0, self.publishPoseMarker).start() # Publish the first marker 1s after starting to let rviz launch
 
 
     def pose_callback(self, msg:Pose):
