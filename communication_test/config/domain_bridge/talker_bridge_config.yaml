@@ -1,0 +1,8 @@
+# Name of the domain bridge, used for node naming and logging
+name: my_bridge
+from_domain: 2
+to_domain: 3
+topics:
+  # Bridge "/chatter" topic from doman ID 2 to domain ID 3
+  chatter:
+    type: std_msgs/msg/String
