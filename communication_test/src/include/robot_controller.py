@@ -77,9 +77,9 @@ class RobotController(Node):
         marker.id = self.paramInt('robot_id')
 
         # Set the scale of the marker
-        marker.scale.x = 1.0
-        marker.scale.y = 0.3
-        marker.scale.z = 0.3
+        marker.scale.x = 0.6
+        marker.scale.y = 0.2
+        marker.scale.z = 0.2
 
         # Set the color
         marker.color.r = 0.0
