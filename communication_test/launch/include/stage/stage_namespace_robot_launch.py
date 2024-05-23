@@ -34,18 +34,19 @@ def generate_launch_description():
     ])
     
 
-    load_map = GroupAction([
+    localization = GroupAction([
         PushRosNamespace(LaunchConfiguration('namespace')),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
                         os.path.join(
-                            get_package_share_directory('nav2_bringup'),
-                            'launch/localization_launch.py')),
+                            get_package_share_directory('communication_test'),
+                            'launch/nav/localization_launch.py')),
             launch_arguments={
                 "namespace": LaunchConfiguration('namespace'),
                 'map': os.path.join(get_package_share_directory('communication_test'), 'config', 'maps', 'cave', 'map.yaml'),
                 'params_file': os.path.join(get_package_share_directory('communication_test'), 'config', 'nav2', 'nav2_params.yaml'),
                 'autostart': 'True',
+                'use_sim_time': 'True'
             }.items()
         )
     ])
@@ -73,6 +74,7 @@ def generate_launch_description():
 
         controller_node,
 
-        load_map,
+        localization,
+
         nav2
     ])

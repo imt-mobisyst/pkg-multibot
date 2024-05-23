@@ -42,6 +42,7 @@ install( PROGRAMS
   src/turtle_mvt.py
   src/stage_mvt.py
   src/stage_init_pose.py
+  src/stage_fake_localization.py
   src/static_operator.py
   src/dynamic_operator.py
   src/parasit.py

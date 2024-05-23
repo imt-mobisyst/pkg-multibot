@@ -66,17 +66,6 @@ def generate_launch_description():
         }.items()
     )
 
-    init_pose_node = Node(
-        package='communication_test',
-        executable='stage_init_pose.py',
-        name='init_pose',
-        parameters=[
-            {
-                'nb_robots': 3,
-                'wait': 15
-            }
-        ]
-    )
 
 
     return LaunchDescription([
@@ -91,8 +80,5 @@ def generate_launch_description():
 
         # Run operator node
         operator_node,
-
-        # Node to initialize all robot poses at startup for AMCL
-        init_pose_node
         
     ])
