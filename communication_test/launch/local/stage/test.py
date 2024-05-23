@@ -13,21 +13,17 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description():
 
-    simulator = GroupAction([
-        SetRemap(src='/robot_0/base_scan',dst='/robot_0/scan'),
-
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                os.path.join(
-                    get_package_share_directory('stage_ros2'),
-                    'launch/stage.launch.py')),
-            launch_arguments={
-                'world':'cave',
-                'enforce_prefixes':'true',
-                'one_tf_tree':'false'
-            }.items()
-        )
-    ])
+    simulator = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                get_package_share_directory('stage_ros2'),
+                'launch/stage.launch.py')),
+        launch_arguments={
+            'world':'cave',
+            'enforce_prefixes':'true',
+            'one_tf_tree':'false'
+        }.items()
+    )
     
     # Start 1 controller
     load_controller = IncludeLaunchDescription(

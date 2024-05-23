@@ -37,7 +37,7 @@ amcl:
     z_max: 0.05
     z_rand: 0.5
     z_short: 0.05
-    scan_topic: scan
+    scan_topic: base_scan
 
 bt_navigator:
   ros__parameters:
@@ -215,7 +215,7 @@ local_costmap:
         observation_sources: scan
         scan:
           sensor_frame: laser
-          topic: <robot_namespace>/scan
+          topic: <robot_namespace>/base_scan
           max_obstacle_height: 2.0
           clearing: True
           marking: True
@@ -253,7 +253,7 @@ global_costmap:
         observation_sources: scan
         scan:
           sensor_frame: laser
-          topic: <robot_namespace>/scan
+          topic: <robot_namespace>/base_scan
           max_obstacle_height: 2.0
           clearing: True
           marking: True
@@ -426,5 +426,5 @@ collision_monitor:
     observation_sources: ["scan"]
     scan:
       type: "scan"
-      topic: "scan"
+      topic: "base_scan"
       enabled: True
