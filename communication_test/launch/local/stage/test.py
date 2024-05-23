@@ -53,16 +53,7 @@ def generate_launch_description():
             {'nb_robots': 1}
         ]
     )
-    
 
-    init_pose_node = Node(
-        package='communication_test',
-        executable='stage_init_pose.py',
-        name='init_pose',
-        parameters=[
-            {'nb_robots': 1}
-        ]
-    )
   
 
     return LaunchDescription([
@@ -70,7 +61,5 @@ def generate_launch_description():
 
         load_controller,
 
-        operator_node,
-
-        init_pose_node
+        operator_node
     ])
