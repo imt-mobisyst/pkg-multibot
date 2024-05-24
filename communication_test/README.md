@@ -18,6 +18,7 @@ ros2 launch communication_test turtlesim_namespace_launch.py nb_robots:="3"
 ### Stage demo
 
 ```bash
+ros2 launch communication_test rviz_launch.py config:=config/stage.rviz
 ros2 launch communication_test stage_namespace_launch.py
 ```
 
