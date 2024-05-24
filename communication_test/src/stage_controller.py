@@ -26,10 +26,10 @@ class StageRobotController(RobotController):
         self._targetPackage = None
 
         self._depositSpots = {
-            "red": createPoint(6.250, 2.40),
-            "green": createPoint(-1.896, -5.0),
-            "blue": createPoint(6.250, 6.25),
-            "yellow": createPoint(-3.70, 2.75)
+            "red":    createPoint(6.328, 2.392),
+            "green":  createPoint(-2.136, -5.496),
+            "blue":   createPoint(6.328, 6.328),
+            "yellow": createPoint(-4.952, 1.816)
         }
 
     def pose_callback(self, msg:Odometry):
@@ -66,7 +66,7 @@ class StageRobotController(RobotController):
 
     def assignedRobot_callback(self, msg:Int8):
         assignedRobotId = int(msg.data)
-        print(f"Robot {assignedRobotId} goes to the target")
+        self.get_logger().info(f"Robot {assignedRobotId} goes to the target")
 
         if(assignedRobotId == self.paramInt('robot_id') and self._targetPackage is not None):# If the robot assigned is this one, tell it to move
             # Go take the package

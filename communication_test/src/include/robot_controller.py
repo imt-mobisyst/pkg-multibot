@@ -116,7 +116,7 @@ class RobotController(Node):
 
     def assignedRobot_callback(self, msg:Int8):
         assignedRobotId = int(msg.data)
-        print(f"Robot {assignedRobotId} goes to the target")
+        self.get_logger().info(f"Robot {assignedRobotId} goes to the target")
 
         if(assignedRobotId == self.paramInt('robot_id') and self.targetPos is not None):# If the robot assigned is this one, tell it to move
             self.queue.append(self.targetPos)

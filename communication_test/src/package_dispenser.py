@@ -31,8 +31,8 @@ class PackageDispenserNode(Node):
         # Variables
 
         self._spawnSpots:list[Point] = [
-            createPoint(-6.998, 6.998), # Top left dispenser
-            createPoint(6.998, -6.998)  # Bottom right dispenser
+            createPoint(-6.328, 6.328), # Top left dispenser
+            createPoint(6.328, -6.328)  # Bottom right dispenser
         ]
         self._spotSize = 2 # Square of 2x2m
 

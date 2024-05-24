@@ -75,14 +75,14 @@ define spot model
 my_block( pose [ 0.76 -1.140 0.000 180.000 ] color "green")
 
 # throw in pickup spots
-spot(pose [-6.998 6.998 0.0 0.0])
-spot(pose [6.998 -6.998 0.0 0.0])
+spot(pose [-6.328 6.328 0.0 0.0])
+spot(pose [6.328 -6.328 0.0 0.0])
 
 # throw in deposit spots
-spot(pose [6.250 6.25 0.0 0.0] color "LightSkyBlue")
-spot(pose [6.250 2.40 0.0 0.0] color "LightCoral")
-spot(pose [-3.70 2.75 0.0 0.0] color "LightGoldenrod")
-spot(pose [-1.896 -5.0 0.0 0.0] color "LightGreen")
+spot(pose [6.328 6.328 0.0 0.0] color "LightSkyBlue")
+spot(pose [6.328 2.392 0.0 0.0] color "LightCoral")
+spot(pose [-4.952 1.816 0.0 0.0] color "LightGoldenrod")
+spot(pose [-2.136 -5.496 0.0 0.0] color "LightGreen")
 
 # throw in a robot
 pioneer2dx_with_laser 
