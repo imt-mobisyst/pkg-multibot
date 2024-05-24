@@ -4,7 +4,7 @@ from rclpy.node import Node
 
 from std_msgs.msg import String
 from geometry_msgs.msg import Point
-from visualization_msgs.msg import Marker
+from visualization_msgs.msg import Marker, MarkerArray
 
 from random import random, choice as randomChoice
 
@@ -19,9 +19,16 @@ class PackageDispenserNode(Node):
 
         # Init publishers
         self.markerPublisher = self.create_publisher(Marker, '/package_marker', 10)
+        self.markerCleaner = self.create_publisher(MarkerArray, '/package_marker_array', 10)
         
         # Init loop
         self.create_timer(self.paramInt('period'), self.loop)
+
+
+        # Clear previous markers
+        self.clearMarkers()
+
+        # Variables
 
         self._spawnSpots:list[Point] = [
             createPoint(-6.998, 6.998), # Top left dispenser
@@ -65,6 +72,13 @@ class PackageDispenserNode(Node):
             # Spawn a package of the selected color at the selected spot
             self.spawnPackage(packageSpot, packageColor)
 
+    def clearMarkers(self):
+        marker_array = MarkerArray()
+        marker = Marker()
+        marker.action = Marker.DELETEALL
+        marker_array.markers.append(marker)
+
+        self.markerCleaner.publish(marker_array)
 
     def publishMarker(self, pos:Point, color, id):
         # Publish marker for vizualisation in rviz
