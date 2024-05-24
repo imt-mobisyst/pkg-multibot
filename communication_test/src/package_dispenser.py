@@ -16,6 +16,7 @@ class PackageDispenserNode(Node):
         super().__init__('package_dispenser')
 
         self.declare_parameter('period', 1)
+        self.declare_parameter('rate', 0.035) # 5% package spawn every second by default
 
         # Init publishers
         self.markerPublisher = self.create_publisher(Marker, '/package_marker', 10)
@@ -47,6 +48,8 @@ class PackageDispenserNode(Node):
     
     def paramInt(self, name):
         return self.get_parameter(name).get_parameter_value().integer_value
+    def paramDouble(self, name):
+        return self.get_parameter(name).get_parameter_value().double_value
 
     def spawnPackage(self, spot, color):
         # Create unique package ID
@@ -60,8 +63,8 @@ class PackageDispenserNode(Node):
 
 
     def loop(self):
-        # There is a 10% probability of spawning a package every second
-        if random() < 0.1:
+        # There is a  probability of spawning a package every second (ex: 10% if rate=0.1)
+        if random() < self.paramDouble('rate'):
             # Each deposit point and color has a the same chance of being chosen
             targetSpot = randomChoice(self._spawnSpots)
             packageColor = randomChoice(self._packageColors)
