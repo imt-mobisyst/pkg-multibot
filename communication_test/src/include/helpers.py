@@ -1,4 +1,4 @@
-from geometry_msgs.msg import Quaternion
+from geometry_msgs.msg import Quaternion, Point
 import numpy as np
 import math as m
 
@@ -32,3 +32,10 @@ def getEulerFromQuaternion(q:Quaternion):
         'pitch': pitch_y,
         'yaw': yaw_z
     }
+
+def createPoint(x,y,z=0) -> Point:
+    p = Point()
+    p.x = float(x)
+    p.y = float(y)
+    p.z = float(z)
+    return p

@@ -40,10 +40,14 @@ DESTINATION lib/${PROJECT_NAME})
 install( PROGRAMS
   src/turtlesim_controller.py
   src/stage_controller.py
+
   src/turtle_mvt.py
   src/stage_mvt.py
+
   src/stage_init_pose.py
   src/stage_fake_localization.py
+  src/package_dispenser.py
+
   src/static_operator.py
   src/dynamic_operator.py
   src/parasit.py
