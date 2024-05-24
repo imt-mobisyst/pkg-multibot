@@ -31,9 +31,9 @@ define floorplan model
 # configure the GUI window
 window
 (
-  size [ 681 681 ] # in pixels
+  size [ 500 500 ] # in pixels
   scale 20.883   # pixels per meter
-  center [ 4.144  -5.251 ]
+  center [ 0.000  0.000 ]
   rotate [ 0.000  0.000 ]
 
   show_data 1              # 1=on 0=off
