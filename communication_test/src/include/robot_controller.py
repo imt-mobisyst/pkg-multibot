@@ -180,18 +180,22 @@ class RobotController(Node):
 
         # If successfully arrived at the point
         if(result.error_code == 0):
-            self.get_logger().info(str(self.queue))
             self.queue.pop(0) # Remove first pos from the queue
             self.robotMoving = False
+
+            # Send event to catch in child classes if needed
+            self.goalSucceeded()
         else:
-            if(len(self.queue) == 0):
-                self.get_logger().info('Goal failed')
-            else:
-                self.get_logger().info('Goal failed. Retrying...')
-                self.send_goal()
+            self.get_logger().info('Goal failed')
+
+            # Send events to catch in child classes if needed
+            self.goalFailed()
             
         
-
+    def goalSucceeded(self):
+        pass
+    def goalFailed(self):
+        pass
 
 
     def loop(self):

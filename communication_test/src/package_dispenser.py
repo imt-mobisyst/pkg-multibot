@@ -16,7 +16,7 @@ class PackageDispenserNode(Node):
         super().__init__('package_dispenser')
 
         self.declare_parameter('period', 1)
-        self.declare_parameter('rate', 0.035) # 5% package spawn every second by default
+        self.declare_parameter('rate', 0.05) # 5% package spawn every second by default
 
         # Init publishers
         self.markerPublisher = self.create_publisher(Marker, '/package_marker', 10)
