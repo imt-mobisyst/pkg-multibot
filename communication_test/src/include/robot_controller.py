@@ -188,8 +188,12 @@ class RobotController(Node):
         else:
             self.get_logger().info('Goal failed')
 
-            # Send events to catch in child classes if needed
-            self.goalFailed()
+            if len(self.queue) > 0:
+                self.get_logger().info('Retrying...')
+                self.send_goal()
+            else:
+                # Send events to catch in child classes if needed
+                self.goalFailed()
             
         
     def goalSucceeded(self):
