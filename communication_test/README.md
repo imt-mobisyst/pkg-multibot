@@ -8,9 +8,17 @@ This package is a ROS2 package that implements the different solutions explained
 
 Namespacing allow to add a prefix before every node, topic, service... in a launchfile. That way, they allow to avoid conflicts between data from different robots.
 
+### Turtlesim demo
+
 To start the demo, you can use the following command, that will take care of starting everything (`turtle`, `operator` et `rviz`) :
 ```bash
 ros2 launch communication_test turtlesim_namespace_launch.py nb_robots:="3"
+```
+
+### Stage demo
+
+```bash
+ros2 launch communication_test stage_namespace_launch.py
 ```
 
 
