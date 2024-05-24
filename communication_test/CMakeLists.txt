@@ -42,7 +42,6 @@ install( PROGRAMS
   src/stage_controller.py
 
   src/turtle_mvt.py
-  src/stage_mvt.py
 
   src/stage_init_pose.py
   src/stage_fake_localization.py
