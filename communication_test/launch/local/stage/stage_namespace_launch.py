@@ -31,6 +31,11 @@ def generate_launch_description():
         }.items()
     )
 
+    package_dispenser = Node(
+        package='communication_test',
+        executable='package_dispenser.py'
+    )
+
     # Create 3 turtles with their own namespace 'robotX'
     turtles = []
     for i in range(3):
@@ -87,5 +92,8 @@ def generate_launch_description():
 
         # Run operator node
         operator_node,
+
+        # Package dispenser
+        package_dispenser
         
     ])

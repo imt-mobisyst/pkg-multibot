@@ -28,7 +28,7 @@ class RobotController(Node):
             self.get_logger().info("RUNNING on DDS \"" + getenv('ROS_DISCOVERY_SERVER') + "\"")
 
         # Init subscriptions
-        self.create_subscription(PoseStamped, '/goal_pose', self.target_callback, 10)
+        self.create_subscription(PoseStamped, '/goal_pose', self.goalPose_callback, 10)
         self.create_subscription(Int8, '/assignedRobot', self.assignedRobot_callback, 10)
 
         # Init publishers
@@ -93,13 +93,18 @@ class RobotController(Node):
 
         self.markerPublisher.publish(marker)
 
-    def target_callback(self, msg:PoseStamped):
+    def goalPose_callback(self, msg:PoseStamped):
         # Save position        
         self.targetPos = msg.pose.position
 
+        # Calculate bid and send it to the operator
+        self.sendBid(self.targetPos)
+
+        
+    def sendBid(self, targetPos:Point):
         # Calculate cost (total distance) to go to that position
         initPos = self.getRobotPosition() if len(self.queue) == 0 else self.queue[-1]
-        totalDistance = self.totalQueueDistance() + self.euclidean_distance(self.targetPos, initPos)
+        totalDistance = self.totalQueueDistance() + self.euclidean_distance(targetPos, initPos)
 
         # Send it to the operator to see which turtle gets assigned to it
         res = DistanceToTarget()
@@ -108,9 +113,10 @@ class RobotController(Node):
 
         self.distanceToTargetPublisher.publish(res)
 
+
     def assignedRobot_callback(self, msg:Int8):
         assignedRobotId = int(msg.data)
-        print(f"msg assigned robot {msg}")
+        print(f"Robot {assignedRobotId} goes to the target")
 
         if(assignedRobotId == self.paramInt('robot_id') and self.targetPos is not None):# If the robot assigned is this one, tell it to move
             self.queue.append(self.targetPos)
