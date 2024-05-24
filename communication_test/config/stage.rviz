@@ -48,11 +48,41 @@ Visualization Manager:
       Value: true
     - Class: rviz_default_plugins/Marker
       Enabled: true
+      Name: Packages spawned
+      Namespaces:
+        blue: true
+        green: true
+        red: true
+        yellow: true
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /package_marker
+      Value: true
+    - Class: rviz_default_plugins/Marker
+      Enabled: true
+      Name: Packages deposit
+      Namespaces:
+        blue: true
+        green: true
+        red: true
+        yellow: true
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /package_deposit_marker
+      Value: true
+    - Class: rviz_default_plugins/Marker
+      Enabled: true
       Name: Robots
       Namespaces:
-        robot0: true
-        robot1: true
-        robot2: true
+        {}
       Topic:
         Depth: 20
         Durability Policy: Transient Local
@@ -288,22 +318,6 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /robot_2/transformed_global_plan
       Value: true
-    - Class: rviz_default_plugins/Marker
-      Enabled: true
-      Name: Packages
-      Namespaces:
-        blue: true
-        green: true
-        red: true
-        yellow: true
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        Filter size: 10
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /package_marker
-      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -359,7 +373,7 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 34.913387298583984
+      Scale: 36.164329528808594
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz_default_plugins)
       X: 0

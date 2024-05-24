@@ -10,6 +10,7 @@ from nav_msgs.msg import Odometry
 from visualization_msgs.msg import Marker, MarkerArray
 
 from include.helpers import getEulerFromQuaternion, createPoint
+from package_dispenser import PACKAGE_COLORS
 
 class StageRobotController(RobotController):
 
@@ -22,6 +23,7 @@ class StageRobotController(RobotController):
 
         # Init stage specific publisher
         self.markerCleaner = self.create_publisher(MarkerArray, '/package_marker_array', 10)
+        self.depositMarkerPublisher = self.create_publisher(Marker, '/package_deposit_marker', 10)
 
         # Init variables
         self.pose = Pose()
@@ -86,7 +88,7 @@ class StageRobotController(RobotController):
         # If the robot assigned is not this one OR the position has been added to queue => reset
         self._targetPackage = None
 
-    def removeMarker(self, id, ns):
+    def removeSpawnMarker(self, id, ns):
         """Remove the marker with this specific id"""
         marker_array = MarkerArray()
         marker = Marker()
@@ -100,18 +102,51 @@ class StageRobotController(RobotController):
 
         self.markerCleaner.publish(marker_array)
 
+    def addDepositMarker(self, package, depositPos):
+        marker = Marker()
+        marker.header.frame_id = 'map'
+        marker.header.stamp = self.get_clock().now().to_msg()
+
+
+
+        # set shape
+        marker.type = 1 # Cube
+        marker.id = package['id']
+        marker.ns = package['colorName']
+
+        # Set the scale of the marker
+        marker.scale.x = 0.3
+        marker.scale.y = 0.3
+        marker.scale.z = 0.3
+
+        # Set the color
+        color = PACKAGE_COLORS[package['colorName']]
+        marker.color.r = float(color[0])
+        marker.color.g = float(color[1])
+        marker.color.b = float(color[2])
+        marker.color.a = 1.0
+
+        # Set the pose of the marker
+        marker.pose.position = depositPos
+
+        self.depositMarkerPublisher.publish(marker)
+
+
     def goalSucceeded(self):
         actualPackage = self._packageQueue[0]
 
         # If you reached the package, pick up
         if actualPackage['picked_up'] == False:
             # Remove the package marker
-            self.removeMarker(self._packageQueue[0]['id'], self._packageQueue[0]['colorName'])
+            self.removeSpawnMarker(self._packageQueue[0]['id'], self._packageQueue[0]['colorName'])
 
             # Change package state in queue
             self._packageQueue[0]['picked_up'] = True
             
         else:
+            # Deposit package
+            self.addDepositMarker(self._packageQueue[0], self.getRobotPosition())
+
             # Package correctly arrived at deposit spot, remove it from queue
             self._packageQueue.pop(0)
 
