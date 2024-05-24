@@ -28,6 +28,7 @@ class PackageDispenserNode(Node):
         # Init publishers
         self.markerPublisher = self.create_publisher(Marker, '/package_marker', 10)
         self.markerCleaner = self.create_publisher(MarkerArray, '/package_marker_array', 10)
+        self.depositMarkerCleaner = self.create_publisher(MarkerArray, '/package_deposit_marker_array', 10)
         
         # Init loop
         self.create_timer(self.paramInt('period'), self.loop)
@@ -83,6 +84,7 @@ class PackageDispenserNode(Node):
         marker_array.markers.append(marker)
 
         self.markerCleaner.publish(marker_array)
+        self.depositMarkerCleaner.publish(marker_array)
 
     def publishMarker(self, pos:Point, color, colorName, id):
         # Publish marker for vizualisation in rviz
