@@ -17,10 +17,13 @@ ros2 launch communication_test turtlesim_namespace_launch.py nb_robots:="3"
 
 ### Stage demo
 
+To start the demo, you can use the following command, that will take care of starting everything (`turtle`, `operator` et `rviz`) :
 ```bash
 ros2 launch communication_test rviz_launch.py config:=config/stage.rviz
 ros2 launch communication_test stage_namespace_launch.py
 ```
+
+To start spawning packages, use the `Publish Point` button in rviz (it will toggle the package spawning).
 
 
 
