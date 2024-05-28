@@ -14,13 +14,13 @@ class StageFakeLocalization(Node):
         super().__init__(name)
 
         # Init subscriber
-        self.create_subscription(Odometry, f"ground_truth", self.groundTruthCallback, 10)
-        self.create_subscription(Odometry, f"odom", self.odomCallback, 10)
+        self.create_subscription(Odometry, "ground_truth", self.groundTruthCallback, 10)
+        self.create_subscription(Odometry, "odom", self.odomCallback, 10)
         
         # Init publisher
         self.tf_broadcaster = TransformBroadcaster(self)
 
-        self.tf_timer = self.create_timer(0.05, self.tf_timer_callback)
+        self.create_timer(0.05, self.tf_timer_callback)
 
         self.lastGlobalPose = Pose()
         self.lastOdomPose = Pose()
@@ -33,8 +33,8 @@ class StageFakeLocalization(Node):
         # Save pose
         self.lastOdomPose = msg.pose.pose
 
-    def tf_timer_callback(self):
 
+    def tf_timer_callback(self):
         msg = TransformStamped()
         msg.header.frame_id = "map"
         msg.header.stamp = self.get_clock().now().to_msg()

@@ -1,0 +1,48 @@
+# Name of the domain bridge, used for node naming and logging
+name: stage_bridge_%robot_X%_to_sim
+from_domain: 100
+to_domain: 1
+topics:
+
+  # Bridge "/robot_X/base_scan" topic from the sim domain ID (100) to the robot's domain ID
+  %robot_X%/base_scan:
+    type: sensor_msgs/msg/LaserScan
+    remap: /base_scan
+
+
+  # Bridge "/robot_X/ground_truth" topic from the sim domain ID (100) to the robot's domain ID
+  %robot_X%/ground_truth:
+    type: nav_msgs/msg/Odometry
+    remap: /ground_truth
+
+  # Bridge "/robot_X/odom" topic from the sim domain ID (100) to the robot's domain ID
+  %robot_X%/odom:
+    type: nav_msgs/msg/Odometry
+    remap: /odom
+  
+  # Bridge "/robot_X/tf" topic from the sim domain ID (100) to the robot's domain ID
+  %robot_X%/tf:
+    type: tf2_msgs/msg/TFMessage
+    remap: /tf
+  
+  # Bridge "/robot_X/tf_static" topic from the sim domain ID (100) to the robot's domain ID
+  %robot_X%/tf_static:
+    type: tf2_msgs/msg/TFMessage
+    remap: /tf_static
+    qos:
+      reliability: reliable
+      history: keep_last
+      durability: transient_local
+      depth: 10
+
+
+  # Bridge the sim clock to be able to sync using use_sim_time:=true
+  clock:
+    type: rosgraph_msgs/msg/Clock
+
+
+  # Bridge "/cmd_vel" topic from the robot's domain ID to the sim domain ID (100)
+  cmd_vel:
+    type: geometry_msgs/msg/Twist
+    reversed: true
+    remap: /%robot_X%/cmd_vel

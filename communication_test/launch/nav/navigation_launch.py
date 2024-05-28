@@ -62,21 +62,26 @@ def generate_launch_description():
 
     # Create our own temporary YAML files that include substitutions
     param_substitutions = {
-        'autostart': autostart,
-        '<robot_namespace>': ('/', namespace)
+        'autostart': autostart
     }
 
     load_params = RewrittenYaml(
-            source_file=params_file,
-            root_key=namespace,
-            param_rewrites=param_substitutions,
-            convert_types=True
+        source_file=params_file,
+        root_key=namespace,
+        param_rewrites=param_substitutions,
+        convert_types=True,
     )
+
     
+    configured_params = ReplaceString(
+        source_file=load_params,
+        replacements={'<robot_namespace>': ('/', namespace)}
+    )
+
     configured_params = ParameterFile(
         ReplaceString(
-            source_file=load_params,
-            replacements={'<robot_namespace>': ('/', namespace)}
+            source_file=configured_params,
+            replacements={'//': '/'}
         ),
     allow_substs=True,)
 

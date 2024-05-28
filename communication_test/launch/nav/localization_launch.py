@@ -134,8 +134,9 @@ def generate_launch_description():
                 package='communication_test',
                 executable='stage_fake_localization.py',
                 name='fake_localization',
-                remappings=remappings
-            ),
+                output='screen',
+                arguments=['--ros-args', '--log-level', log_level],
+                remappings=remappings),
             Node(
                 package='nav2_lifecycle_manager',
                 executable='lifecycle_manager',
