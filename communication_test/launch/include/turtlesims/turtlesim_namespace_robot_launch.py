@@ -26,11 +26,11 @@ def createTurtleNode(context):
 
 def generate_launch_description():
 
+    # CLI arguments
     is_same_machine_launch_arg = DeclareLaunchArgument(
         "is_same_machine", default_value="True"
     )
 
-    # args that can be set from the command line or a default will be used
     robot_id_launch_arg = DeclareLaunchArgument(
         "robot_id", default_value=TextSubstitution(text="1")
     )

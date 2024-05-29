@@ -18,13 +18,14 @@ def generate_launch_description():
         "is_same_machine", default_value="True"
     )
 
-    # args that can be set from the command line or a default will be used
+    # CLI arguments
     bot_domain_id_launch_arg = DeclareLaunchArgument(
         "bot_domain_id", default_value=TextSubstitution(text="2")
     )
     operator_domain_id_launch_arg = DeclareLaunchArgument(
         "operator_domain_id", default_value=TextSubstitution(text="1")
     )
+    
     # include the launch file for the domain_bridge with given domain ids
     bridge_launch = GroupAction(
         actions=[

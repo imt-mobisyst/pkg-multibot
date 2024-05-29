@@ -11,7 +11,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description():
 
-    # args that can be set from the command line or a default will be used
+    # CLI arguments
     robot_id_launch_arg = DeclareLaunchArgument(
         "robot_id", default_value=TextSubstitution(text="1")
     )
@@ -58,7 +58,6 @@ def generate_launch_description():
                         get_package_share_directory('communication_test'),
                         'launch/nav/localization_launch.py')),
         launch_arguments={
-            "namespace": '',
             'map': LaunchConfiguration('map_file'),
             'params_file': os.path.join(get_package_share_directory('communication_test'), 'config', 'nav2', 'nav2_params.yaml'),
             'autostart': 'True',

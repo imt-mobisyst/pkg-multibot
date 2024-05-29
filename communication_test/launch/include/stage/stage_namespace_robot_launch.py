@@ -11,7 +11,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description():
 
-    # args that can be set from the command line or a default will be used
+    # CLI arguments
     robot_id_launch_arg = DeclareLaunchArgument(
         "robot_id", default_value=TextSubstitution(text="1")
     )

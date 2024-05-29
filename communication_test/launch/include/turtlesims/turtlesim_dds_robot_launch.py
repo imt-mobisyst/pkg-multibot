@@ -1,8 +1,3 @@
-
-import os
-
-from ament_index_python import get_package_share_directory
-
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.actions import GroupAction
@@ -12,10 +7,10 @@ from launch.substitutions import LaunchConfiguration
 from launch.substitutions import TextSubstitution
 from launch_ros.actions import Node
 
-def create_turtle_nodes(context, *args, **kwargs):
+def create_turtle_nodes(context):
     local_dds_server  =  LaunchConfiguration('local_dds_server').perform(context)
     robot_id          =  int(LaunchConfiguration('robot_id').perform(context))
-    is_same_machine          = LaunchConfiguration('is_same_machine').perform(context) == "True"
+    is_same_machine   = LaunchConfiguration('is_same_machine').perform(context) == "True"
 
     # The ROS_DISCOVERY_SERVER variable must list the servers as a list with their ID as index
     if is_same_machine:
@@ -78,7 +73,7 @@ def create_controller_node(context, *args, **kwargs):
 
 def generate_launch_description():
 
-    # Get nb robots param from CLI
+    # CLI arguments
     nb_robots_launch_arg = DeclareLaunchArgument(
         "nb_robots", default_value=TextSubstitution(text="3")
     )
@@ -87,7 +82,6 @@ def generate_launch_description():
         "is_same_machine", default_value="True"
     )
     
-    # args that can be set from the command line or a default will be used
     local_dds_server_launch_arg = DeclareLaunchArgument(
         "local_dds_server", default_value=TextSubstitution(text="127.0.0.1:11811")
     )
