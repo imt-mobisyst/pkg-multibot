@@ -7,7 +7,6 @@ from launch.substitutions import TextSubstitution
 from launch_ros.actions import Node
 from launch.actions import IncludeLaunchDescription, OpaqueFunction, SetLaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch_xml.launch_description_sources import XMLLaunchDescriptionSource
 
 
 def generate_launch_description():
