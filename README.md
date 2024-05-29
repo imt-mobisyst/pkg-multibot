@@ -79,7 +79,7 @@ Here is the list of the different communication methods we will study :
 - **DDS Partitions**
 
 ### Namespacing
-> See working demo [here](communication_test/README.md#robot-separation-using-namespaces)
+> See working demo [here](communication_test/README.md#1-robot-separation-using-namespaces)
 
 **Namespaces** are prefixes to node names, topics, actions and services. They allow to have multiple elements with the same name but different prefix. 
 
@@ -92,7 +92,7 @@ With our multi-robot architecture, we would have a configuration like the follow
 
 
 ### Different domain IDs
-> See working demo [here](communication_test/README.md#multi-domain_id-communication)
+> See working demo [here](communication_test/README.md#2-multi-domain_id-communication)
 
 ROS2 uses **DDS** (**D**ata **D**istribution **S**ervice) as the default middleware for communication. DDS allows nodes to 
 discover other nodes that are on the same network. In order to create different logical networks, DDS provides a feature called 
@@ -113,7 +113,7 @@ With our multi-robot architecture, we would have the following configuration :
 
 
 ### DDS Discovery servers
-> See working demo [here](communication_test/README.md#network-isolation-with-fastdds-discovery-server)
+> See working demo [here](communication_test/README.md#3-network-isolation-with-fastdds-discovery-server)
 
 As stated before, DDS is the protocol used by ROS2 for communicating between nodes. One aspect of this protocol is to look for
 elements that a node can communicate with on the newtwork. It's the "Discovery protocol".
@@ -142,6 +142,8 @@ With our multi-robot architecture, we would have the following configuration :
 <div align="center"><img src="docs/img/dds_architecture.png" width="850" title="FastDDS Discovery Server architecture"></div>
 
 ### DDS partitions
+> See working demo [here](communication_test/README.md#4-robot-isolation-using-dds-partitions)
+
 
 As stated before, DDS is the protocol used by ROS2 for communicating between nodes. DDS introduced the concept of
 [**partitions**](https://docs.ros.org/en/iron/Tutorials/Advanced/FastDDS-Configuration.html#using-partitions-within-the-topic) :

@@ -2,20 +2,26 @@
 
 This package is a ROS2 package that implements the different solutions explained in the repository's root README.
 
+For each solution, there are 3 working demos *(with different complexity levels)*:
+- A very simple **talker/listener** example (except for the namespacing)
+- Multiple turtlesims running in parallel : you can place a `goal_pose` in Rviz and one of the robots will be assigned to it
+- One with the stage simulator, with 3 robots in a warehouse environment. It perfectly illustrates the scenario explained
+[here](../README.md#1-scenario) : when you add a `clicked_point` in Rviz, packages start to spawn at specific places in
+the map, and the robots coordinate to bring the packages to the correct deposit spot depending on their color.
 
 
 ## 1. Robot separation using namespaces
 
-Namespacing allow to add a prefix before every node, topic, service... in a launchfile. That way, they allow to avoid conflicts between data from different robots.
+Namespacing allows to add a prefix before every node, topic, service... in a launchfile. That way, they allow to avoid conflicts between data from different robots.
 
-### Turtlesim demo
+### a. Turtlesim demo
 
 To start the demo, you can use the following command, that will take care of starting everything (`turtle`, `operator` and `rviz`) :
 ```bash
 ros2 launch communication_test turtlesim_namespace_launch.py nb_robots:="3"
 ```
 
-### Stage demo
+### b. Stage demo
 
 To start the demo, you can use the following commands, that will take care of starting everything (`rviz`, `stage`, `controller` and `operator`) :
 ```bash
@@ -41,7 +47,7 @@ apt install ros-iron-domain-bridge
 > **Note :** The library doesn't seem to be maintained any more : [last commit](https://github.com/ros2/domain_bridge/commit/64e34de40218909b91057c368c10d4ce584af612) on January 2nd 2023. Maybe have a look at [DDS Router](https://github.com/eProsima/DDS-Router) or try to reproduce how it works inside our own communication nodes.
 
 
-### Simple test with a talker and a listener
+### a. Simple test with a talker and a listener
 
 We only need to create a configuration file, telling the library which topics/services/actions need to be transmitted, from which `ROS_DOMAIN_ID` and to which `ROS_DOMAIN_ID` *(see [talker_bridge_config.yaml](./config/domain_bridge/talker_bridge_config.yaml))*
 To start the bridge, we use the following command :
@@ -65,7 +71,7 @@ ROS_DOMAIN_ID=3 ros2 run demo_nodes_cpp listener
 ```
 
 
-### Test with multiple turtlesim on the same computer
+### b. Test with multiple turtlesim on the same computer
 
 Each "robot" will be linked to a unique domain ID *(`bot_domain_id`)*. In each domain ID, there will be a `turtlesim_node` and a `turtlesim_controller` (which will control the movement of the turtle towards the goal poses).
 
@@ -104,7 +110,7 @@ ROS_DOMAIN_ID=1 ros2 topic pub /goal_pose geometry_msgs/msg/PoseStamped "{pose: 
 > Note : After some time, nodes were "disappearing" : they had not crashed, the processes were still running, but `ros2 node list` and `ros2 topic list` returned empty lists. The only solution that seemed to fix it was to change the DDS provider from **eProsima Fast DDS** to **Eclipse Cyclone DDS**
 
 
-### Test with the stage simulator
+### c. Test with the stage simulator
 
 We'll use the following domain IDs :
 - 0,1,2... for the different robots
@@ -129,7 +135,7 @@ DDS is the protocol used by ROS2 for communicating between nodes. One aspect of 
 In our use case, we'll use Fast DDS [Discovery server](https://docs.ros.org/en/iron/Tutorials/Advanced/Discovery-Server/Discovery-Server.html), which works similarly to a router and allows to isolate DDS subnets.
 
 
-### Simple test with a talker and a listener
+### a. Simple test with a talker and a listener
 
 We are going to start multiple DDS Discovery servers :
 - one to isolate a "local" network, which port is `11811`. This one will emulate one that would be on a robot computer.
@@ -211,7 +217,7 @@ This can be done thanks to the [super_client_config.xml](./config/dds_server/sup
 > ```
 
 
-### Test with multiple turtlesim on the same computer
+### b. Test with multiple turtlesim on the same computer
 
 Each robot will host its own "local" DDS Discovery server, allowing communication between its internal nodes. Nodes that need to communicate with the outside elements (other robots/operator) will also connect to the operator's DDS Discovery server.
 
@@ -263,7 +269,7 @@ In order to send goal points for the turtles to go to, you can press the `2D Goa
 ros2 topic pub /goal_pose geometry_msgs/msg/PoseStamped "{pose: {position: {x: 9, y: 9.0, z: 0.0}}}" --once
 ```
 
-### Test with multiple turtlesim on different computers *(pibot)*
+### c. Test with multiple turtlesim on different computers *(pibot)*
 
 First we need to install the `turtlesim` library on each *pibot* :
 ```bash
@@ -282,6 +288,26 @@ On each *pibot* :
 ros2 launch communication_test pibot_turtlesim_dds_launch.py nb_robots:=2 operator_server:="10.89.5.90:11811"
 ```
 
+### d. Test with the stage simulator
+
+All DDS servers will be hosted on the current machine, with IP `127.0.0.1`.
+We'll use the following DDS server ports :
+- 11811 for the simulation
+- 11812 for the operator/rviz
+- 11813,111814,11815... for the different robots
+
+To launch rviz, run the following commands :
+```bash
+export FASTRTPS_DEFAULT_PROFILES_FILE=/path/to/super_client_subnet_config.xml
+ros2 daemon stop && ros2 daemon start
+ros2 launch communication_test rviz_launch.py config:=config/stage.rviz
+```
+
+In another terminal, launch the demo (with the simulator, the controllers, the nav2 stacks...):
+```bash
+ros2 launch communicaiton_test stage_dds_launch.py
+```
+
 
 
 ## 4. Robot isolation using DDS partitions
@@ -291,7 +317,7 @@ and DataReaders (Subscribers) called [DDS partitions](https://fast-dds.docs.epro
 
 For a Publisher to communicate with a Subscriber, they have to belong at least to one common partition.
 
-### Simple test with a talker and a listener
+### a. Simple test with a talker and a listener
 
 In a first terminal, run a first talker (in the `chatter1` topic):
 ```bash
@@ -342,7 +368,7 @@ ros2 topic echo /chatter2
 ```
 
 
-### Test with multiple turtlesim on the same computer
+### b. Test with multiple turtlesim on the same computer
 
 Each "robot" will have its own DDS partition (`robotX`). Their nodes will be communicating through topics with that partition. Topics that need to be shared across robots will be in the `shared` partition
 
