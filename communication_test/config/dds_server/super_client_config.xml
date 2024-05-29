@@ -47,6 +47,16 @@
                                      </locator>
                                  </metatrafficUnicastLocatorList>
                              </RemoteServer>
+                            <RemoteServer prefix="44.53.04.5f.45.50.52.4f.53.49.4d.41">
+                                 <metatrafficUnicastLocatorList>
+                                     <locator>
+                                         <udpv4>
+                                             <address>127.0.0.1</address>
+                                             <port>11815</port>
+                                         </udpv4>
+                                     </locator>
+                                 </metatrafficUnicastLocatorList>
+                             </RemoteServer>
                          </discoveryServersList>
                      </discovery_config>
                  </builtin>
