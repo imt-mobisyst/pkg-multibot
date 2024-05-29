@@ -5,7 +5,7 @@ from rclpy.node import Node
 from nav_msgs.msg import Odometry
 from tf2_ros import TransformBroadcaster
 from geometry_msgs.msg import TransformStamped, Pose
-from include.helpers import getEulerFromQuaternion, getQuaternionFromEuler
+from include.helpers import getYaw, getQuaternionFromEuler
 
 
 class StageFakeLocalization(Node):
@@ -42,9 +42,7 @@ class StageFakeLocalization(Node):
 
         # Calculate map2odom tf based on robot position/rotation in odom and map
         ## Rotation between odom and map
-        globalRot = getEulerFromQuaternion(self.lastGlobalPose.orientation)
-        odomRot = getEulerFromQuaternion(self.lastOdomPose.orientation)
-        yaw = globalRot['yaw'] - odomRot['yaw']
+        yaw = getYaw(self.lastGlobalPose.orientation) - getYaw(self.lastOdomPose.orientation)
 
         ## Translation between odom and map (based on previous rotation)
         msg.transform.translation.x = self.lastGlobalPose.position.x - (self.lastOdomPose.position.x * m.cos(yaw) - self.lastOdomPose.position.y * m.sin(yaw))

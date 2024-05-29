@@ -9,7 +9,7 @@ from geometry_msgs.msg import Pose
 from nav_msgs.msg import Odometry
 from visualization_msgs.msg import Marker, MarkerArray
 
-from include.helpers import getEulerFromQuaternion, createPoint
+from include.helpers import getYaw, createPoint
 from package_dispenser import PACKAGE_COLORS
 
 class StageRobotController(RobotController):
@@ -42,7 +42,7 @@ class StageRobotController(RobotController):
     def pose_callback(self, msg:Odometry):
         newPose = msg.pose.pose
         # If not moved since last callback, do nothing
-        if(self.pose is not None and newPose.position.x == self.pose.position.x and newPose.position.y == self.pose.position.y and getEulerFromQuaternion(newPose.orientation)['yaw'] == getEulerFromQuaternion(self.pose.orientation)['yaw']):
+        if(self.pose is not None and newPose.position.x == self.pose.position.x and newPose.position.y == self.pose.position.y and getYaw(newPose.orientation) == getYaw(self.pose.orientation)):
             return
         
         # If moved, update pose and marker
@@ -53,7 +53,7 @@ class StageRobotController(RobotController):
         return createPoint(self.pose.position.x, self.pose.position.y)
 
     def getRobotAngle(self):
-        return getEulerFromQuaternion(self.pose.orientation)['yaw']
+        return getYaw(self.pose.orientation)
 
     # Stop listening to goal poses
     def goalPose_callback(self, msg):
