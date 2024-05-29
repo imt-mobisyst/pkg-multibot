@@ -72,7 +72,7 @@
             </partition>
         </qos>
     </publisher>
-    <publisher profile_name="/turtle_marker">
+    <publisher profile_name="/robot_marker">
         <qos>
             <partition>
                 <names>

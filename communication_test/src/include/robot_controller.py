@@ -33,7 +33,7 @@ class RobotController(Node):
 
         # Init publishers
         self.distanceToTargetPublisher = self.create_publisher(DistanceToTarget, '/distanceToTarget', 10)
-        self.markerPublisher = self.create_publisher(Marker, '/turtle_marker', QoSProfile(
+        self.markerPublisher = self.create_publisher(Marker, '/robot_marker', QoSProfile(
             durability=DurabilityPolicy.TRANSIENT_LOCAL,
             history=HistoryPolicy.KEEP_LAST,
             depth=3)

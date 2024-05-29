@@ -16,7 +16,7 @@ topics:
   assignedRobot:
     type: std_msgs/msg/Int8
 
-  # Bridge "/turtle_marker" topic from domain ID 2 to domain ID 1
-  turtle_marker:
+  # Bridge "/robot_marker" topic from domain ID 2 to domain ID 1
+  robot_marker:
     type: visualization_msgs/msg/Marker
     reversed: true

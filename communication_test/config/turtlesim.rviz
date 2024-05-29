@@ -64,7 +64,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /turtle_marker
+        Value: /robot_marker
       Value: true
   Enabled: true
   Global Options:

@@ -6,8 +6,8 @@ topics:
 
   # ------------------------------------------ RVIZ ------------------------------------------ #
 
-  # Bridge "/turtle_marker" topic to the operator domain ID (99)
-  turtle_marker:
+  # Bridge "/robot_marker" topic to the operator domain ID (99)
+  robot_marker:
     type: visualization_msgs/msg/Marker
     reversed: true
     qos:
