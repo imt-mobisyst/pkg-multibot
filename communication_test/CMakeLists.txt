@@ -46,7 +46,6 @@ install( PROGRAMS
   src/turtle_mvt.py
 
   # Simulation
-  src/stage_init_pose.py
   src/stage_fake_localization.py
   src/stage_dds_bridge.py
   src/package_dispenser.py
