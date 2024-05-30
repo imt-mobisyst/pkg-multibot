@@ -29,7 +29,7 @@ def createConfigFile(originalPath, robotId):
 
     return targetPath
 
-def create_turtle_nodes(context, *args, **kwargs):
+def create_turtle_nodes(context):
     robot_id =  int(LaunchConfiguration('robot_id').perform(context))
 
     # Get configuration file
@@ -54,7 +54,7 @@ def create_turtle_nodes(context, *args, **kwargs):
         ])
     ]
 
-def create_controller_node(context, *args, **kwargs):
+def create_controller_node(context):
     robot_id =  int(LaunchConfiguration('robot_id').perform(context))
 
     # Get configuration file
