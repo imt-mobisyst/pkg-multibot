@@ -38,15 +38,20 @@ DESTINATION lib/${PROJECT_NAME})
 
 # Python scripts
 install( PROGRAMS
+  # Robot controllers
   src/turtlesim_controller.py
   src/stage_controller.py
 
+  # Turtlesim movement
   src/turtle_mvt.py
 
+  # Simulation
   src/stage_init_pose.py
   src/stage_fake_localization.py
+  src/stage_dds_bridge.py
   src/package_dispenser.py
 
+  # Operator nodes to control the fleet
   src/static_operator.py
   src/dynamic_operator.py
   src/parasit.py

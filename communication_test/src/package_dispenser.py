@@ -104,6 +104,8 @@ class PackageDispenserNode(Node):
 
 
     def clearMarkers(self):
+        self.get_logger().info("Clearing previous package markers")
+        
         marker_array = MarkerArray()
         marker = Marker()
         marker.action = Marker.DELETEALL
