@@ -34,7 +34,6 @@ def generate_launch_description():
             parameters=[
                 {
                     'robot_id': LaunchConfiguration('robot_id'),
-                    'world': LaunchConfiguration('map')
                 }
             ]
         )
