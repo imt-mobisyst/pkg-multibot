@@ -305,15 +305,15 @@ Here are the results, based on the above explanations for each method.
             <th colspan="9" style="text-align:center">Criteria</th>
         </tr>
         <tr>
-            <th><center>Method</center></th>
-            <th><center>Dynamism</center></th>
-            <th><center>Reliability</center></th>
-            <th><center>Isolation</center></th>
-            <th><center>Network Usage</center></th>
-            <th><center>Computability</center></th>
-            <th><center>Ease of simulation</center></th>
-            <th><center>Ease of programming</center></th>
-            <th><center>Ease of debugging</center></th>
+            <th align="center">Method</th>
+            <th align="center">Dynamism</th>
+            <th align="center">Reliability</th>
+            <th align="center">Isolation</th>
+            <th align="center">Network Usage</th>
+            <th align="center">Computability</th>
+            <th align="center">Ease of simulation</th>
+            <th align="center">Ease of programming</th>
+            <th align="center">Ease of debugging</th>
         </tr>
     </thead>
     <tbody>
