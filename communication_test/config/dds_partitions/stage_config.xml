@@ -11,23 +11,15 @@
                     <name>robot_2</name>
                 </names>
             </partition>
-            <!-- <reliability>
-                <kind>RELIABLE</kind>
-                <max_blocking_time>
-                    <sec>1</sec>
-                </max_blocking_time>
-            </reliability> -->
         </qos>
     </publisher>
 
     <!-- Default subscriber profile -->
-    <!-- <subscriber profile_name="default_subscriber" is_default_profile="true">
+    <subscriber profile_name="default_subscriber" is_default_profile="true">
         <qos>
             <partition>
                 <names>
-                    <name>robot_0</name>
-                    <name>robot_1</name>
-                    <name>robot_2</name>
+                    <name>stage</name>
                 </names>
             </partition>
             <reliability>
@@ -37,7 +29,7 @@
                 </max_blocking_time>
             </reliability>
         </qos>
-    </subscriber> -->
+    </subscriber>
 
 
 
@@ -49,6 +41,7 @@
             <partition>
                 <names>
                     <name>robot_0</name>
+                    <name>stage</name>
                 </names>
             </partition>
         </qos>
@@ -58,6 +51,7 @@
             <partition>
                 <names>
                     <name>robot_0</name>
+                    <name>stage</name>
                 </names>
             </partition>
         </qos>
@@ -67,6 +61,7 @@
             <partition>
                 <names>
                     <name>robot_0</name>
+                    <name>stage</name>
                 </names>
             </partition>
         </qos>
@@ -76,6 +71,7 @@
             <partition>
                 <names>
                     <name>robot_0</name>
+                    <name>stage</name>
                 </names>
             </partition>
         </qos>
@@ -91,6 +87,7 @@
             <partition>
                 <names>
                     <name>robot_0</name>
+                    <name>stage</name>
                 </names>
             </partition>
             <reliability>
@@ -106,6 +103,7 @@
             <partition>
                 <names>
                     <name>robot_0</name>
+                    <name>stage</name>
                 </names>
             </partition>
         </qos>
@@ -117,6 +115,7 @@
             <partition>
                 <names>
                     <name>robot_1</name>
+                    <name>stage</name>
                 </names>
             </partition>
         </qos>
@@ -126,6 +125,7 @@
             <partition>
                 <names>
                     <name>robot_1</name>
+                    <name>stage</name>
                 </names>
             </partition>
         </qos>
@@ -135,6 +135,7 @@
             <partition>
                 <names>
                     <name>robot_1</name>
+                    <name>stage</name>
                 </names>
             </partition>
         </qos>
@@ -144,6 +145,7 @@
             <partition>
                 <names>
                     <name>robot_1</name>
+                    <name>stage</name>
                 </names>
             </partition>
         </qos>
@@ -159,6 +161,7 @@
             <partition>
                 <names>
                     <name>robot_1</name>
+                    <name>stage</name>
                 </names>
             </partition>
             <reliability>
@@ -174,6 +177,7 @@
             <partition>
                 <names>
                     <name>robot_1</name>
+                    <name>stage</name>
                 </names>
             </partition>
         </qos>

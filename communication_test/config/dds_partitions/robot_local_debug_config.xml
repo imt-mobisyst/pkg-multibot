@@ -48,6 +48,7 @@
             <partition>
                 <names>
                     <name>shared</name>
+                    <name>%robotX%</name>
                 </names>
             </partition>
             <reliability>
@@ -70,6 +71,7 @@
             <partition>
                 <names>
                     <name>shared</name>
+                    <name>%robotX%</name>
                 </names>
             </partition>
             <reliability>
@@ -86,6 +88,7 @@
             <partition>
                 <names>
                     <name>shared</name>
+                    <name>%robotX%</name>
                 </names>
             </partition>
         </qos>
