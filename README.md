@@ -3,7 +3,7 @@
 This repository's goal is to study the **coordination of a robot fleet** using **ROS2** (Iron). We will study different communication methods and architectures to achieve a specific scenario, and compare them based on different criteria.
 
 Although multi-robots research has been a subject for many years now (late 80s), there is still no standard on how to
-architecture communication between them using ROS2. This readme's goal is to show the main communications methods that
+architecture communication between them using ROS2. This README's goal is to show the main communications methods that
 exist, their advantages and drawbacks, so that you can choose the one that best fits your needs.
 
 ## Table of contents
@@ -17,9 +17,8 @@ exist, their advantages and drawbacks, so that you can choose the one that best 
     - [DDS Partitions](#dds-partitions)
 1. [Comparing the communication methods](#4-comparing-the-communication-methods)
 1. [Comparing the different architectures](#5-comparing-the-different-architectures)
-1. [Quality of service options](#6-quality-of-service-options)
-1. [Useful resources](#7-useful-resources)
-1. [References](#8-references)
+2. [Quality of service options](#6-quality-of-service-options)
+3. [References](#7-references)
 
 
 ## 1. Scenario
@@ -31,14 +30,16 @@ We will consider the following situation :
 In a warehouse, there are **2 arrivals of packages**. At random time intervals, packages arrive at each arrival zone.
 Each package has a **specific color**, and for each color there is a corresponding **deposit zone** in the map.
 
+> TODO : Add image
+
 We will consider 2 possible **tasks** for the robots :
-- **Store :** Once a package arrives at a pickup spot, a robot will be selected to carry the package to the correct deposit zone, **depending on its color**.
+- **Store :** Once a package arrives at a pickup spot, a robot will be selected to pick up the package, and carry it to the correct deposit zone, **depending on its color**.
 - **Retrieve :** An operator can send a request to retrieve a package from a specific color. A robot will be selected to go to the correct storing position, and bring back a package to the **retrieval zone**
 
-There will be 3 robots working together, coordinating, in order to achieve these tasks in the shortest time possible.
+There will be 3 robots working together, **coordinating**, in order to achieve these tasks in the shortest time possible.
 
-This coordination will be achieved thanks to an auction/bid system, that would assign the task to the best robot (based on
-its position and its waypoints queue). This auction system could either be centralized, with an entity listening all
+This coordination will be achieved thanks to an **auction/bid system**, that would assign the task to the best robot (based
+on its position and its waypoints queue). This auction system could either be centralized, with an entity listening all
 the bids and choosing the best one, or distributed, with each robot comparing its bid with the others.
 
 First we'll consider that once a task is assigned to a robot, it can't abandon it and give it to another robot. However,
@@ -66,8 +67,15 @@ To compare the different methods and architectures, we'll use different criteria
 - **Computability :** Does the system require a lot of computing power (both on the robots and the operator) ?
 - **Ease of simulation :** How easy is it to reproduce this communication architecture in a simulation ?
 - **Ease of programming :** Does this architecture require the programmer to make a lot of configuration on each robot to allow them to communicate ?
-- **Ease of debugging :** Is it simple to check for nodes / topics on a specific robot ?
+- **Ease of debugging :** Is it simple to see the list of nodes / topics on a specific robot, and listen to the data published ?
 
+
+> [!NOTE]
+> When no node are subscribed to a topic, the data is not sent on the network. That way, in the `Network usage` criteria we'll
+> only consider the network traffic during the **discovery** of nodes.
+> 
+> The discovery protocol is the automatic finding and matching of publishers and subscribers across nodes so they can start 
+> sharing data. It is part of the underlying communication protocol of ROS2 (DDS: Data Distribution Service)
 
 ## 3. Communication methods
 
@@ -79,12 +87,13 @@ Here is the list of the different communication methods we will study :
 - **DDS Partitions**
 
 ### Namespacing
-> See working demo [here](communication_test/README.md#1-robot-separation-using-namespaces)
+> See working demos [here](communication_test/README.md#1-robot-separation-using-namespaces)
 
 **Namespaces** are prefixes to node names, topics, actions and services. They allow to have multiple elements with the same name but different prefix. 
 
 In a multi-robot scenario, namespacing is the easiest solution to seperate each robot with a unique namespace, in order for robots
-to not have name conflicts when running the same nodes and using the same topics. An example of this is to prefix the `cmd_vel`
+to not have name conflicts when running the same nodes and using the same topics.
+> An example of this is to prefix the `cmd_vel`
 topic for robots (`robot1/cmd_vel` and `robot2/cmd_vel`), to prevent them from having the same velocity command.
 
 With our multi-robot architecture, we would have a configuration like the following :
@@ -92,7 +101,7 @@ With our multi-robot architecture, we would have a configuration like the follow
 
 
 ### Different domain IDs
-> See working demo [here](communication_test/README.md#2-multi-domain_id-communication)
+> See working demos [here](communication_test/README.md#2-multi-domain_id-communication)
 
 ROS2 uses **DDS** (**D**ata **D**istribution **S**ervice) as the default middleware for communication. DDS allows nodes to 
 discover other nodes that are on the same network. In order to create different logical networks, DDS provides a feature called 
@@ -113,13 +122,16 @@ With our multi-robot architecture, we would have the following configuration :
 
 
 ### DDS Discovery servers
-> See working demo [here](communication_test/README.md#3-network-isolation-with-fastdds-discovery-server)
+> See working demos [here](communication_test/README.md#3-network-isolation-with-fastdds-discovery-server)
 
 As stated before, DDS is the protocol used by ROS2 for communicating between nodes. One aspect of this protocol is to look for
-elements that a node can communicate with on the newtwork. It's the "Discovery protocol".
+elements that a node can communicate with on the newtwork. It's the "Discovery protocol". By default, the **Simple Discovery 
+protocol** is used, which consists in sending multicast messages to every other node in the network.
 
-Fast DDS, one of the DDS middlewares, provides a [Discovery server](https://docs.ros.org/en/iron/Tutorials/Advanced/Discovery-Server/Discovery-Server.html), which works similarly to a router and allows to isolate DDS subnets.
-Each node can choose which DDS Discovery servers (it can be more than 1) it connects to using the `ROS_DISCOVERY_SERVER` env variable.
+Fast DDS, one of the DDS middlewares, provides a [Discovery server](https://docs.ros.org/en/iron/Tutorials/Advanced/Discovery-Server/Discovery-Server.html) to replace the **Simple Discovery protocol**. It works similarly to a router and
+allows to isolate DDS subnets.
+Each node can choose which DDS Discovery servers (it can be more than 1) it connects to using the `ROS_DISCOVERY_SERVER` env 
+variable. Its main purpose is to reduce the network traffic induced by the discovery phase.
 
 <div align="center"><img src="https://docs.ros.org/en/iron/_images/ds_partition_example.svg" width="850" title="DDS Network isolation example"></div>
 
@@ -130,7 +142,7 @@ A discovery server is described by :
 - its **port**
 - its **ID**
 > [!NOTE] 
-> This solution is similar to the *"multi-master"* solution that existed in ROS1, as we're using ip addresses to connect
+> This solution is similar to the *"multi-master"* solution that existed in ROS1, as we're using IP addresses to connect
 > multiple robots
 
 In our multi-robot scenario, we could use this Discovery server to isolate nodes running on the robot, by connecting them to a DDS
@@ -142,12 +154,12 @@ With our multi-robot architecture, we would have the following configuration :
 <div align="center"><img src="docs/img/dds_architecture.png" width="850" title="FastDDS Discovery Server architecture"></div>
 
 ### DDS partitions
-> See working demo [here](communication_test/README.md#4-robot-isolation-using-dds-partitions)
+> See working demos [here](communication_test/README.md#4-robot-isolation-using-dds-partitions)
 
 
 As stated before, DDS is the protocol used by ROS2 for communicating between nodes. DDS introduced the concept of
 [**partitions**](https://docs.ros.org/en/iron/Tutorials/Advanced/FastDDS-Configuration.html#using-partitions-within-the-topic) :
-each partition is defined by a **string**, and only elements in the same partition can communicate. 
+each partition is defined by a name (**string**), and only elements that have a partition in common can communicate. 
 
 Contrary to the DOMAIN_ID, nodes still receive the broadcast discovery messages (since they are on the same DOMAIN_ID they have
 the same UDP port) but drop them if they don't have a partition in common.
@@ -157,7 +169,7 @@ terms)*. To configure this, you can create an **XML file** and apply it by setti
 
 <div align="center"><img src="docs/img/dds_partitions.png" width="850" title="DDS partitions"></div>
 
-In our multi-robot scenario, we could have **one partition for each robot** (`robotX`). Topics that need to stay local would be 
+In our multi-robot scenario, we could have **one partition for each robot** (`robot_X`). Topics that need to stay local would be 
 published to that partition and topics that need to be shared across robots would be published in the `shared` partition.
 
 With our multi-robot architecture, we would have the following configuration :
@@ -166,11 +178,12 @@ With our multi-robot architecture, we would have the following configuration :
 
 ### Others to check
 
-- DDSrouter (+ HusarnetVPN)
-
 - [Security](https://github.com/ros2/sros2/blob/master/SROS2_Windows.md) inside ROS2 to prevent communication if the correct
 certificate is not given
 
+- DDSrouter (+ HusarnetVPN)
+
+- [DDS data_sharing](https://fast-dds.docs.eprosima.com/en/latest/fastdds/xml_configuration/common.html#xml-datasharing) QoS property
 
 - [DDS domain tag](https://community.rti.com/static/documentation/connext-dds/6.0.1/doc/manuals/connext_dds/html_files/RTI_ConnextDDS_CoreLibraries_UsersManual/Content/UsersManual/ChoosingDomainTag.htm) (only CycloneDDS) that drops messages from the same DOMAIN_ID if nodes don't have the same domain tag
     > Is it possible for a node to be on multiple `tag` at the same time / switch when publishing ?
@@ -188,71 +201,69 @@ certificate is not given
 ### Namespacing
 
 - **Dynamism :** You can add robots but their namespace will not be set dynamically so you'll have to make sure yourself they are unique
-- **Reliability :** No losses in the communication
+- **Reliability :** No additional losses in the communication
 - **Isolation :** Everything is shared to everyone in the network (other robots, the operator PC and any other PC)
 - **Network usage :** At launch, every node tries to discover the nodes it can communicate with (Simple Discovery protocol) 
 using a broadcast request. This creates a lot of network traffic. After that, only nodes that should communicate (publisher/
 subscriber) will send packets to the network, thus not impacting the traffic.
 - **Computability :** No additional nodes are needed for the communication
-- **Ease of simulation :** Nothing special to configure
+- **Ease of simulation :** Nothing special to configure, just make sure your namespaces match the simulator's.
 - **Ease of programming :** Just add the namespace to everything started by a launchfile (1 line)
-- **Ease of debugging :** Easy, just use the basic tools of ROS2 (`ros2 node list`, `ros2 topic list`, `rqt_graph`, `rviz`...)
+- **Ease of debugging :** Easy, just use the tools of ROS2 (`ros2 node list`, `ros2 topic list`, `rqt_graph`, `rviz`...)
 
 ### Different domain IDs
 
 - **Dynamism :** You can add robots but their `ROS_DOMAIN_ID` will not be set dynamically so you'll have to make sure yourself 
 they are unique
-- **Reliability :** The first message on a topic is caught by the bridge, and it creates the publisher in the other domain. 
-However, sometimes the first message doesn't get sent back in the other domain ID, and is lost.
+- **Reliability :** The QoS properties are "propagated" by the domain bridge, so the reliability is the same.
 - **Isolation :** Only what is specified in the bridge configuration file is shared in the shared `ROS_DOMAIN_ID`. Every robot as
 well as the operator can access that information.
-- **Network usage :** At launch, every node tries to discover the nodes it can communicate with (Simple Discovery protocol) 
-using a broadcast request. Since the robots are fully isolated, the network traffic will be reduced. After that, only nodes that 
+- **Network usage :** At launch, every node tries to discover the nodes it can communicate (Simple Discovery protocol) using a 
+broadcast request. Since the robots are fully isolated, the network traffic will be reduced. After that, only nodes that 
 should communicate (publisher/subscriber) will send packets to the network, thus not impacting the traffic.
-informations.
 - **Computability :** Additional nodes are needed, to be able to bridge the informations from one domain ID to the other (2 nodes 
-in a shared process per robot for the moment)
+in a shared process for each bridge)
 - **Ease of simulation :** By default, Gazebo (or any other simulator) runs in a specific `ROS_DOMAIN_ID`. That way, you can't 
-have robots evolving in different domain IDs inside of Gazebo. You'll have to spawn them in the same domain ID, and then create 
-bridges for the default topics (`scan`, `odom`...) to the corresponding domain ID.
+have robots evolving in different domain IDs inside of Gazebo. You'll have to spawn them in the simulator's domain ID, and then
+create bridges for the default topics (`scan`, `odom`...) to the corresponding domain IDs.
 - **Ease of programming :** Set the correct environment variable before starting the nodes in the launchfile (1 line) and start 
 the bridges in the launchfile (with a specific configuration file)
 - **Ease of debugging :** To see the nodes/topics running on a specific robot, you must first export the `ROS_DOMAIN_ID` 
-environment variable to the robot ID. Then you can use the basic ROS2 debug tools (`ros2 node list`, `ros2 topic list`, 
+environment variable to the robot ID. Then you can use the ROS2 debug tools (`ros2 node list`, `ros2 topic list`, 
 `rqt_graph`, `rviz`...).
 
 > [!NOTE]
-> There is a limited number of possible `ROS_DOMAIN_ID` values. If your fleet is really big (more than 100 robots), you might
-> encounter collision between robots.
+> There is a limited number of possible `ROS_DOMAIN_ID` values (see [this](https://docs.ros.org/en/foxy/Concepts/About-Domain-ID.html#choosing-a-domain-id-long-version)).
+> If your fleet is really big (more than 100 robots), you might encounter domain ID collision between robots.
 
 ### DDS Discovery servers
 
 - **Dynamism :** You can add robots dynamically as long as you know the IP address, port and ID of the shared DDS Discovery Server.
-However, if you are in a distributed architecture, you'll need to know every other robots' ip.
+However, if you are in a distributed architecture, you'll need to know every other robots' IP.
 - **Reliability :** No losses in the communication
-- **Isolation :** Nodes connected only to the local DDS Discovery server will be isolated. However, nodes connected to both the 
-local DDS Discovery server and the operator's (="public" nodes) will be able to communicate to the shared network. Every other 
-public node from other robots as well as the operator can access that information. Finally, these public nodes messages to local 
-nodes will also be visible on the shared network.
-- **Network usage :** At launch, every node tries to discover the nodes it can communicate with (Simple Discovery protocol) 
-using a broadcast request. Since the networks are isolated, the network traffic will be reduced (see [this](communication_test/scripts/README.md)).
+- **Isolation :** Nodes connected only to the local DDS Discovery server will be isolated. In addition, nodes connected to both
+the local DDS Discovery server and the operator's (="public" nodes) will be able to communicate to the shared network. Every
+other public node from other robots as well as the operator can access that information. However, when these public nodes
+will publish messages to local nodes, they will also be visible on the shared network and that can cause naming problems.
+- **Network usage :** At launch, every node tries to discover the nodes it can communicate with. Since the networks are isolated, the network traffic will be reduced (see [this](communication_test/scripts/README.md)).
 After that, only nodes that should communicate (publisher/subscriber) will send packets to the network, thus not impacting the traffic.
 - **Computability :** Each robot need to host their own DDS Discovery server. There is also one hosted for the shared communication.
-- **Ease of simulation :** To check. Bridges might be necessary, or at least a specific XML configuration before launching Gazebo.
+- **Ease of simulation :** You have to manually code bridges to send specific informations to the shared network. The lack
+of isolation creates conflicts that require you to use namespaces.
 - **Ease of programming :** Set the `ROS_DISCOVERY_SERVER` environment variable before starting the nodes in the launchfile 
 (depending on whether they can communicate with the shared network or not).
 Creating the `ROS_DISCOVERY_SERVER` environment variable takes multiple lines and is not easily readable since the IP address 
 needs to be in the correct place in the list, based on the server ID *(example : `;;10.89.5.110:11811` for a server with ID=2)*
 - **Ease of debugging :** By default, your ROS2 CLI will not have access to any information, even if the `ROS_DISCOVERY_SERVER` is 
-correctly set. For it to work with the DDS Discovery server architecture, we need to configure ROS2 as a **"Super client"** (so 
+correctly set. For it to work with the DDS Discovery server architecture, you need to configure ROS2 as a **"Super client"** (so 
 that it discovers everything on the network). This can be done with an XML configuration file specifying the IP addresses, ports 
-and IDs of the DDS Discovery servers you want to connect to.
+and IDs of the DDS Discovery servers you want to connect to. However, every time you change the configuration you'll have to
+restart the ROS2 Daemon (`ros2 daemon stop && ros2 daemon start`) for it to be applied.
 
 
 > [!NOTE]
-> It might be possible to change the ROS_DISCOVERY_SERVER env variable at runtime
-> (see [this](https://readthedocs.org/projects/eprosima-fast-rtps/downloads/pdf/latest/#paragraph*.600))  
-> This woud allow the operator nodes to only send messages to specific robots if needed
+> It seems possible to change the ROS_DISCOVERY_SERVER env variable at runtime (but only remove some of them from the list)
+> (see the end of [this section](https://readthedocs.org/projects/eprosima-fast-rtps/downloads/pdf/latest/#subsection.7.26.4))  
 
 ### DDS partitions
 
@@ -265,8 +276,14 @@ choose to send some topics only to the operator PC and some only to other robots
 - **Ease of simulation :** To check. Bridges might be necessary, or at least a specific XML configuration before launching Gazebo.
 - **Ease of programming :** Create a specific configuration file (XML) and set it as an environment variable before starting the 
 nodes in the launchfile (1 line).
-- **Ease of debugging :** To check. An XML configuration file might be needed (the basic one would be to listen/publish to
-the `{"","*"}` partitions)
+- **Ease of debugging :** By default, your ROS2 CLI will be able to see the list of topics (`ros2 node list`) on the network.
+However, it will not have access (`ros2 topic echo`) to any information published to any partitions that is not the default
+empty one (`""`). For it to work, you need to configure ROS2 to listen to these specific partitions. This can be done with an XML
+configuration file, specifying the partitions that you want to subscribe to 
+*(see [listener_config.xml](./communication_test/config/dds_partitions/listener_config.xml))*. If you want to subscribe to all
+partitions, you can make a configuration file subscribing to the `"*"` paritition 
+*(see [cli_config.xml](./communication_test/config/dds_partitions/debug/cli_config.xml))*, which corresponds to all partitions **except the default one**
+
 
 > [!NOTE]
 > In theory, DDS partitions can be changed dynamically at runtime
@@ -288,77 +305,94 @@ Here are the results, based on the above explanations for each method.
             <th colspan="9" style="text-align:center">Criteria</th>
         </tr>
         <tr>
-            <th>Method</th>
-            <th>Dynamism</th>
-            <th>Reliability</th>
-            <th>Isolation</th>
-            <th>Network Usage</th>
-            <th>Computability</th>
-            <th>Ease of simulation</th>
-            <th>Ease of programming</th>
-            <th>Ease of debugging</th>
+            <th><center>Method</center></th>
+            <th><center>Dynamism</center></th>
+            <th><center>Reliability</center></th>
+            <th><center>Isolation</center></th>
+            <th><center>Network Usage</center></th>
+            <th><center>Computability</center></th>
+            <th><center>Ease of simulation</center></th>
+            <th><center>Ease of programming</center></th>
+            <th><center>Ease of debugging</center></th>
         </tr>
     </thead>
     <tbody>
         <tr>
             <th>Namespaces</th>
-            <td>🟠</td>
-            <td>✅</td>
-            <td>❌</td>
-            <td>🟠</td>
-            <td>✅</td>
-            <td>✅</td>
-            <td>✅</td>
-            <td>✅</td>
+            <td align="center">🟠</td>
+            <td align="center">✅</td>
+            <td align="center">❌</td>
+            <td align="center">🟠</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
         </tr>
         <tr>
             <th>Domain ID</th>
-            <td>🟠</td>
-            <td>🟨</td>
-            <td>✅</td>
-            <td>✅</td>
-            <td>🟠</td>
-            <td>❌❔</td>
-            <td>🟠</td>
-            <td>🟨</td>
+            <td align="center">🟠</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+            <td align="center">🟨</td>
+            <td align="center">🟠</td>
+            <td align="center">🟨</td>
+            <td align="center">🟨</td>
+            <td align="center">🟨</td>
         </tr>
         <tr>
             <th>DDS Discovery server</th>
-            <td>🟨</td>
-            <td>✅</td>
-            <td>🟨</td>
-            <td>✅</td>
-            <td>🟨</td>
-            <td>🟠❔</td>
-            <td>🟠</td>
-            <td>❌</td>
+            <td align="center">🟨</td>
+            <td align="center">✅</td>
+            <td align="center">🟨</td>
+            <td align="center">✅</td>
+            <td align="center">🟨</td>
+            <td align="center">❌</td>
+            <td align="center">🟠</td>
+            <td align="center">❌</td>
         </tr>
         <tr>
             <th>DDS Partitions</th>
-            <td>🟨</td>
-            <td>✅</td>
-            <td>✅</td>
-            <td>🟨❔</td>
-            <td>✅</td>
-            <td>🟠❔</td>
-            <td>🟠</td>
-            <td>🟠❔</td>
+            <td align="center">🟨</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+            <td align="center">🟠</td>
+            <td align="center">✅</td>
+            <td align="center">🟠</td>
+            <td align="center">🟨</td>
+            <td align="center">❌</td>
         </tr>
     <tbody>
 </table>
 
 > ***Legend :***  
-> ✅ : Good / Easy  
+> ✅ : Good  
 > 🟨 : Fair  
-> 🟠 : Poor / Needs configuration to work  
-> ❌ : Bad / Difficult  
-> ❔ : Unknown for the moment  
+> 🟠 : Poor  
+> ❌ : Bad
 
 ### Conclusion
 
 Each solution has its advantages and drawbacks, there is no perfect solution. You should select the method that best fits your 
-needs, and event **combine** some of them to achieve your goal
+needs, and even **combine** some of them to achieve your goal
 (see [this](https://discourse.ros.org/t/restricting-communication-between-robots/2931/32))
+
+
+First of all, **DDS Discovery servers** can't be used as a standalone solution, as they don't isolate entirely your system and
+can cause naming conflicts problems easily.
+
+If **isolation** is not a key factor in your decision, you should probably use the easiest method : **namespacing**.
+However, with a large number of robots (and nodes), **network discovery traffic** can become a problem. Adding **discovery
+servers** in your architecture would allow to reduce this traffic.
+
+If you need strong isolation, **domain IDs** might be the best strategy for you, as by default everything is accessible only
+to your robot, and you decide which topics can be shared. Moreover, it's a DDS parameter that is built into ROS2, that way
+it doesn't rely on specific DDS middleware implementations. However, the bridging of topics between nodes require additional
+nodes, thus increasing the **computing power** required on the robot.
+
+That way, if **computing power** is a key factor in your decision, you might want to isolate topics using **partitions**,
+that don't require any additional nodes. However, since it still broadcasts discovery information, network discovery traffic
+could still be an issue with large fleets of robots.
+
 
 ## 5. Comparing the different architectures
 
@@ -369,12 +403,15 @@ The system can have a :
 - **centralized architecture :** there is an entity, that centralizes the information and sends back information to all robots. 
 That entity has running nodes and is on the common network between robots.
 - **distributed architecture :** there is no central entity, each robot communicates informations to all other robots.
-- **ad-hoc architecture :** there is no central entity, each robot communicates informations to its neighbours
+
+The communication can be :
+- **on a common network :** all the robots are on the same network, and communicate through it
+- **ad-hoc :** each robot communicates informations to its neighbours (peer to peer)
 
 > The names of these architectures might be different in the litterature
 
 > [!NOTE]
-> Any of the previous communication methods can be adapted to work with these architectures
+> Any of the previous communication methods could be adapted to work with these architectures
 
 ### Pros and cons
 
@@ -386,57 +423,74 @@ On the contrary, a **distributed architecture** is much more **resilient** to fa
 one fails, the others can still communicate. However, this is harder to design and implement, especially when robots have
 to take a decision together. Finally, if the router that the robots are connected to dies, all communication is interrupted.
 
-Finally, the two previous architectures assume that all robots are on a **common network**. However, when having lots of robots on 
-the same network, we can experience bandwidth problems, which affects the effectiveness of the communication. The **ad-hoc 
-architecture** can help with these issues, by enabling **peer-to-peer (P2P) communication** between robots, so that they can 
-**communicate locally** with their neighbours. However, this prevents them from having a global organization, but rather local
-groups that communicate together. Furthermore, this is more costly, as every robot needs to have the equipment to be able to
-do such communication. 
+When having lots of robots on the **same network**, we can experience bandwidth problems, which affects the effectiveness of the
+communication. The **ad-hoc communication** can help with these issues, by enabling **peer-to-peer (P2P) communication** between
+robots, so that they can **communicate locally** with their neighbours. However, this prevents them from having a global 
+organization, but rather local groups that communicate together. Furthermore, this is more costly, as every robot needs to
+have the equipment to be able to do such communication. 
 
 ### Results
 
 <table>
     <thead>
         <tr style="border:none;">
-            <th style="border: none;"></th>
-            <th colspan="6" style="text-align:center">Criteria</th>
+            <th colspan=2 style="border: none;"></th>
+            <th colspan=7 style="text-align:center">Criteria</th>
         </tr>
         <tr>
+            <th>Communication</th>
             <th>Architecture</th>
+            <!-- Criteria -->
             <th>Resilience</th>
             <th>Scalability</th>
             <th>Organization</th>
             <th>Cost</th>
             <th>Ease of programming</th>
         </tr>
-    </thead>
+    </thead> 
     <tbody>
         <tr>
+            <th rowspan="2">Common network</th>
             <th>Centralized</th>
-            <td>🟠</td>
-            <td>❌</td>
-            <td>✅</td>
-            <td>✅</td>
-            <td>✅</td>
+            <td align="center" rowspan=2>🟠</td>
+            <td align="center" rowspan=2>🟠</td>
+            <td align="center">✅</td>
+            <td align="center" rowspan=2>✅</td>
+            <td align="center">✅</td>
         </tr>
         <tr>
             <th>Distributed</th>
-            <td>🟨</td>
-            <td>❌</td>
-            <td>✅</td>
-            <td>🟨</td>
-            <td>🟠</td>
+            <!-- <td align="center">🟠</td> -->
+            <!-- <td align="center">🟠</td> -->
+            <td align="center">🟠</td>
+            <!-- <td align="center">✅</td> -->
+            <td align="center">🟠</td>
         </tr>
         <tr>
-            <th>Ad-hoc</th>
-            <td>✅</td>
-            <td>✅</td>
-            <td>🟠</td>
-            <td>🟠</td>
-            <td>❌</td>
+            <th rowspan="2">Ad-hoc</th>
+            <th>Centralized</th>
+            <td align="center">🟨</td>
+            <td align="center" rowspan=2>✅</td>
+            <td align="center" rowspan=2>🟠</td>
+            <td align="center" rowspan=2>🟠</td>
+            <td align="center">❌</td>
+        </tr>
+        <tr>
+            <th>Distributed</th>
+            <td align="center">✅</td>
+            <!-- <td align="center">✅</td> -->
+            <!-- <td align="center">🟠</td> -->
+            <!-- <td align="center">🟠</td> -->
+            <td align="center">🟠</td>
         </tr>
     <tbody>
 </table>
+
+> ***Legend :***  
+> ✅ : Good  
+> 🟨 : Fair  
+> 🟠 : Poor  
+> ❌ : Bad
 
 > [!NOTE]
 > All of these issues (bandwidth, network range...) are pretty hard to simulate
@@ -494,80 +548,15 @@ You should first design your system depending on the type of data that is commun
 policies to make sure this configuration works for your system.
 
 
-## 7. Useful resources
+## 7. References
 
-### Simulators
-- [Stage](https://github.com/tuw-robotics/stage_ros2/tree/humble) : 2D simple simulator
-- [Webots](https://cyberbotics.com/) : 3D simulator
+Here are the best references, in hierarchical order, on multirobot communication and architecture in ROS2 :
 
----
-
-- [MAES](https://link.springer.com/article/10.1007/s10015-023-00895-7) : 3D simple multirobots simulator made with Unity, but maximum 5 robots via ROS2 *(works in Galactic but doesn't seem to work in Iron)*
-- *[LGSVL](https://github.com/lgsvl/simulator) for autonomous cars (not maintained anymore)*
-- *Argos : simulator with ROS1 bridge but not ROS2*
-
-
-### Libraries / Software
-
-- [awesome-ros2](https://github.com/fkromer/awesome-ros2) : repository full of links for libraries/docs/demo... for ROS2  
-    > Useful liks :
-    > - Benchmark : [ros2_benchmarking](https://github.com/piappl/ros2_benchmarking) or [performance_test](https://gitlab.com/ApexAI/performance_test/)
-    > - Unity : [Robotics hub](https://github.com/Unity-Technologies/Unity-Robotics-Hub) or [ROS2 for Unity](https://github.com/RobotecAI/ros2-for-unity)
-    > - [swarm example](https://github.com/Adlink-ROS/adlink_ddsbot)
-
-
-- [ROS2swarm](https://github.com/ROS2swarm/ROS2swarm/) library
-
-
-- [Ansible](https://docs.ansible.com/) to easily deploy software on multiple robots
-
-
-
-## 8. References
-
-### ROS(2) specific
-
-1. [A ROS2 based communication architecture for control in collaborative and intelligent automation systems][1]
-    > Interesting isolation example but with ROS1/ROS2 bridges and hub ???
-
-1. [Performance Improvement of Multi-Robot Data Transmission in Aggregated Robot Processing Architecture with Caches and QoS Balancing Optimization ](https://www.mdpi.com/2218-6581/12/3/87)
-    > Nice global multi computer architecture (sensor drivers separated from calculus intensive activities)
-
-1. [Robots that Sync and Swarm: A Proof of Concept in ROS 2](https://arxiv.org/pdf/1903.06440)
-    > Ad-hoc wifi with babel protocol
-
-1. 🔥 [How do you Architect your Robots? State of the Practice and Guidelines for ROS-based Systems](http://acme.able.cs.cmu.edu/pubs/uploads/pdf/ICSE_SEIP_20202020_ICSE_RobotArchitecture.pdf)
+1. [Restricting communication between robots](https://discourse.ros.org/t/restricting-communication-between-robots/2931)
+2. [A more unified and standard way of configuring the DDS layer](https://discourse.ros.org/t/a-more-unified-and-standard-way-of-configuring-the-dds-layer/11372/18)
+3. [How do you Architect your Robots? State of the Practice and Guidelines for ROS-based Systems](http://acme.able.cs.cmu.edu/pubs/uploads/pdf/ICSE_SEIP_20202020_ICSE_RobotArchitecture.pdf)
     > Robotics architecture standard with ROS (not ROS2) based on real examples
     > ![Guidelines](./docs/img/communication_guidelines.png)
-
-1. 🔥🔥🔥 [Restricting communication between robots](https://discourse.ros.org/t/restricting-communication-between-robots/2931)
-1. 🔥🔥 [A more unified and standard way of configuring the DDS layer](https://discourse.ros.org/t/a-more-unified-and-standard-way-of-configuring-the-dds-layer/11372/18)
-
-1. [Mapping and Optimizing Communication in ROS 2-based Applications on Configurable System-on-Chip Platforms](https://arxiv.org/pdf/2306.12761)
-    > It's possible thanks to specific DDS libraries to run ROS2 on the GPU, FPGA... to increase performance
-
-1. [Robot Operating System 2 (ROS2) - Based Frameworks for Increasing Robot Autonomy: A Survey](https://www.mdpi.com/2076-3417/13/23/12796)
-
-
-
-### Up to date
-
-1. [A Critical Review of Communications in Multi-robot Systems](https://link.springer.com/article/10.1007/s43154-022-00090-9)
-
-
-
-### Old ones
-
-1. [Current State of the Art in Distributed Autonomous Mobile Robotics](https://www.researchgate.net/profile/Lynne-Parker/publication/221230010_Current_State_of_the_Art_in_Distributed_Autnomous_Mobile_Robotics/links/0deec52b1bf084ef14000000/Current-State-of-the-Art-in-Distributed-Autnomous-Mobile-Robotics.pdf)
-
-2. [Collective Grounded Representations for Robots](http://www.louis.hugues.xunuda.com/papers/dars.pdf)
-
-3. [Grounded Symbolic Communication between Heterogeneous Cooperating Robots](https://www.researchgate.net/publication/2460805_Grounded_Symbolic_Communication_between_Heterogeneous_Cooperating_Robots)
-
-4. [Distributed Sensing and Data Collection Via Broken Ad Hoc Wireless Connected Networks of Mobile Robots](https://www.researchgate.net/publication/221230049_Distributed_Sensing_and_Data_Collection_Via_Broken_Ad_Hoc_Wireless_Connected_Networks_of_Mobile_Robots)
-
-5. [https://www.researchgate.net/publication/221230044_Communication_Fault_Tolerance_in_Distributed_Robotic_Systems](https://www.researchgate.net/publication/221230044_Communication_Fault_Tolerance_in_Distributed_Robotic_Systems)
-
 
 
 
