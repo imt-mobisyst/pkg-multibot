@@ -402,3 +402,24 @@ export RMW_FASTRTPS_USE_QOS_FROM_XML=1
 export FASTRTPS_DEFAULT_PROFILES_FILE=path/to/operator_config.xml
 ros2 launch communication_test rviz_turtlesim_launch.py
 ```
+
+
+
+### c. Test with the stage simulator
+
+We'll use the following DDS partitions :
+- `robot_0`,`robot_1`,`robot_2`... for the different robots
+- `shared` for the subnet (operator/rviz)
+
+To launch rviz, run the following commands :
+```bash
+export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+export RMW_FASTRTPS_USE_QOS_FROM_XML=1
+export FASTRTPS_DEFAULT_PROFILES_FILE=path/to/operator_config.xml
+ros2 launch communication_test rviz_launch.py config:=config/stage.rviz
+```
+
+In another terminal, launch the demo (with the simulator, the controllers, the nav2 stacks...):
+```bash
+ros2 launch communication_test stage_partition_launch.py
+```
