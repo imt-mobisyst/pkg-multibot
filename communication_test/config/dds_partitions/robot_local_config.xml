@@ -13,7 +13,6 @@
                 <kind>RELIABLE</kind>
                 <max_blocking_time>
                     <sec>1</sec>
-                    <nanosec>0</nanosec>
                 </max_blocking_time>
             </reliability>
         </qos>
@@ -31,7 +30,6 @@
                 <kind>RELIABLE</kind>
                 <max_blocking_time>
                     <sec>1</sec>
-                    <nanosec>0</nanosec>
                 </max_blocking_time>
             </reliability>
         </qos>

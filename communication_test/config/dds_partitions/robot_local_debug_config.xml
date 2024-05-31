@@ -36,52 +36,40 @@
     </subscriber>
 
 
-
-
-    <!-- Shared partition -->
-
-    <subscriber profile_name="/assignedRobot">
+    <!-- DEBUG TOPICS -->
+    <publisher profile_name="/%robotX%/map">
         <qos>
             <partition>
                 <names>
                     <name>shared</name>
                 </names>
             </partition>
-        </qos>
-    </subscriber>
-    
-    
-    <subscriber profile_name="/goal_pose"> 
-        <qos>
-            <partition>
-                <names>
-                    <name>shared</name>
-                </names>
-            </partition>
-        </qos>
-    </subscriber>
-
-    <publisher profile_name="/distanceToTarget">
-        <qos>
-            <partition>
-                <names>
-                    <name>shared</name>
-                </names>
-            </partition>
+            <reliability>
+                <kind>RELIABLE</kind>
+            </reliability>
+            <durability>
+                <kind>TRANSIENT_LOCAL</kind>
+            </durability>
         </qos>
     </publisher>
 
-    <publisher profile_name="/robot_marker">
+    <publisher profile_name="/%robotX%/local_costmap/costmap">
         <qos>
             <partition>
                 <names>
                     <name>shared</name>
                 </names>
             </partition>
+            <reliability>
+                <kind>RELIABLE</kind>
+            </reliability>
+            <durability>
+                <kind>TRANSIENT_LOCAL</kind>
+            </durability>
         </qos>
     </publisher>
 
-    <publisher profile_name="/package_deposit_marker">
+    <publisher profile_name="/%robotX%/transformed_global_plan">
         <qos>
             <partition>
                 <names>
@@ -91,24 +79,5 @@
         </qos>
     </publisher>
     
-    <subscriber profile_name="/package_marker">
-        <qos>
-            <partition>
-                <names>
-                    <name>shared</name>
-                </names>
-            </partition>
-        </qos>
-    </subscriber>
-
-    <publisher profile_name="/package_marker_array">
-        <qos>
-            <partition>
-                <names>
-                    <name>shared</name>
-                </names>
-            </partition>
-        </qos>
-    </publisher>
 
 </profiles>

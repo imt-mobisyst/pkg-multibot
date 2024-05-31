@@ -6,15 +6,9 @@
         <qos>
             <partition>
                 <names>
-                    <name>shared</name>
+                    <name>robot_0</name>
                 </names>
             </partition>
-            <reliability>
-                <kind>RELIABLE</kind>
-                <max_blocking_time>
-                    <sec>1</sec>
-                </max_blocking_time>
-            </reliability>
         </qos>
     </publisher>
 
@@ -23,7 +17,7 @@
         <qos>
             <partition>
                 <names>
-                    <name>shared</name>
+                    <name>robot_0</name>
                 </names>
             </partition>
         </qos>

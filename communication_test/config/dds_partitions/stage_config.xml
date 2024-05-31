@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<profiles xmlns="http://www.eprosima.com/XMLSchemas/fastRTPS_Profiles">
+
+    <!-- Default publisher profile (for the /clock topic for example) -->
+    <publisher profile_name="default_publisher" is_default_profile="true">
+        <qos>
+            <partition>
+                <names>
+                    <name>robot_0</name>
+                    <name>robot_1</name>
+                    <name>robot_2</name>
+                </names>
+            </partition>
+            <!-- <reliability>
+                <kind>RELIABLE</kind>
+                <max_blocking_time>
+                    <sec>1</sec>
+                </max_blocking_time>
+            </reliability> -->
+        </qos>
+    </publisher>
+
+    <!-- Default subscriber profile -->
+    <!-- <subscriber profile_name="default_subscriber" is_default_profile="true">
+        <qos>
+            <partition>
+                <names>
+                    <name>robot_0</name>
+                    <name>robot_1</name>
+                    <name>robot_2</name>
+                </names>
+            </partition>
+            <reliability>
+                <kind>RELIABLE</kind>
+                <max_blocking_time>
+                    <sec>1</sec>
+                </max_blocking_time>
+            </reliability>
+        </qos>
+    </subscriber> -->
+
+
+
+
+    <!-- Deliver each namespace to the correct partition -->
+    <!-- ROBOT 0 -->
+    <publisher profile_name="/robot_0/base_scan">
+        <qos>
+            <partition>
+                <names>
+                    <name>robot_0</name>
+                </names>
+            </partition>
+        </qos>
+    </publisher>
+    <publisher profile_name="/robot_0/ground_truth">
+        <qos>
+            <partition>
+                <names>
+                    <name>robot_0</name>
+                </names>
+            </partition>
+        </qos>
+    </publisher>
+    <publisher profile_name="/robot_0/odom">
+        <qos>
+            <partition>
+                <names>
+                    <name>robot_0</name>
+                </names>
+            </partition>
+        </qos>
+    </publisher>
+    <publisher profile_name="/robot_0/tf">
+        <qos>
+            <partition>
+                <names>
+                    <name>robot_0</name>
+                </names>
+            </partition>
+        </qos>
+    </publisher>
+    <publisher profile_name="/robot_0/tf_static">
+        <qos>
+            <partition>
+                <names>
+                    <name>robot_0</name>
+                </names>
+            </partition>
+            <reliability>
+                <kind>RELIABLE</kind>
+            </reliability>
+            <durability>
+                <kind>TRANSIENT_LOCAL</kind>
+            </durability>
+        </qos>
+    </publisher>
+    <subscriber profile_name="/robot_0/cmd_vel">
+        <qos>
+            <partition>
+                <names>
+                    <name>robot_0</name>
+                </names>
+            </partition>
+        </qos>
+    </subscriber>
+
+    <!-- ROBOT 1 -->
+    <publisher profile_name="/robot_1/base_scan">
+        <qos>
+            <partition>
+                <names>
+                    <name>robot_1</name>
+                </names>
+            </partition>
+        </qos>
+    </publisher>
+    <publisher profile_name="/robot_1/ground_truth">
+        <qos>
+            <partition>
+                <names>
+                    <name>robot_1</name>
+                </names>
+            </partition>
+        </qos>
+    </publisher>
+    <publisher profile_name="/robot_1/odom">
+        <qos>
+            <partition>
+                <names>
+                    <name>robot_1</name>
+                </names>
+            </partition>
+        </qos>
+    </publisher>
+    <publisher profile_name="/robot_1/tf">
+        <qos>
+            <partition>
+                <names>
+                    <name>robot_1</name>
+                </names>
+            </partition>
+        </qos>
+    </publisher>
+    <publisher profile_name="/robot_1/tf_static">
+        <qos>
+            <partition>
+                <names>
+                    <name>robot_1</name>
+                </names>
+            </partition>
+            <reliability>
+                <kind>RELIABLE</kind>
+            </reliability>
+            <durability>
+                <kind>TRANSIENT_LOCAL</kind>
+            </durability>
+        </qos>
+    </publisher>
+    <subscriber profile_name="/robot_1/cmd_vel">
+        <qos>
+            <partition>
+                <names>
+                    <name>robot_1</name>
+                </names>
+            </partition>
+        </qos>
+    </subscriber>
+
+
+    <!-- ROBOT 2 -->
+    <publisher profile_name="/robot_2/base_scan">
+        <qos>
+            <partition>
+                <names>
+                    <name>robot_2</name>
+                </names>
+            </partition>
+        </qos>
+    </publisher>
+    <publisher profile_name="/robot_2/ground_truth">
+        <qos>
+            <partition>
+                <names>
+                    <name>robot_2</name>
+                </names>
+            </partition>
+        </qos>
+    </publisher>
+    <publisher profile_name="/robot_2/odom">
+        <qos>
+            <partition>
+                <names>
+                    <name>robot_2</name>
+                </names>
+            </partition>
+        </qos>
+    </publisher>
+    <publisher profile_name="/robot_2/tf">
+        <qos>
+            <partition>
+                <names>
+                    <name>robot_2</name>
+                </names>
+            </partition>
+        </qos>
+    </publisher>
+    <publisher profile_name="/robot_2/tf_static">
+        <qos>
+            <partition>
+                <names>
+                    <name>robot_2</name>
+                </names>
+            </partition>
+            <reliability>
+                <kind>RELIABLE</kind>
+            </reliability>
+            <durability>
+                <kind>TRANSIENT_LOCAL</kind>
+            </durability>
+        </qos>
+    </publisher>
+    <subscriber profile_name="/robot_2/cmd_vel">
+        <qos>
+            <partition>
+                <names>
+                    <name>robot_2</name>
+                </names>
+            </partition>
+        </qos>
+    </subscriber>
+</profiles>

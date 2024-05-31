@@ -9,12 +9,6 @@
                     <name>shared</name>
                 </names>
             </partition>
-            <reliability>
-                <kind>RELIABLE</kind>
-                <max_blocking_time>
-                    <sec>1</sec>
-                </max_blocking_time>
-            </reliability>
         </qos>
     </publisher>
 
