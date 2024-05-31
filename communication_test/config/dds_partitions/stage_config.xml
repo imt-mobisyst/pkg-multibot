@@ -80,7 +80,13 @@
             </partition>
         </qos>
     </publisher>
-    <publisher profile_name="/robot_0/tf_static">
+    <data_writer profile_name="/robot_0/tf_static">
+        <topic>
+            <historyQos>
+                <kind>KEEP_LAST</kind>
+                <depth>10</depth>
+            </historyQos>
+        </topic>
         <qos>
             <partition>
                 <names>
@@ -94,7 +100,7 @@
                 <kind>TRANSIENT_LOCAL</kind>
             </durability>
         </qos>
-    </publisher>
+    </data_writer>
     <subscriber profile_name="/robot_0/cmd_vel">
         <qos>
             <partition>
@@ -142,7 +148,13 @@
             </partition>
         </qos>
     </publisher>
-    <publisher profile_name="/robot_1/tf_static">
+    <data_writer profile_name="/robot_1/tf_static">
+        <topic>
+            <historyQos>
+                <kind>KEEP_LAST</kind>
+                <depth>10</depth>
+            </historyQos>
+        </topic>
         <qos>
             <partition>
                 <names>
@@ -156,7 +168,7 @@
                 <kind>TRANSIENT_LOCAL</kind>
             </durability>
         </qos>
-    </publisher>
+    </data_writer>
     <subscriber profile_name="/robot_1/cmd_vel">
         <qos>
             <partition>
@@ -205,7 +217,13 @@
             </partition>
         </qos>
     </publisher>
-    <publisher profile_name="/robot_2/tf_static">
+    <data_writer profile_name="/robot_2/tf_static">
+        <topic>
+            <historyQos>
+                <kind>KEEP_LAST</kind>
+                <depth>10</depth>
+            </historyQos>
+        </topic>
         <qos>
             <partition>
                 <names>
@@ -219,7 +237,7 @@
                 <kind>TRANSIENT_LOCAL</kind>
             </durability>
         </qos>
-    </publisher>
+    </data_writer>
     <subscriber profile_name="/robot_2/cmd_vel">
         <qos>
             <partition>

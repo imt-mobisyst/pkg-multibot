@@ -37,7 +37,13 @@
 
 
     <!-- DEBUG TOPICS -->
-    <publisher profile_name="/%robotX%/map">
+    <data_writer profile_name="/%robotX%/map">
+        <topic>
+            <historyQos>
+                <kind>KEEP_LAST</kind>
+                <depth>10</depth>
+            </historyQos>
+        </topic>
         <qos>
             <partition>
                 <names>
@@ -51,9 +57,15 @@
                 <kind>TRANSIENT_LOCAL</kind>
             </durability>
         </qos>
-    </publisher>
+    </data_writer>
 
-    <publisher profile_name="/%robotX%/local_costmap/costmap">
+    <data_writer profile_name="/%robotX%/local_costmap/costmap">
+        <topic>
+            <historyQos>
+                <kind>KEEP_LAST</kind>
+                <depth>10</depth>
+            </historyQos>
+        </topic>
         <qos>
             <partition>
                 <names>
@@ -67,7 +79,7 @@
                 <kind>TRANSIENT_LOCAL</kind>
             </durability>
         </qos>
-    </publisher>
+    </data_writer>
 
     <publisher profile_name="/%robotX%/transformed_global_plan">
         <qos>
