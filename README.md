@@ -30,7 +30,7 @@ We will consider the following situation :
 In a warehouse, there are **2 arrivals of packages**. At random time intervals, packages arrive at each arrival zone.
 Each package has a **specific color**, and for each color there is a corresponding **deposit zone** in the map.
 
-> TODO : Add image
+<div align="center"><img src="docs/img/warehouse-scenario-map.png" width="500" title="Scenario warehouse map"></div>
 
 We will consider 2 possible **tasks** for the robots :
 - **Store :** Once a package arrives at a pickup spot, a robot will be selected to pick up the package, and carry it to the correct deposit zone, **depending on its color**.

@@ -78,11 +78,14 @@ my_block( pose [ 0.76 -1.140 0.000 180.000 ] color "green")
 spot(pose [-6.328 6.328 0.0 0.0])
 spot(pose [6.328 -6.328 0.0 0.0])
 
+# throw in a retrieval spot
+spot(pose [6.328 -1.784 0.0 0.0])
+
 # throw in deposit spots
 spot(pose [6.328 6.328 0.0 0.0] color "LightSkyBlue")
 spot(pose [6.328 2.392 0.0 0.0] color "LightCoral")
 spot(pose [-4.952 1.816 0.0 0.0] color "LightGoldenrod")
-spot(pose [-2.136 -5.496 0.0 0.0] color "LightGreen")
+spot(pose [-3.704 -6.328 0.0 0.0] color "LightGreen")
 
 # throw in a robot
 pioneer2dx_with_laser 
@@ -90,7 +93,7 @@ pioneer2dx_with_laser
   # can refer to the robot by this name
   name "robot_0"
   color "red" 
-  pose [ -4.000 -6.000 0.001 0.000 ] # Spawn at z=0.001 to be above pickup/deposit spots
+  pose [ -1.800 -6.328 0.001 0.000 ] # Spawn at z=0.001 to be above pickup/deposit spots
 )
 
 
@@ -100,7 +103,7 @@ pioneer2dx_with_laser
   # can refer to the robot by this name
   name "robot_1"
   color "GreenYellow" 
-  pose [ -3.000 5.000 0.001 90.000 ] # Spawn at z=0.001 to be above pickup/deposit spots
+  pose [ -2.640 1.816 0.001 90.000 ] # Spawn at z=0.001 to be above pickup/deposit spots
 )
 
 # throw in a robot
@@ -109,5 +112,5 @@ pioneer2dx_with_laser
   # can refer to the robot by this name
   name "robot_2"
   color "GreenBlue" 
-  pose [ 6.000 2.500 0.001 180.000 ] # Spawn at z=0.001 to be above pickup/deposit spots
+  pose [ 4.300 2.392 0.001 180.000 ] # Spawn at z=0.001 to be above pickup/deposit spots
 )

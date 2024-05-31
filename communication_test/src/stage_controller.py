@@ -32,10 +32,12 @@ class StageRobotController(RobotController):
 
         self._depositSpots = {
             "red":    createPoint(6.328, 2.392),
-            "green":  createPoint(-2.136, -5.496),
+            "green":  createPoint(-3.704, -6.328),
             "blue":   createPoint(6.328, 6.328),
             "yellow": createPoint(-4.952, 1.816)
         }
+
+        self._retrievalSpot = createPoint(6.328, -1.784)
 
         self._packageQueue = []
 
