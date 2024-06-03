@@ -4,11 +4,8 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /Global Options1
-        - /Status1
-        - /Grid1
+        - /Grid1/Status1
         - /Grid1/Offset1
-        - /Marker1
         - /Marker1/Topic1
       Splitter Ratio: 0.5
     Tree Height: 549
@@ -53,18 +50,38 @@ Visualization Manager:
       Value: true
     - Class: rviz_default_plugins/Marker
       Enabled: true
-      Name: Marker
+      Name: Robot markers
       Namespaces:
+        robot0: true
         robot1: true
         robot2: true
-        robot3: true
       Topic:
         Depth: 20
-        Durability Policy: Volatile
+        Durability Policy: Transient Local
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /robot_marker
+      Value: true
+    - Alpha: 1
+      Axes Length: 1
+      Axes Radius: 0.10000000149011612
+      Class: rviz_default_plugins/Pose
+      Color: 255; 25; 0
+      Enabled: true
+      Head Length: 0
+      Head Radius: 0
+      Name: Goal Pose
+      Shaft Length: 0.20000000298023224
+      Shaft Radius: 0.20000000298023224
+      Shape: Arrow
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /goal_pose
       Value: true
   Enabled: true
   Global Options:
@@ -121,11 +138,11 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 22.96525764465332
+      Scale: 39.67429733276367
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz_default_plugins)
-      X: 5.544444561004639
-      Y: 5.544444561004639
+      X: 4.751173973083496
+      Y: 8.775421142578125
     Saved: ~
 Window Geometry:
   Displays:
