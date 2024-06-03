@@ -54,7 +54,7 @@ class StageSimBridge(Node):
             depth=1
         )
 
-        for topic in self.topics.keys():
+        for topic in self.topics:
             type = self.topics[topic]['type']
             targetTopicName = self.topics[topic]['target'] if 'target' in self.topics[topic] else topic
             qos = self.topics[topic]['qos'] if 'qos' in self.topics[topic] else defaultQos

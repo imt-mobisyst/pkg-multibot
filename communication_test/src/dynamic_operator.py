@@ -29,7 +29,7 @@ class DynamicOperator(Operator):
         # Get IP
         robotIP = msg.data
 
-        if robotIP not in self.robotIPaddresses.keys():
+        if robotIP not in self.robotIPaddresses:
             # Log info
             self.get_logger().info(f"New robot added with IP {robotIP} - Now at {self.getNbRobots() + 1} robot(s)")
         
@@ -43,7 +43,7 @@ class DynamicOperator(Operator):
 
         updatedDict = {}
         
-        for addr in self.robotIPaddresses.keys():
+        for addr in self.robotIPaddresses:
             timestamp = self.robotIPaddresses[addr]
             now = self.get_clock().now()
 
