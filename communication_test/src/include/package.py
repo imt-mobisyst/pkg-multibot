@@ -1,5 +1,6 @@
 from random import random, choice as randomChoice
 from geometry_msgs.msg import Point
+from visualization_msgs.msg import Marker
 from include.helpers import createPoint
 
 class Package():
@@ -65,3 +66,29 @@ class Package():
         """Get the color of the package ([R,G,B])"""
         return Package.colors[self.colorName]
     
+    def publishMarker(self, publisher, node):
+        marker = Marker()
+        marker.header.frame_id = 'map'
+        marker.header.stamp = node.get_clock().now().to_msg()
+
+        # set shape
+        marker.type = 1 # Cube
+        marker.id = self.id
+        marker.ns = self.colorName
+
+        # Set the scale of the marker
+        marker.scale.x = 0.3
+        marker.scale.y = 0.3
+        marker.scale.z = 0.3
+
+        # Set the color
+        color = self.color()
+        marker.color.r = float(color[0])
+        marker.color.g = float(color[1])
+        marker.color.b = float(color[2])
+        marker.color.a = 1.0
+
+        # Set the pose of the marker
+        marker.pose.position = self.position
+
+        publisher.publish(marker)

@@ -65,7 +65,7 @@ class PackageDispenserNode(Node):
         package = Package.random()
 
         # Publish marker (for visualization but also information for the robots)
-        self.publishPackageMarker(package)
+        package.publishMarker(self.markerPublisher, self)
 
 
     def loop(self):
@@ -86,35 +86,6 @@ class PackageDispenserNode(Node):
 
         self.markerCleaner.publish(marker_array)
         self.depositMarkerCleaner.publish(marker_array)
-
-    def publishPackageMarker(self, package:Package):
-        # Publish marker for vizualisation in rviz
-        marker = Marker()
-        marker.header.frame_id = "map"
-        marker.header.stamp = self.get_clock().now().to_msg()
-
-        # set shape
-        marker.type = 1 # Cube
-        marker.ns = package.colorName
-        marker.id = package.id
-
-        # Set the scale of the marker
-        marker.scale.x = 0.3
-        marker.scale.y = 0.3
-        marker.scale.z = 0.3
-
-        # Set the color
-        color = package.color()
-        marker.color.r = float(color[0])
-        marker.color.g = float(color[1])
-        marker.color.b = float(color[2])
-        marker.color.a = 1.0
-
-        # Set the pose of the marker
-        marker.pose.position = package.position
-
-        self.markerPublisher.publish(marker)
-
 
 
 
