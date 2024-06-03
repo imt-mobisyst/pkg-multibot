@@ -3,9 +3,12 @@ import rclpy
 
 
 from include.robot_controller import RobotController
+from include.helpers import createPoint
 
-from geometry_msgs.msg import Point
+from geometry_msgs.msg import Point, PoseStamped
 from turtlesim.msg import Pose
+from std_msgs.msg import Int8
+from include.tasks import GoalPoseTask
 
 class TurtleController(RobotController):
 
@@ -13,6 +16,7 @@ class TurtleController(RobotController):
         super().__init__('turtle_controller')
 
         # Init turtlesim specific subscriptions
+        self.create_subscription(PoseStamped, '/goal_pose', self.goalPose_callback, 10)
         self.create_subscription(Pose, 'turtle1/pose', self.pose_callback, 10)
 
         # Init variables
@@ -28,17 +32,29 @@ class TurtleController(RobotController):
         self.pose = msg
         self.publishPoseMarker()
 
-    def getRobotPosition(self):
-        p = Point()
-        p.x = self.pose.x
-        p.y = self.pose.y
-        p.z = 0.0
-        
-        return p
+    def getRobotPosition(self):        
+        return createPoint(self.pose.x, self.pose.y)
 
     def getRobotAngle(self):
         return self.pose.theta
 
+    def goalPose_callback(self, msg:PoseStamped):
+        # Save position        
+        self.targetPos = msg.pose.position
+
+        # Calculate bid and send it to the operator
+        self.sendBid(self.targetPos)
+
+    def assignedRobot_callback(self, msg:Int8):
+        assignedRobotId = int(msg.data)
+        self.get_logger().info(f"Turtle {assignedRobotId} goes to the target")
+
+        if(assignedRobotId == self.paramInt('robot_id') and self.targetPos is not None):# If the robot assigned is this one, tell it to move
+            task = GoalPoseTask(self.targetPos)
+            self.queue.addTask(task)
+        
+        # If the robot assigned is not this one OR the position has been added to queue => reset
+        self.targetPos = None
 
 
 

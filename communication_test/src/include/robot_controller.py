@@ -11,7 +11,6 @@ from visualization_msgs.msg import Marker
 from nav2_msgs.action import NavigateToPose
 
 from include.helpers import getQuaternionFromEuler, euclideanDistance
-from include.tasks import GoalPoseTask
 from include.task_queue import TaskQueue
 
 class RobotController(Node):
@@ -28,7 +27,6 @@ class RobotController(Node):
             self.get_logger().info("RUNNING on DDS \"" + getenv('ROS_DISCOVERY_SERVER') + "\"")
 
         # Init subscriptions
-        self.create_subscription(PoseStamped, '/goal_pose', self.goalPose_callback, 10)
         self.create_subscription(Int8, '/assignedRobot', self.assignedRobot_callback, 10)
 
         # Init publishers
@@ -93,12 +91,7 @@ class RobotController(Node):
 
         self.markerPublisher.publish(marker)
 
-    def goalPose_callback(self, msg:PoseStamped):
-        # Save position        
-        self.targetPos = msg.pose.position
 
-        # Calculate bid and send it to the operator
-        self.sendBid(self.targetPos)
 
         
     def sendBid(self, targetPos:Point):
@@ -115,15 +108,7 @@ class RobotController(Node):
 
 
     def assignedRobot_callback(self, msg:Int8):
-        assignedRobotId = int(msg.data)
-        self.get_logger().info(f"Robot {assignedRobotId} goes to the target")
-
-        if(assignedRobotId == self.paramInt('robot_id') and self.targetPos is not None):# If the robot assigned is this one, tell it to move
-            task = GoalPoseTask([self.targetPos])
-            self.queue.addTask(task)
-        
-        # If the robot assigned is not this one OR the position has been added to queue => reset
-        self.targetPos = None
+        raise NotImplementedError
 
     
             

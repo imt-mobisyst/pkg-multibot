@@ -47,9 +47,6 @@ class StageRobotController(RobotController):
     def getRobotAngle(self):
         return getYaw(self.pose.orientation)
 
-    # Stop listening to goal poses
-    def goalPose_callback(self, msg):
-        return
 
     def package_callback(self, msg:Marker):
         # Save package data
