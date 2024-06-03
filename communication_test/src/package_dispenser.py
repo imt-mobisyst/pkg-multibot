@@ -2,20 +2,12 @@
 import rclpy
 from rclpy.node import Node
 
-from std_msgs.msg import String
-from geometry_msgs.msg import Point, PointStamped
+from geometry_msgs.msg import PointStamped
 from visualization_msgs.msg import Marker, MarkerArray
 
-from random import random, choice as randomChoice
+from random import random
 
-from include.helpers import createPoint
-
-PACKAGE_COLORS = {
-    'red':    [0.941, 0.502, 0.502],
-    'green':  [0.565, 0.933, 0.565],
-    'blue':   [0.529, 0.808, 0.980],
-    'yellow': [0.933, 0.867, 0.510],
-}
+from include.package import Package
 
 class PackageDispenserNode(Node):
 
@@ -40,15 +32,8 @@ class PackageDispenserNode(Node):
         # Clear previous markers
         self.clearMarkers()
 
+
         # Variables
-
-        self._spawnSpots:list[Point] = [
-            createPoint(-6.328, 6.328), # Top left dispenser
-            createPoint(6.328, -6.328)  # Bottom right dispenser
-        ]
-        self._spotSize = 2 # Square of 2x2m
-
-        self._totalPackagesSpawned = 0
         self._spawn = False # By default, don't start spawning packages
     
     def paramInt(self, name):
@@ -66,7 +51,7 @@ class PackageDispenserNode(Node):
             return
         
         
-        if self._totalPackagesSpawned == 0:
+        if Package.nbPackages == 0:
             # Spawn a first package
             self.spawnRandomPackage()
 
@@ -74,26 +59,14 @@ class PackageDispenserNode(Node):
         self.get_logger().info("START SPAWNING PACKAGES")
         self._spawn = True
 
-    def spawnPackage(self, spot, color, colorName):
-        # Create unique package ID
-        packageID = self._totalPackagesSpawned
-
-        # Publish marker (for visualization but also information for the robots)
-        self.publishMarker(spot, color, colorName, packageID)
-
-        # Save new total number of packages
-        self._totalPackagesSpawned += 1
 
     def spawnRandomPackage(self):
-        # Each deposit point and color has a the same chance of being chosen
-        targetSpot = randomChoice(self._spawnSpots)
-        packageColorName = randomChoice(list(PACKAGE_COLORS.keys()))
-        packageColor = PACKAGE_COLORS[packageColorName]
+        # Create a random package
+        package = Package.random()
 
-        # Add variation to the spawn point
-        packageSpot = createPoint(targetSpot.x + (random()-0.5)*1.5, targetSpot.y + (random()-0.5)*1.5)
+        # Publish marker (for visualization but also information for the robots)
+        self.publishPackageMarker(package)
 
-        self.spawnPackage(packageSpot, packageColor, packageColorName)
 
     def loop(self):
         # There is a probability of spawning a package every second (ex: 10% if rate=0.1)
@@ -114,7 +87,7 @@ class PackageDispenserNode(Node):
         self.markerCleaner.publish(marker_array)
         self.depositMarkerCleaner.publish(marker_array)
 
-    def publishMarker(self, pos:Point, color, colorName, id):
+    def publishPackageMarker(self, package:Package):
         # Publish marker for vizualisation in rviz
         marker = Marker()
         marker.header.frame_id = "map"
@@ -122,8 +95,8 @@ class PackageDispenserNode(Node):
 
         # set shape
         marker.type = 1 # Cube
-        marker.ns = colorName
-        marker.id = id
+        marker.ns = package.colorName
+        marker.id = package.id
 
         # Set the scale of the marker
         marker.scale.x = 0.3
@@ -131,13 +104,14 @@ class PackageDispenserNode(Node):
         marker.scale.z = 0.3
 
         # Set the color
+        color = package.color()
         marker.color.r = float(color[0])
         marker.color.g = float(color[1])
         marker.color.b = float(color[2])
         marker.color.a = 1.0
 
         # Set the pose of the marker
-        marker.pose.position = pos
+        marker.pose.position = package.position
 
         self.markerPublisher.publish(marker)
 

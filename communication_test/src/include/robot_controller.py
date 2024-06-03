@@ -4,15 +4,15 @@ from rclpy.node import Node
 from rclpy.action import ActionClient
 from rclpy.qos import QoSProfile, DurabilityPolicy, HistoryPolicy
 
-import numpy as np
-
 from communication_test_interfaces.msg import DistanceToTarget
 from geometry_msgs.msg import PoseStamped, Point
 from std_msgs.msg import Int8
 from visualization_msgs.msg import Marker
 from nav2_msgs.action import NavigateToPose
 
-from include.helpers import getQuaternionFromEuler
+from include.helpers import getQuaternionFromEuler, euclideanDistance
+from include.tasks import GoalPoseTask
+from include.task_queue import TaskQueue
 
 class RobotController(Node):
 
@@ -48,7 +48,7 @@ class RobotController(Node):
         # Init variables
         self.targetPos = None
 
-        self.queue = []
+        self.queue = TaskQueue()
         self.robotMoving = False
 
     def paramInt(self, name):
@@ -103,10 +103,10 @@ class RobotController(Node):
         
     def sendBid(self, targetPos:Point):
         # Calculate cost (total distance) to go to that position
-        initPos = self.getRobotPosition() if len(self.queue) == 0 else self.queue[-1]
-        totalDistance = self.totalQueueDistance() + self.euclidean_distance(targetPos, initPos)
+        initPos = self.getRobotPosition() if self.queue.isEmpty() else self.queue.lastPoint()
+        totalDistance = self.queue.totalDistance() + euclideanDistance(targetPos, initPos)
 
-        # Send it to the operator to see which turtle gets assigned to it
+        # Send it to the operator to see which robot gets assigned to it
         res = DistanceToTarget()
         res.robot_id = self.paramInt('robot_id') # Send the domain ID that the robot is currently in
         res.distance = totalDistance
@@ -119,41 +119,23 @@ class RobotController(Node):
         self.get_logger().info(f"Robot {assignedRobotId} goes to the target")
 
         if(assignedRobotId == self.paramInt('robot_id') and self.targetPos is not None):# If the robot assigned is this one, tell it to move
-            self.queue.append(self.targetPos)
+            task = GoalPoseTask([self.targetPos])
+            self.queue.addTask(task)
         
         # If the robot assigned is not this one OR the position has been added to queue => reset
         self.targetPos = None
 
     
-
-    def euclidean_distance(self, targetPos, initPos=None):
-        """Euclidean distance between current pose and the goal."""
-        if initPos is None:
-            initPos = self.getRobotPosition()
-
-        return np.sqrt(np.square(targetPos.y - initPos.y) + np.square(targetPos.x - initPos.x))
-
-
-    def totalQueueDistance(self):
-        if len(self.queue) == 0:
-            return 0
-        
-        dist = 0
-        positions = [self.getRobotPosition()] + self.queue
-        for i in range(len(positions)-1):
-            dist += self.euclidean_distance(positions[i+1], positions[i])
-
-        return dist
             
     def send_goal(self):
-        if(len(self.queue) == 0):
+        if self.queue.isEmpty():
             return
 
         # Create msg
         goal_msg = NavigateToPose.Goal()
         goal_msg.pose = PoseStamped()
         goal_msg.pose.header.frame_id = 'map'
-        goal_msg.pose.pose.position = self.queue[0] # Go to the first element in the queue
+        goal_msg.pose.pose.position = self.queue.firstPoint() # Go to the first element in the queue
 
         # Connect to action server
         self.action_client.wait_for_server()
@@ -166,7 +148,7 @@ class RobotController(Node):
         goal_handle = future.result()
         if not goal_handle.accepted:
             self.get_logger().info('Goal rejected')
-            self.queue.pop(0) # Remove first pos from the queue
+            self.queue.removeFirstPoint() # Remove first pos from the queue
             return
 
         self.get_logger().info('Goal accepted :)')
@@ -180,15 +162,18 @@ class RobotController(Node):
 
         # If successfully arrived at the point
         if(result.error_code == 0):
-            self.queue.pop(0) # Remove first pos from the queue
+            self.queue.removeFirstPoint() # Remove first pos from the queue
             self.robotMoving = False
 
             # Send event to catch in child classes if needed
             self.goalSucceeded()
+
+            # Clean tasks
+            self.queue.removeEmptyTasks()
         else:
             self.get_logger().info('Goal failed')
 
-            if len(self.queue) > 0:
+            if not self.queue.isEmpty():
                 self.get_logger().info('Retrying...')
                 self.send_goal()
             else:
@@ -204,7 +189,7 @@ class RobotController(Node):
 
     def loop(self):
         # Don't do anything if empty queue
-        if len(self.queue) == 0:
+        if self.queue.isEmpty():
             return
         
         # Go to each point in the queue
