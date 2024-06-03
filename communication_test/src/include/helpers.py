@@ -42,3 +42,8 @@ def createPoint(x,y,z=0) -> Point:
     p.y = float(y)
     p.z = float(z)
     return p
+
+
+
+def euclideanDistance(targetPos:Point, initPose:Point):
+    return np.sqrt(np.square(targetPos.y - initPose.y) + np.square(targetPos.x - initPose.x))
