@@ -4,7 +4,7 @@ from rclpy.node import Node
 from rclpy.action import ActionClient
 from rclpy.qos import QoSProfile, DurabilityPolicy, HistoryPolicy
 
-from communication_test_interfaces.msg import DistanceToTarget
+from communication_test_interfaces.msg import AuctionBid
 from geometry_msgs.msg import PoseStamped, Point
 from std_msgs.msg import Int8
 from visualization_msgs.msg import Marker
@@ -32,7 +32,7 @@ class RobotController(Node):
         self.create_subscription(Int8, '/assignedRobot', self.assignedRobot_callback, 10)
 
         # Init publishers
-        self.distanceToTargetPublisher = self.create_publisher(DistanceToTarget, '/distanceToTarget', 10)
+        self.auctionBidPublisher = self.create_publisher(AuctionBid, '/auctionBid', 10)
         self.markerPublisher = self.create_publisher(Marker, '/robot_marker', QoSProfile(
             durability=DurabilityPolicy.TRANSIENT_LOCAL,
             history=HistoryPolicy.KEEP_LAST,
@@ -107,11 +107,11 @@ class RobotController(Node):
         totalDistance = self.queue.totalDistance() + euclideanDistance(targetPos, initPos)
 
         # Send it to the operator to see which robot gets assigned to it
-        res = DistanceToTarget()
+        res = AuctionBid()
         res.robot_id = self.paramInt('robot_id') # Send the domain ID that the robot is currently in
         res.distance = totalDistance
 
-        self.distanceToTargetPublisher.publish(res)
+        self.auctionBidPublisher.publish(res)
 
 
     def assignedRobot_callback(self, msg:Int8):

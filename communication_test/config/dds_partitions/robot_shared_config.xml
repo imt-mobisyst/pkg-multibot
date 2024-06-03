@@ -61,7 +61,7 @@
         </qos>
     </subscriber>
 
-    <publisher profile_name="/distanceToTarget">
+    <publisher profile_name="/auctionBid">
         <qos>
             <partition>
                 <names>

@@ -7,9 +7,9 @@ topics:
   goal_pose:
     type: geometry_msgs/msg/PoseStamped
 
-  # Bridge "/distanceToTarget" topic from domain ID 2 to domain ID 1
-  distanceToTarget:
-    type: communication_test_interfaces/msg/DistanceToTarget
+  # Bridge "/auctionBid" topic from domain ID 2 to domain ID 1
+  auctionBid:
+    type: communication_test_interfaces/msg/AuctionBid
     reversed: true
 
   # Bridge "/assignedRobot" topic from domain ID 1 to domain ID 2

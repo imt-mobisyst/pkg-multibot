@@ -4,7 +4,7 @@ import rclpy
 from rclpy.node import Node
 
 from std_msgs.msg import Int8
-from communication_test_interfaces.msg import DistanceToTarget
+from communication_test_interfaces.msg import AuctionBid
 from geometry_msgs.msg import PoseStamped
 
 class Operator(Node):
@@ -23,7 +23,7 @@ class Operator(Node):
 
         # Init subscriber
         self.create_subscription(PoseStamped, '/goal_pose', self.target_callback, 10)
-        self.create_subscription(DistanceToTarget, '/distanceToTarget', self.turtleDistance_callback, 10)
+        self.create_subscription(AuctionBid, '/auctionBid', self.auctionBid_callback, 10)
 
         # Init publisher
         self.assignedRobotPublisher = self.create_publisher(Int8, '/assignedRobot', 10)
@@ -37,14 +37,15 @@ class Operator(Node):
         self.distanceDict.clear()
 
 
-    def turtleDistance_callback(self, msg:DistanceToTarget):
-        print(f"TURTLE {msg.robot_id} DIST RECEIVED" )
+    def auctionBid_callback(self, msg:AuctionBid):
+        print(f"ROBOT {msg.robot_id} DIST RECEIVED" )
+
         # Add value to dict
         self.distanceDict[msg.robot_id] = msg.distance
 
         # Check if all distances have been received
         if(len(self.distanceDict) == self.getNbRobots()):
-
+            # The best bid is the smallest one (since it represents the distance in the queue)
             sortedDistances = sorted(self.distanceDict.items(), key=lambda x:x[1])
             closestRobotId = sortedDistances[0][0]
 

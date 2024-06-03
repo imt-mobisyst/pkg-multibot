@@ -47,9 +47,9 @@ topics:
   package_marker:
     type: visualization_msgs/msg/Marker
 
-  # Bridge "/distanceToTarget" to the operator domain ID (99) (to send a bid)
-  distanceToTarget:
-    type: communication_test_interfaces/msg/DistanceToTarget
+  # Bridge "/auctionBid" to the operator domain ID (99) (to send a bid)
+  auctionBid:
+    type: communication_test_interfaces/msg/AuctionBid
     reversed: true
 
   # Bridge "/assignedRobot" topic to the robot's domain ID (to assign the task)

@@ -27,7 +27,7 @@ endif()
 
 # Install interfaces
 rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/DistanceToTarget.msg"
+  "msg/AuctionBid.msg"
 )
 
 ament_export_dependencies(rosidl_default_runtime)
