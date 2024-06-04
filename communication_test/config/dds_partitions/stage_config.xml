@@ -190,6 +190,7 @@
             <partition>
                 <names>
                     <name>robot_2</name>
+                    <name>stage</name>
                 </names>
             </partition>
         </qos>
@@ -199,6 +200,7 @@
             <partition>
                 <names>
                     <name>robot_2</name>
+                    <name>stage</name>
                 </names>
             </partition>
         </qos>
@@ -208,6 +210,7 @@
             <partition>
                 <names>
                     <name>robot_2</name>
+                    <name>stage</name>
                 </names>
             </partition>
         </qos>
@@ -217,6 +220,7 @@
             <partition>
                 <names>
                     <name>robot_2</name>
+                    <name>stage</name>
                 </names>
             </partition>
         </qos>
@@ -232,6 +236,7 @@
             <partition>
                 <names>
                     <name>robot_2</name>
+                    <name>stage</name>
                 </names>
             </partition>
             <reliability>
@@ -247,6 +252,7 @@
             <partition>
                 <names>
                     <name>robot_2</name>
+                    <name>stage</name>
                 </names>
             </partition>
         </qos>
