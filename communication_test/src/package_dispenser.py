@@ -11,11 +11,13 @@ from include.package import Package
 
 class PackageDispenserNode(Node):
 
+    MAX_PACKAGES_WAITING = 4
+
     def __init__(self):
         super().__init__('package_dispenser')
 
         self.declare_parameter('period', 1)
-        self.declare_parameter('rate', 0.05) # 5% package spawn every second by default
+        self.declare_parameter('rate', 0.07) # 7% package spawn every second by default
 
         # Init publishers
         self.markerPublisher = self.create_publisher(Marker, '/package_marker', 10)
@@ -25,6 +27,7 @@ class PackageDispenserNode(Node):
 
         # Init subscriber
         self.create_subscription(PointStamped, "/clicked_point", self.toggleSpawn, 10)
+        self.create_subscription(MarkerArray, '/package_marker_array', self.packagePickedUp, 10)
         
         # Init loop
         self.create_timer(self.paramInt('period'), self.loop)
@@ -33,9 +36,9 @@ class PackageDispenserNode(Node):
         # Clear previous markers
         self.clearMarkers()
 
-
         # Variables
         self._spawn = False # By default, don't start spawning packages
+        self._nbPackagesWaitingStore = 0
     
     def paramInt(self, name):
         return self.get_parameter(name).get_parameter_value().integer_value
@@ -53,6 +56,7 @@ class PackageDispenserNode(Node):
         
         
         if Package.nbPackages == 0:
+
             # Spawn a first package
             self.spawnRandomPackage()
 
@@ -60,18 +64,38 @@ class PackageDispenserNode(Node):
         self.get_logger().info("START SPAWNING PACKAGES")
         self._spawn = True
 
+    def packagePickedUp(self, _):
+        # Prevent first clear from being listened
+        if self._nbPackagesWaitingStore == 0:
+            return
+        
+        # Log if starts spawning again
+        if self._nbPackagesWaitingStore == self.MAX_PACKAGES_WAITING:
+            self.get_logger().info("Number of packages OK, restarting spawn")
+
+        # Update number of waiting packages
+        self._nbPackagesWaitingStore -= 1
+
 
     def spawnRandomPackage(self):
         # Create a random package
         package = Package.random()
+
+        # Update number of waiting packages
+        self._nbPackagesWaitingStore += 1
+        if self._nbPackagesWaitingStore == self.MAX_PACKAGES_WAITING:
+            self.get_logger().info("Max number of packages reached, stopping spawn")
 
         # Publish marker (for visualization but also information for the robots)
         package.publishMarker(self.markerPublisher, self)
 
 
     def loop(self):
+        # Only spawn if toggled and not too much packages
+        canSpawn = self._spawn and self._nbPackagesWaitingStore < self.MAX_PACKAGES_WAITING
+
         # There is a probability of spawning a package every second (ex: 10% if rate=0.1)
-        if self._spawn and random() < self.paramDouble('rate'):
+        if canSpawn and random() < self.paramDouble('rate') :
             # Spawn a package with a random color and a random spot
             self.spawnRandomPackage()
 
