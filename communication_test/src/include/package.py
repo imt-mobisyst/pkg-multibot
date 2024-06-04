@@ -1,7 +1,15 @@
+from enum import Enum
 from random import random, choice as randomChoice
 from geometry_msgs.msg import Point
 from visualization_msgs.msg import Marker
 from include.helpers import createPoint
+
+class PackageState(Enum):
+    SPAWNED = 1     # When the package is waiting at the spawn spot
+    STORING = 2     # When the package is being moved from the spawn spot to it's deposit spot
+    STORED = 3      # When the package is in stock (at it's deposit spot)
+    RETRIEVING = 4  # When the package is being moved from the deposit spot to the retrieval spot
+    RETRIEVED = 4   # When the package is waiting at the retrieval spot
 
 class Package():
 
@@ -32,10 +40,10 @@ class Package():
 
     # Functions
 
-    def __init__(self, colorName:str, position:Point, pickedUp = False, id=None):
+    def __init__(self, colorName:str, position:Point, state = PackageState.SPAWNED, id=None):
         self.colorName = colorName
         self.position = position
-        self.pickedUp = pickedUp
+        self.state = state
 
         if id is None:
             # Automatic ID generation

@@ -5,6 +5,7 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Grid1/Offset1
+        - /Packages deposit1/Topic1
       Splitter Ratio: 0.6411764621734619
     Tree Height: 549
   - Class: rviz_common/Selection
@@ -80,9 +81,24 @@ Visualization Manager:
       Value: true
     - Class: rviz_default_plugins/Marker
       Enabled: true
-      Name: Robots
+      Name: Packages retrieved
       Namespaces:
         {}
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /package_retrieved_marker
+      Value: true
+    - Class: rviz_default_plugins/Marker
+      Enabled: true
+      Name: Robots
+      Namespaces:
+        robot0: true
+        robot1: true
+        robot2: true
       Topic:
         Depth: 10
         Durability Policy: Transient Local

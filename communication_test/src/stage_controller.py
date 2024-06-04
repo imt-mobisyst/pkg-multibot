@@ -10,8 +10,8 @@ from nav_msgs.msg import Odometry
 from visualization_msgs.msg import Marker, MarkerArray
 
 from include.helpers import getYaw, createPoint
-from include.package import Package
-from include.tasks import StoreTask
+from include.package import Package, PackageState
+from include.tasks import StoreTask, RetrieveTask
 
 class StageRobotController(RobotController):
 
@@ -19,12 +19,19 @@ class StageRobotController(RobotController):
         super().__init__('stage_robot_controller')
 
         # Init stage specific subscriptions
+        # -> Position
         self.create_subscription(Odometry, 'ground_truth', self.pose_callback, 10)
+        # -> Store task
         self.create_subscription(Marker, '/package_marker', self.package_callback, 10)
+        # -> Retrieve task
+        self.create_subscription(Marker, '/retrieve_marker', self.retrieve_callback, 10)
 
         # Init stage specific publisher
-        self.markerCleaner = self.create_publisher(MarkerArray, '/package_marker_array', 10)
+        self.spawnMarkerCleaner = self.create_publisher(MarkerArray, '/package_marker_array', 10)
+        self.depositMarkerCleaner = self.create_publisher(MarkerArray, '/package_deposit_marker_array', 10)
+
         self.depositMarkerPublisher = self.create_publisher(Marker, '/package_deposit_marker', 10)
+        self.retrievedMarkerPublisher = self.create_publisher(Marker, '/package_retrieved_marker', 10)
 
         # Init variables
         self.pose = Pose()
@@ -48,9 +55,18 @@ class StageRobotController(RobotController):
         return getYaw(self.pose.orientation)
 
 
+    # Task reception
+
     def package_callback(self, msg:Marker):
         # Save package data
         self._targetPackage = Package(id=msg.id, colorName=msg.ns, position=msg.pose.position)
+
+        # Calculate bid and send it to the operator
+        self.sendBid(self._targetPackage.position)
+
+    def retrieve_callback(self, msg:Marker):
+        # Save package data
+        self._targetPackage = Package(id=msg.id, colorName=msg.ns, position=msg.pose.position, state=PackageState.STORED)
 
         # Calculate bid and send it to the operator
         self.sendBid(self._targetPackage.position)
@@ -61,14 +77,20 @@ class StageRobotController(RobotController):
         self.get_logger().info(f"Robot {assignedRobotId} goes to the target")
 
         if(assignedRobotId == self.paramInt('robot_id') and self._targetPackage is not None):# If the robot assigned is this one, tell it to move
-            # Create a store task (go to the package and bring it to the deposit spot corresponding to its color)
-            task = StoreTask(self._targetPackage)
+            
+            if self._targetPackage.state == PackageState.SPAWNED:
+                # Create a store task (go to the package and bring it to the deposit spot corresponding to its color)
+                task = StoreTask(self._targetPackage)
+            else:
+                # Create a retrieve task (go to the package and bring it to the retrieval spot)
+                task = RetrieveTask(self._targetPackage)
+
             self.queue.addTask(task)
         
         # If the robot assigned is not this one OR the position has been added to queue => reset
         self._targetPackage = None
 
-    def removeSpawnMarker(self, package:Package):
+    def removeMarker(self, package:Package, pub):
         """Remove the marker with this specific id"""
         marker_array = MarkerArray()
         marker = Marker()
@@ -80,52 +102,50 @@ class StageRobotController(RobotController):
 
         marker_array._markers.append(marker)
 
-        self.markerCleaner.publish(marker_array)
-
-    def addDepositMarker(self, package:Package, depositPos):
-        marker = Marker()
-        marker.header.frame_id = 'map'
-        marker.header.stamp = self.get_clock().now().to_msg()
-
-
-
-        # set shape
-        marker.type = 1 # Cube
-        marker.id = package.id
-        marker.ns = package.colorName
-
-        # Set the scale of the marker
-        marker.scale.x = 0.3
-        marker.scale.y = 0.3
-        marker.scale.z = 0.3
-
-        # Set the color
-        color = package.color()
-        marker.color.r = float(color[0])
-        marker.color.g = float(color[1])
-        marker.color.b = float(color[2])
-        marker.color.a = 1.0
-
-        # Set the pose of the marker
-        marker.pose.position = depositPos
-
-        self.depositMarkerPublisher.publish(marker)
+        pub.publish(marker_array)
 
 
     def goalSucceeded(self):
-        actualPackage:Package = self.queue.tasks[0].package
+        # Get REFERENCE to task
+        task = self.queue.tasks[0]
 
-        # If you reached the package, pick up
-        if actualPackage.pickedUp == False:
-            # Remove the package marker
-            self.removeSpawnMarker(self.queue.tasks[0].package)
+        if isinstance(task, StoreTask):
 
-            # Change package state in queue
-            self.queue.tasks[0].package.pickedUp = True
-            
-        else:
-            # Deposit package
-            self.addDepositMarker(self.queue.tasks[0].package, self.getRobotPosition())
+            # If you reached the package, pick up
+            if task.package.state == PackageState.SPAWNED:
+                # Remove the package marker from '/package_marker'
+                self.removeMarker(task.package, self.spawnMarkerCleaner)
+
+                # Change package state in queue
+                task.package.state = PackageState.STORING
+                
+            else:
+                # Deposit package
+                # -> Update package
+                task.package.position = self.getRobotPosition() # Change package position
+                task.package.state = PackageState.STORED        # Change package state
+                # -> Publish marker
+                task.package.publishMarker(self.depositMarkerPublisher, self)
+
+
+
+        elif isinstance(task, RetrieveTask):
+
+            # If you reached the package, pick up
+            if task.package.state == PackageState.STORED:
+                # Remove the package marker from '/package_deposit_marker'
+                self.removeMarker(task.package, self.depositMarkerCleaner)
+
+                # Change package state in queue
+                task.package.state = PackageState.RETRIEVING
+                
+            else:
+                # Drop package
+                # -> Update package
+                task.package.position = self.getRobotPosition() # Change package position
+                task.package.state = PackageState.RETRIEVED     # Change package state
+                # -> Publish marker
+                task.package.publishMarker(self.retrievedMarkerPublisher, self)
 
 
 def main(args=None):

@@ -2,6 +2,7 @@
 from os import getenv
 from rclpy.node import Node
 from rclpy.action import ActionClient
+from rclpy.task import Future
 from rclpy.qos import QoSProfile, DurabilityPolicy, HistoryPolicy
 
 from communication_test_interfaces.msg import AuctionBid
@@ -12,6 +13,8 @@ from nav2_msgs.action import NavigateToPose
 
 from include.helpers import getQuaternionFromEuler, euclideanDistance
 from include.task_queue import TaskQueue
+from nav2_msgs.action._navigate_to_pose import NavigateToPose_GetResult_Response
+from action_msgs.msg import GoalStatus
 
 class RobotController(Node):
 
@@ -129,40 +132,45 @@ class RobotController(Node):
         action = self.action_client.send_goal_async(goal_msg)
         action.add_done_callback(self.goal_response_callback)
 
-    def goal_response_callback(self, future):
+    def goal_response_callback(self, future:Future):
         goal_handle = future.result()
         if not goal_handle.accepted:
-            self.get_logger().info('Goal rejected')
+            self.get_logger().info('!!! GOAL REJECTED !!!')
             self.queue.removeFirstPoint() # Remove first pos from the queue
             return
 
-        self.get_logger().info('Goal accepted :)')
+        self.get_logger().info('GOAL ACCEPTED')
 
         self._get_result_future = goal_handle.get_result_async()
         self._get_result_future.add_done_callback(self.get_result_callback)
 
-    def get_result_callback(self, future):
-        result = future.result().result
-        self.get_logger().info('Result: {0}'.format(result.error_code))
+    def get_result_callback(self, future:Future):
+        result:NavigateToPose_GetResult_Response = future.result()
+        self.get_logger().info(f'Result: {result.result} with status {result.status}')
+        # GOAL ABORTED : status 6
+        # GOAL SUCCEEDED : status 4
+        
 
         # If successfully arrived at the point
-        if(result.error_code == 0):
+        if(result.result.error_code == 0 and result.status == GoalStatus.STATUS_SUCCEEDED):
             self.queue.removeFirstPoint() # Remove first pos from the queue
             self.robotMoving = False
 
             # Send event to catch in child classes if needed
+            self.get_logger().info('GOAL SUCEEDED')
             self.goalSucceeded()
 
             # Clean tasks
             self.queue.removeEmptyTasks()
         else:
-            self.get_logger().info('Goal failed')
+            self.get_logger().info('-------------------------------GOAL FAILED-------------------------------')
 
             if not self.queue.isEmpty():
                 self.get_logger().info('Retrying...')
                 self.send_goal()
             else:
-                # Send events to catch in child classes if needed
+                # Send events to catch in child classes if needed                
+                self.get_logger().info('DONT RETRY')
                 self.goalFailed()
             
         
