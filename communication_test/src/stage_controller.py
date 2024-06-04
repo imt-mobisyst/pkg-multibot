@@ -74,14 +74,15 @@ class StageRobotController(RobotController):
 
     def assignedRobot_callback(self, msg:Int8):
         assignedRobotId = int(msg.data)
-        self.get_logger().info(f"Robot {assignedRobotId} goes to the target")
 
         if(assignedRobotId == self.paramInt('robot_id') and self._targetPackage is not None):# If the robot assigned is this one, tell it to move
             
             if self._targetPackage.state == PackageState.SPAWNED:
+                self.get_logger().info(f"Robot {assignedRobotId} is assigned the STORE task for {self._targetPackage.colorName} package")
                 # Create a store task (go to the package and bring it to the deposit spot corresponding to its color)
                 task = StoreTask(self._targetPackage)
             else:
+                self.get_logger().info(f"Robot {assignedRobotId} is assigned the RETRIEVE task for {self._targetPackage.colorName} package")
                 # Create a retrieve task (go to the package and bring it to the retrieval spot)
                 task = RetrieveTask(self._targetPackage)
 
