@@ -53,7 +53,7 @@ class StoreTask(Task):
 
 class RetrieveTask(Task):
     def __init__(self, package:Package):
-        points = [package.position, Package.retrievalSpot]
+        points = [package.position, Package.retrievalSpot()]
 
         super().__init__(TaskType.RETRIEVAL, points)
 

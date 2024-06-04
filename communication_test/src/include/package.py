@@ -60,14 +60,26 @@ class Package():
         packageColorName = randomChoice(list(Package.colors.keys()))
 
         # Add variation to the spawn point
-        packageSpot = createPoint(targetSpot.x + (random()-0.5)*1.5, targetSpot.y + (random()-0.5)*1.5)
+        packageSpot = Package.randomizeSpot(targetSpot)
 
         return Package(packageColorName, packageSpot)
 
 
+
+    def randomizeSpot(center:Point, squareSize = 1.5):
+        """Create a random point in a square around a center"""        
+        return createPoint(center.x + (random()-0.5)*squareSize, center.y + (random()-0.5)*squareSize)
+
+
+
     def depositSpot(self):
         """Get the position that the package should be stored at"""
-        return Package.depositSpots[self.colorName]
+        return Package.randomizeSpot(Package.depositSpots[self.colorName])
+    
+    def retrievalSpot():
+        """Get the position that the package should be retrieved at"""
+        return Package.randomizeSpot(Package.retrievalSpot)
+
     
 
     def color(self):
