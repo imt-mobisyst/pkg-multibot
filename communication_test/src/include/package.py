@@ -9,7 +9,7 @@ class PackageState(Enum):
     STORING = 2     # When the package is being moved from the spawn spot to it's deposit spot
     STORED = 3      # When the package is in stock (at it's deposit spot)
     RETRIEVING = 4  # When the package is being moved from the deposit spot to the retrieval spot
-    RETRIEVED = 4   # When the package is waiting at the retrieval spot
+    RETRIEVED = 5   # When the package is waiting at the retrieval spot
 
 class Package():
 
