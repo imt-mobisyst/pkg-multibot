@@ -12,6 +12,10 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description():
 
+    log_level_launch_arg = DeclareLaunchArgument(
+        'nav_log_level', default_value='info', description='log level'
+    )
+
     map_launch_arg = DeclareLaunchArgument(
         'map', default_value='warehouse'
     )
@@ -47,7 +51,8 @@ def generate_launch_description():
                 launch_arguments={
                     'namespace': f"robot_{i}",
                     'robot_id': str(i),
-                    'map': LaunchConfiguration('map')
+                    'map': LaunchConfiguration('map'),
+                    'nav_log_level': LaunchConfiguration('nav_log_level')
                 }.items()
             )
         )
@@ -76,6 +81,7 @@ def generate_launch_description():
 
 
     return LaunchDescription([
+        log_level_launch_arg,
         map_launch_arg,
 
         # Rviz with specific config

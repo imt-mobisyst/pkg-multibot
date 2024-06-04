@@ -60,7 +60,8 @@ def createRobotNodes():
                     "sim_dds_server": f"{IP}:{SIM_DDS_SERVER_PORT}",
                     "robot_id": str(i),
                     "namespace": f"robot_{i}",
-                    "map": LaunchConfiguration('map')
+                    "map": LaunchConfiguration('map'),
+                    'nav_log_level': LaunchConfiguration('nav_log_level')
                 }.items()
             )
         )
@@ -89,6 +90,10 @@ def createDebugBridges():
     return bridges
 
 def generate_launch_description():
+    log_level_launch_arg = DeclareLaunchArgument(
+        'nav_log_level', default_value='info', description='log level'
+    )
+        
     map_launch_arg = DeclareLaunchArgument(
         'map', default_value='warehouse'
     )
@@ -135,6 +140,7 @@ def generate_launch_description():
 
 
     return LaunchDescription([
+        log_level_launch_arg,
         map_launch_arg,
 
         # Start DDS servers

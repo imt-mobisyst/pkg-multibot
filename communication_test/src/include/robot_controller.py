@@ -146,10 +146,8 @@ class RobotController(Node):
 
     def get_result_callback(self, future:Future):
         result:NavigateToPose_GetResult_Response = future.result()
-        self.get_logger().info(f'Result: {result.result} with status {result.status}')
-        # GOAL ABORTED : status 6
-        # GOAL SUCCEEDED : status 4
-        
+        self.get_logger().info(f'Result: Error code {result.result.error_code} | Status {result.status}')
+                
 
         # If successfully arrived at the point
         if(result.result.error_code == 0 and result.status == GoalStatus.STATUS_SUCCEEDED):
@@ -162,8 +160,7 @@ class RobotController(Node):
 
             # Clean tasks
             self.queue.removeEmptyTasks()
-        else:
-            self.get_logger().info('-------------------------------GOAL FAILED-------------------------------')
+        else: # Probably received status 6 : Goal aborted
 
             if not self.queue.isEmpty():
                 self.get_logger().info('Retrying...')

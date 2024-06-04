@@ -14,6 +14,10 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description():
 
+    log_level_launch_arg = DeclareLaunchArgument(
+        'nav_log_level', default_value='info', description='log level'
+    )
+
     map_launch_arg = DeclareLaunchArgument(
         'map', default_value='warehouse'
     )
@@ -35,21 +39,22 @@ def generate_launch_description():
         executable='package_dispenser.py'
     )
 
-    # Create 3 turtles with their own namespace 'robot_X'
-    turtles = []
+    # Create 3 robots with their own namespace 'robot_X'
+    robots = []
     for i in range(3):
-        turtles.append(
+        robots.append(
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(
                     os.path.join(
                         get_package_share_directory('communication_test'),
                         'launch/include/stage/stage_partition_robot_launch.py')),
 
-                # Launch turtles with the correct DDS configuration
+                # Launch robots with the correct DDS configuration
                 launch_arguments={
                     'namespace': f"robot_{i}",
                     'robot_id': str(i),
-                    'map': LaunchConfiguration('map')
+                    'map': LaunchConfiguration('map'),
+                    'nav_log_level': LaunchConfiguration('nav_log_level')
                 }.items()
             )
         )
@@ -66,6 +71,7 @@ def generate_launch_description():
 
 
     return LaunchDescription([
+        log_level_launch_arg,
         map_launch_arg,
 
         # Launch stage simulator with 3 robots
@@ -76,8 +82,8 @@ def generate_launch_description():
             simulator
         ]),
 
-        # Turtles
-        *turtles,
+        # Robots
+        *robots,
 
         GroupAction([
             SetEnvironmentVariable(name='RMW_FASTRTPS_USE_QOS_FROM_XML', value="1"),

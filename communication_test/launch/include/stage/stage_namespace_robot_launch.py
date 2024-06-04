@@ -10,6 +10,9 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
 def generate_launch_description():
+    log_level_launch_arg = DeclareLaunchArgument(
+        'nav_log_level', default_value='info', description='log level'
+    )
 
     # CLI arguments
     robot_id_launch_arg = DeclareLaunchArgument(
@@ -60,7 +63,8 @@ def generate_launch_description():
                 'map': LaunchConfiguration('map_file'),
                 'params_file': os.path.join(get_package_share_directory('communication_test'), 'config', 'nav2', 'nav2_params.yaml'),
                 'autostart': 'True',
-                'use_sim_time': 'True'
+                'use_sim_time': 'True',
+                'log_level': LaunchConfiguration('nav_log_level')
             }.items()
         )
     ])
@@ -76,6 +80,7 @@ def generate_launch_description():
             launch_arguments={
                 "namespace": LaunchConfiguration('namespace'),
                 "params_file": os.path.join(get_package_share_directory('communication_test'), 'config', 'nav2', 'nav2_params.yaml'),
+                'log_level': LaunchConfiguration('nav_log_level')
             }.items()
         )
     ])
@@ -83,6 +88,8 @@ def generate_launch_description():
   
 
     return LaunchDescription([
+        log_level_launch_arg,
+
         robot_id_launch_arg,
         namespace_launch_arg,
         map_launch_arg,
