@@ -6,8 +6,12 @@ For each solution, there are 3 working demos *(with different complexity levels)
 - A very simple **talker/listener** example (except for the namespacing)
 - Multiple turtlesims running in parallel : you can place a `goal_pose` in Rviz and one of the robots will be assigned to it
 - One with the stage simulator, with 3 robots in a warehouse environment. It perfectly illustrates the scenario explained
-[here](../README.md#1-scenario) : when you add a `clicked_point` in Rviz, packages start to spawn at specific places in
-the map, and the robots coordinate to bring the packages to the correct deposit spot depending on their color.
+[here](../README.md#1-scenario) :
+    - when you add a `clicked_point` in Rviz, packages start to spawn at specific places in the map, and the robots coordinate
+    to bring the packages to the correct deposit spot depending on their color.
+    - when you send a message on the `retrieve` topic, one of the robots retrieves a package from the correct deposit zone and
+    brings it to the retrieval zone
+
 
 
 ## 1. Robot separation using namespaces
@@ -29,8 +33,9 @@ ros2 launch communication_test rviz_launch.py config:=config/stage.rviz
 ros2 launch communication_test stage_namespace_launch.py
 ```
 
-To start spawning packages, use the `Publish Point` button in rviz (it will toggle the package spawning).
-
+To start spawning packages, use the `Publish Point` button in rviz (it will toggle the package spawning).  
+To retrieve a package with a specific color, run `ros2 topic pub /retrieve std_msgs/msg/String "{data: 'green'}" --once`
+*(other colors: `yellow`, `blue`, `red`)*.
 
 
 ## 2. Multi DOMAIN_ID communication
@@ -127,6 +132,10 @@ Launch the demo (with the simulator, the controllers, the nav2 stacks...):
 ```bash
 ros2 launch communication_test stage_bridge_launch.py
 ```
+
+To start spawning packages, use the `Publish Point` button in rviz (it will toggle the package spawning).  
+To retrieve a package with a specific color, run `ros2 topic pub /retrieve std_msgs/msg/String "{data: 'green'}" --once`
+*(other colors: `yellow`, `blue`, `red`)*.
 
 ## 3. Network isolation with FastDDS Discovery server
 
@@ -308,6 +317,9 @@ In another terminal, launch the demo (with the simulator, the controllers, the n
 ros2 launch communication_test stage_dds_launch.py
 ```
 
+To start spawning packages, use the `Publish Point` button in rviz (it will toggle the package spawning).  
+To retrieve a package with a specific color, run `ros2 topic pub /retrieve std_msgs/msg/String "{data: 'green'}" --once`
+*(other colors: `yellow`, `blue`, `red`)*.
 
 
 ## 4. Robot isolation using DDS partitions
@@ -423,3 +435,7 @@ In another terminal, launch the demo (with the simulator, the controllers, the n
 ```bash
 ros2 launch communication_test stage_partition_launch.py
 ```
+
+To start spawning packages, use the `Publish Point` button in rviz (it will toggle the package spawning).  
+To retrieve a package with a specific color, run `ros2 topic pub /retrieve std_msgs/msg/String "{data: 'green'}" --once`
+*(other colors: `yellow`, `blue`, `red`)*.
