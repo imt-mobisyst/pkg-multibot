@@ -98,9 +98,16 @@ class RobotController(Node):
 
         
     def sendBid(self, targetPos:Point):
-        # Calculate cost (total distance) to go to that position
-        initPos = self.getRobotPosition() if self.queue.isEmpty() else self.queue.lastPoint()
-        totalDistance = self.queue.totalDistance() + euclideanDistance(targetPos, initPos)
+
+        if self.queue.isEmpty():
+            # If nothing in queue, total distance to travel = distance from robot to target
+            totalDistance = euclideanDistance(self.getRobotPosition(), targetPos)
+        else:
+            # If points in queue, add distances : to first point in queue, between points in queue, after last point in queue
+            distanceRobotToFirstPoint   = euclideanDistance(self.getRobotPosition(), self.queue.firstPoint())
+            distanceLastPointToNewPoint = euclideanDistance(self.queue.lastPoint(), targetPos)
+
+            totalDistance = distanceRobotToFirstPoint + self.queue.totalDistance() + distanceLastPointToNewPoint
 
         # Send it to the operator to see which robot gets assigned to it
         res = AuctionBid()
