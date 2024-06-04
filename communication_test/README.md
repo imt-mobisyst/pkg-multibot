@@ -305,7 +305,7 @@ ros2 launch communication_test rviz_launch.py config:=config/stage.rviz
 
 In another terminal, launch the demo (with the simulator, the controllers, the nav2 stacks...):
 ```bash
-ros2 launch communicaiton_test stage_dds_launch.py
+ros2 launch communication_test stage_dds_launch.py
 ```
 
 

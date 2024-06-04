@@ -101,7 +101,36 @@
         </qos>
     </subscriber>
 
+    <subscriber profile_name="/retrieve_marker">
+        <qos>
+            <partition>
+                <names>
+                    <name>shared</name>
+                </names>
+            </partition>
+        </qos>
+    </subscriber>
+
+    <publisher profile_name="/package_retrieved_marker">
+        <qos>
+            <partition>
+                <names>
+                    <name>shared</name>
+                </names>
+            </partition>
+        </qos>
+    </publisher>
+
     <publisher profile_name="/package_marker_array">
+        <qos>
+            <partition>
+                <names>
+                    <name>shared</name>
+                </names>
+            </partition>
+        </qos>
+    </publisher>
+    <publisher profile_name="/package_deposit_marker_array">
         <qos>
             <partition>
                 <names>

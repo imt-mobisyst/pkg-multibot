@@ -38,6 +38,16 @@ topics:
     type: visualization_msgs/msg/MarkerArray # To delete markers for packages taken by the robot
     reversed: true
 
+  # Bridge "/package_deposit_marker_array" to the operator domain ID (99)
+  package_deposit_marker_array:
+    type: visualization_msgs/msg/MarkerArray # To delete markers for packages retrieved
+    reversed: true
+
+  # Bridge "/package_retrieved_marker" to the operator domain ID (99)
+  package_retrieved_marker:
+    type: visualization_msgs/msg/Marker # To show the packages that have been deposit in the retrieval zone
+    reversed: true
+
 
 
 
@@ -45,6 +55,9 @@ topics:
 
   # Bridge "/package_marker" the robot's domain ID (to start a bid)
   package_marker:
+    type: visualization_msgs/msg/Marker
+
+  retrieve_marker:
     type: visualization_msgs/msg/Marker
 
   # Bridge "/auctionBid" to the operator domain ID (99) (to send a bid)

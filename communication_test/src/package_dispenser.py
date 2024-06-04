@@ -19,8 +19,9 @@ class PackageDispenserNode(Node):
 
         # Init publishers
         self.markerPublisher = self.create_publisher(Marker, '/package_marker', 10)
-        self.markerCleaner = self.create_publisher(MarkerArray, '/package_marker_array', 10)
+        self.spawnedMarkerCleaner = self.create_publisher(MarkerArray, '/package_marker_array', 10)
         self.depositMarkerCleaner = self.create_publisher(MarkerArray, '/package_deposit_marker_array', 10)
+        self.retrievedMarkerCleaner = self.create_publisher(MarkerArray, '/package_retrieved_marker_array', 10)
 
         # Init subscriber
         self.create_subscription(PointStamped, "/clicked_point", self.toggleSpawn, 10)
@@ -84,8 +85,9 @@ class PackageDispenserNode(Node):
         marker.action = Marker.DELETEALL
         marker_array.markers.append(marker)
 
-        self.markerCleaner.publish(marker_array)
+        self.spawnedMarkerCleaner.publish(marker_array)
         self.depositMarkerCleaner.publish(marker_array)
+        self.retrievedMarkerCleaner.publish(marker_array)
 
 
 
