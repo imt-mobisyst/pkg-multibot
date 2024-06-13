@@ -31,12 +31,20 @@ def generate_launch_description():
             ]
         ),
 
+        # Package dispenser
+        Node(
+            package='communication_test',
+            executable='package_dispenser.py'
+        ),
+
         # Rviz node with specific configuration
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
                 os.path.join(
-                    get_package_share_directory('communication_test'),
-                    'launch/include/rviz_launch.py')),
+                    get_package_share_directory('communication_test'), 'launch','include','rviz_launch.py')),
+                launch_arguments={
+                    "config": os.path.join(get_package_share_directory('communication_test'),'config','stage.rviz')
+                }.items()
         )
 
     ])
