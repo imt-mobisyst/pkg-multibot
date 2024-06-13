@@ -1,7 +1,6 @@
 
 amcl:
   ros__parameters:
-    use_sim_time: True
     alpha1: 0.2
     alpha2: 0.2
     alpha3: 0.2
@@ -43,7 +42,6 @@ amcl:
 
 bt_navigator:
   ros__parameters:
-    use_sim_time: True
     global_frame: map
     robot_base_frame: base_link
     odom_topic: odom
@@ -117,7 +115,6 @@ bt_navigator:
 
 controller_server:
   ros__parameters:
-    use_sim_time: True
     controller_frequency: 20.0
     min_x_velocity_threshold: 0.001
     min_y_velocity_threshold: 0.5
@@ -198,7 +195,6 @@ controller_server:
 local_costmap:
   local_costmap:
     ros__parameters:
-      use_sim_time: True
       update_frequency: 10.0
       publish_frequency: 10.0
       global_frame: map
@@ -232,17 +228,10 @@ local_costmap:
         plugin: "nav2_costmap_2d::StaticLayer"
         map_subscribe_transient_local: True
       always_send_full_costmap: True
-  local_costmap_client:
-    ros__parameters:
-      use_sim_time: True
-  local_costmap_rclcpp_node:
-    ros__parameters:
-      use_sim_time: True
 
 global_costmap:
   global_costmap:
     ros__parameters:
-      use_sim_time: True
       update_frequency: 1.0
       publish_frequency: 1.0
       global_frame: map
@@ -274,12 +263,6 @@ global_costmap:
         cost_scaling_factor: 3.0
         inflation_radius: 0.55
       always_send_full_costmap: True
-  global_costmap_client:
-    ros__parameters:
-      use_sim_time: True
-  global_costmap_rclcpp_node:
-    ros__parameters:
-      use_sim_time: True
 
 # The yaml_filename does not need to be specified since it going to be set by defaults in launch.
 # If you'd rather set it in the yaml, remove the default "map" value in the tb3_simulation_launch.py
@@ -290,7 +273,6 @@ global_costmap:
 
 map_saver:
   ros__parameters:
-    use_sim_time: True
     save_map_timeout: 5.0
     free_thresh_default: 0.25
     occupied_thresh_default: 0.65
@@ -298,7 +280,6 @@ map_saver:
 
 planner_server:
   ros__parameters:
-    use_sim_time: True
     expected_planner_frequency: 20.0
     planner_plugins: ["GridBased"]
     GridBased:
@@ -309,7 +290,6 @@ planner_server:
 
 smoother_server:
   ros__parameters:
-    use_sim_time: True
     smoother_plugins: ["simple_smoother"]
     simple_smoother:
       plugin: "nav2_smoother::SimpleSmoother"
@@ -319,7 +299,6 @@ smoother_server:
 
 behavior_server:
   ros__parameters:
-    use_sim_time: True
     local_costmap_topic: local_costmap/costmap_raw
     global_costmap_topic: global_costmap/costmap_raw
     local_footprint_topic: local_costmap/published_footprint
@@ -347,7 +326,6 @@ behavior_server:
 
 waypoint_follower:
   ros__parameters:
-    use_sim_time: True
     loop_rate: 20
     stop_on_failure: false
     action_server_result_timeout: 900.0
@@ -359,7 +337,6 @@ waypoint_follower:
 
 velocity_smoother:
   ros__parameters:
-    use_sim_time: True
     smoothing_frequency: 20.0
     scale_velocities: False
     feedback: "OPEN_LOOP"
@@ -375,7 +352,6 @@ velocity_smoother:
 
 collision_monitor:
   ros__parameters:
-    use_sim_time: True
     base_frame_id: "base_footprint"
     odom_frame_id: "odom"
     cmd_vel_in_topic: "cmd_vel_smoothed"
