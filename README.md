@@ -23,7 +23,7 @@ exist, their advantages and drawbacks, so that you can choose the one that best 
 
 ## 1. Scenario
 
-We want to be able to control an **heterogenous fleet of robots** (for example robots from different vendors) in an 
+We want to be able to control an **heterogeneous fleet of robots** (for example robots from different vendors) in an 
 industrial environment.
 
 We will consider the following situation :  
@@ -58,11 +58,11 @@ fleet could share information to create a common map with multi robot SLAM algor
 
 To compare the different methods and architectures, we'll use different criteria :
 
-- **Dynamism :** Does the architecture allow to dynamically add a robot to the fleet ? (dynamic identification...)
+- **Dynamism :** Does the architecture allow to dynamically add a robot to the fleet ? (dynamic identification)
 - **Resilience :** Does the architecture continue to work when there are failures (of the robots or the operator) ? 
 - **Reliability :** Are there losses in the communication ?
 - **Isolation :** Are robot specific informations shared or kept local ? How much control do we have over the information shared ?
-- **Network usage :** How much data is transfered on the network ?
+- **Network usage :** How much data is transferred on the network ?
 - **Scalability :** Does the system still work well when there are lots of robots ?
 - **Computability :** Does the system require a lot of computing power (both on the robots and the operator) ?
 - **Ease of simulation :** How easy is it to reproduce this communication architecture in a simulation ?
@@ -91,7 +91,7 @@ Here is the list of the different communication methods we will study :
 
 **Namespaces** are prefixes to node names, topics, actions and services. They allow to have multiple elements with the same name but different prefix. 
 
-In a multi-robot scenario, namespacing is the easiest solution to seperate each robot with a unique namespace, in order for robots
+In a multi-robot scenario, namespacing is the easiest solution to separate each robot with a unique namespace, in order for robots
 to not have name conflicts when running the same nodes and using the same topics.
 > An example of this is to prefix the `cmd_vel`
 topic for robots (`robot1/cmd_vel` and `robot2/cmd_vel`), to prevent them from having the same velocity command.
@@ -125,7 +125,7 @@ With our multi-robot architecture, we would have the following configuration :
 > See working demos [here](communication_test/README.md#3-network-isolation-with-fastdds-discovery-server)
 
 As stated before, DDS is the protocol used by ROS2 for communicating between nodes. One aspect of this protocol is to look for
-elements that a node can communicate with on the newtwork. It's the "Discovery protocol". By default, the **Simple Discovery 
+elements that a node can communicate with on the network. It's the "Discovery protocol". By default, the **Simple Discovery 
 protocol** is used, which consists in sending multicast messages to every other node in the network.
 
 Fast DDS, one of the DDS middlewares, provides a [Discovery server](https://docs.ros.org/en/iron/Tutorials/Advanced/Discovery-Server/Discovery-Server.html) to replace the **Simple Discovery protocol**. It works similarly to a router and
@@ -183,17 +183,8 @@ certificate is not given
 
 - DDSrouter (+ HusarnetVPN)
 
-- [DDS data_sharing](https://fast-dds.docs.eprosima.com/en/latest/fastdds/xml_configuration/common.html#xml-datasharing) QoS property
-
-- [DDS domain tag](https://community.rti.com/static/documentation/connext-dds/6.0.1/doc/manuals/connext_dds/html_files/RTI_ConnextDDS_CoreLibraries_UsersManual/Content/UsersManual/ChoosingDomainTag.htm) (only CycloneDDS) that drops messages from the same DOMAIN_ID if nodes don't have the same domain tag
-    > Is it possible for a node to be on multiple `tag` at the same time / switch when publishing ?
-
-
 - Custom communication outside of ROS2 (but how to simulate) :
     > MQTT, Lora, Zigbee, Zenoh, ad hoc multi-hop with babel protocol
-
-- Hubs ?? (see [this][1])
-
 
 
 ## 4. Comparing the communication methods
@@ -209,7 +200,7 @@ subscriber) will send packets to the network, thus not impacting the traffic.
 - **Computability :** No additional nodes are needed for the communication
 - **Ease of simulation :** Nothing special to configure, just make sure your namespaces match the simulator's.
 - **Ease of programming :** Just add the namespace to everything started by a launchfile (1 line)
-- **Ease of debugging :** Easy, just use the tools of ROS2 (`ros2 node list`, `ros2 topic list`, `rqt_graph`, `rviz`...)
+- **Ease of debugging :** Easy, just use the tools of ROS2 (`ros2 node list`, `ros2 topic list`, `rqt_graph`, `rviz` etc.)
 
 ### Different domain IDs
 
@@ -225,12 +216,12 @@ should communicate (publisher/subscriber) will send packets to the network, thus
 in a shared process for each bridge)
 - **Ease of simulation :** By default, Gazebo (or any other simulator) runs in a specific `ROS_DOMAIN_ID`. That way, you can't 
 have robots evolving in different domain IDs inside of Gazebo. You'll have to spawn them in the simulator's domain ID, and then
-create bridges for the default topics (`scan`, `odom`...) to the corresponding domain IDs.
+create bridges for the default topics (`scan`, `odom` etc.) to the corresponding domain IDs.
 - **Ease of programming :** Set the correct environment variable before starting the nodes in the launchfile (1 line) and start 
 the bridges in the launchfile (with a specific configuration file)
 - **Ease of debugging :** To see the nodes/topics running on a specific robot, you must first export the `ROS_DOMAIN_ID` 
 environment variable to the robot ID. Then you can use the ROS2 debug tools (`ros2 node list`, `ros2 topic list`, 
-`rqt_graph`, `rviz`...).
+`rqt_graph`, `rviz` etc.).
 
 > [!NOTE]
 > There is a limited number of possible `ROS_DOMAIN_ID` values (see [this](https://docs.ros.org/en/foxy/Concepts/About-Domain-ID.html#choosing-a-domain-id-long-version)).
@@ -271,9 +262,10 @@ restart the ROS2 Daemon (`ros2 daemon stop && ros2 daemon start`) for it to be a
 - **Reliability :** No losses in the communication
 - **Isolation :** Only what is specified in the bridge configuration file is shared to the corresponding partitions. You can 
 choose to send some topics only to the operator PC and some only to other robots.
-- **Network usage :** To check.
+- **Network usage :** The messages are still sent as multicast, they will just be dropped when DataReaders/DataWriters don't
+have any partition in common. That way the network traffic will be the same as with namespaces
 - **Computability :** No additional nodes are needed for the communication
-- **Ease of simulation :** To check. Bridges might be necessary, or at least a specific XML configuration before launching Gazebo.
+- **Ease of simulation :** You need to create a specific XML configuration file to tell which simulation topics should be published to which partitions for each robot to only be able to read its own topics.
 - **Ease of programming :** Create a specific configuration file (XML) and set it as an environment variable before starting the 
 nodes in the launchfile (1 line).
 - **Ease of debugging :** By default, your ROS2 CLI will be able to see the list of topics (`ros2 node list`) on the network.
@@ -281,7 +273,7 @@ However, it will not have access (`ros2 topic echo`) to any information publishe
 empty one (`""`). For it to work, you need to configure ROS2 to listen to these specific partitions. This can be done with an XML
 configuration file, specifying the partitions that you want to subscribe to 
 *(see [listener_config.xml](./communication_test/config/dds_partitions/listener_config.xml))*. If you want to subscribe to all
-partitions, you can make a configuration file subscribing to the `"*"` paritition 
+partitions, you can make a configuration file subscribing to the `"*"` partition 
 *(see [cli_config.xml](./communication_test/config/dds_partitions/debug/cli_config.xml))*, which corresponds to all partitions **except the default one**
 
 
@@ -408,7 +400,7 @@ The communication can be :
 - **on a common network :** all the robots are on the same network, and communicate through it
 - **ad-hoc :** each robot communicates informations to its neighbours (peer to peer)
 
-> The names of these architectures might be different in the litterature
+> The names of these architectures might be different in the literature
 
 > [!NOTE]
 > Any of the previous communication methods could be adapted to work with these architectures
@@ -416,7 +408,7 @@ The communication can be :
 ### Pros and cons
 
 A **centralized architecture** has the benefit of being pretty easy to design and implement in the code : each robot sends 
-informations (sensors...), and the **central computer** gathers them to send back instructions to the robots.
+informations (sensors etc.), and the **central computer** gathers them to send back instructions to the robots.
 However, if the central computer fails, all the communication is stopped and this causes the entire fleet to be down.
 
 On the contrary, a **distributed architecture** is much more **resilient** to failure : as **robots are all interconnected**, if 
@@ -493,7 +485,7 @@ have the equipment to be able to do such communication.
 > ❌ : Bad
 
 > [!NOTE]
-> All of these issues (bandwidth, network range...) are pretty hard to simulate
+> All of these issues (bandwidth, network range etc.) are pretty hard to simulate
 
 ## 6. Quality of service options
 
@@ -502,7 +494,7 @@ network traffic by not resending data that is not needed when it's lost.
 
 > [!NOTE]
 > All of the following options are DDS QoS options but can be configured inside ROS2. However, there are more policies, such
-> as `Partition`, `GroupData`... that are only accessible at the DDS level (by changing the default configuration file
+> as `Partition`, `GroupData` etc. that are only accessible at the DDS level (by changing the default configuration file
 > `FASTRTPS_DEFAULT_PROFILES_FILE`)
 
 > See [Documentation](https://community.rti.com/static/documentation/connext-dds/6.0.1/doc/manuals/connext_dds/getting_started/cpp11/intro_qos.html)
@@ -533,7 +525,7 @@ When setting the history policy to `KEEP_LAST`, it could overflow the device's m
 
 ### When to use them ?
 
-- **Streaming data** that does not need reliability at all *(ex: sensor data...)*
+- **Streaming data** that does not need reliability at all *(ex: sensor data etc.)*
 - **State data**, where DataReaders generally want to reliably receive the latest state and can accept missing some state updates when the state is changing rapidly
 - **Event and Alarm** data that needs guaranteed delivery of every sample
 
