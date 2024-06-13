@@ -19,6 +19,10 @@ def generate_launch_description():
         "nb_robots", default_value=TextSubstitution(text="3")
     )
 
+    rviz_config_launch_arg = DeclareLaunchArgument(
+        "rviz_config", default_value=os.path.join(get_package_share_directory('communication_test'), "config", "turtlesim.rviz")
+    )
+
     # Launch operator nodes only in the common network
     operator_nodes = GroupAction([
         # Operator node
@@ -37,13 +41,18 @@ def generate_launch_description():
                 os.path.join(
                     get_package_share_directory('communication_test'),
                     'launch/include/rviz_launch.py')),
-            ),
+                launch_arguments={
+                    "config": LaunchConfiguration('rviz_config')
+                }.items()
+        )
+
     ])
 
 
 
     return LaunchDescription([
         nb_robots_launch_arg,
+        rviz_config_launch_arg,
         
         # Run operator nodes (operator & rviz)
         operator_nodes
