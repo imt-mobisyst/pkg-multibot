@@ -2,22 +2,54 @@ import os, socket
 from ament_index_python import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, GroupAction
+from launch.actions import SetEnvironmentVariable
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node, PushRosNamespace
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, OpaqueFunction, SetLaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
 def generate_launch_description():
-
-    # CLI arguments
     log_level_launch_arg = DeclareLaunchArgument(
         'nav_log_level', default_value='info', description='log level'
     )
 
+    # CLI arguments
+    local_dds_server = "127.0.0.1:11811"
+    subnet_dds_server_launch_arg = DeclareLaunchArgument("subnet_dds_server")
+
+
     # Robot ID
     robot_id = int(socket.gethostname()[-2:])
     namespace = f"robot_{robot_id}"
+
+
+    # Create ROS_DISCOVERY_SERVER variables
+
+    def create_common_servers(context):
+        subnet_dds_server =  LaunchConfiguration('subnet_dds_server').perform(context)
+
+        # The ROS_DISCOVERY_SERVER variable must list the servers as a list with their ID as index
+        # When running on the same machine, we need to add multiple ";" to match the many IDs
+        controller_servers = subnet_dds_server + (";"*robot_id) + local_dds_server
+
+        return [SetLaunchConfiguration('common_servers', controller_servers)]
+
+    common_servers_arg = OpaqueFunction(function=create_common_servers)
+
+
+    def create_local_servers(context):
+        # The ROS_DISCOVERY_SERVER variable must list the servers as a list with their ID as index
+        # When running on the same machine, we need to add multiple ";" to match the many IDs
+        controller_servers = (";"*(robot_id + 1)) + local_dds_server
+
+        return [SetLaunchConfiguration('local_servers', controller_servers)]
+
+    local_servers_arg = OpaqueFunction(function=create_local_servers)
+
+
+
+    # START NODES
 
     # Start a controller node
     controller_node = GroupAction([
@@ -27,9 +59,7 @@ def generate_launch_description():
             executable='stage_controller.py',
             name='stage_controller',
             parameters=[
-                {
-                    'robot_id': robot_id,
-                }
+                {'robot_id': robot_id},
             ]
         )
     ])
@@ -72,10 +102,20 @@ def generate_launch_description():
 
     return LaunchDescription([
         log_level_launch_arg,
+        
+        subnet_dds_server_launch_arg,
 
-        controller_node,
+        common_servers_arg,
+        local_servers_arg,
 
-        localization,
+        GroupAction([
+            SetEnvironmentVariable('ROS_DISCOVERY_SERVER', LaunchConfiguration('common_servers')),
+            controller_node,
+        ]),
 
-        nav2
+        GroupAction([
+            SetEnvironmentVariable('ROS_DISCOVERY_SERVER', LaunchConfiguration('local_servers')),
+            localization,
+            nav2
+        ])
     ])
