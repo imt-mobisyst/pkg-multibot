@@ -42,7 +42,7 @@ def generate_launch_description():
     DDSserver = ExecuteProcess(
         cmd=[[
             FindExecutable(name='fastdds'),
-            ' discovery -i 1 -l ',
+            ' discovery -i 0 -l ',
             common_dds_ip,
             ' -p ',
             str(common_dds_port)
