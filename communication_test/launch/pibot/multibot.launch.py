@@ -27,6 +27,9 @@ def createConfigFile(originalPath, robotId):
     f.write(xmlstring)
     f.close()
 
+
+
+
 def tbot(context):
     type = LaunchConfiguration('type').perform(context)
 
@@ -43,6 +46,7 @@ def tbot(context):
         case "namespace":
             # Add namespace to base launchfile
             return [GroupAction([
+                SetEnvironmentVariable('ROS_DOMAIN_ID', LaunchConfiguration('domain_id')),
                 PushRosNamespace(f"robot_{robot_id}"),
                 base_launchfile
             ])]
@@ -59,6 +63,7 @@ def tbot(context):
 
 
         case "discovery":
+            SetEnvironmentVariable('ROS_DOMAIN_ID', LaunchConfiguration('domain_id')),
             # Start and set the correct discovery server to base launchfile
             return [GroupAction([
                 # Start DDS server
@@ -88,6 +93,7 @@ def tbot(context):
     
             # Add partition config to base launchfile
             return [GroupAction([
+                SetEnvironmentVariable('ROS_DOMAIN_ID', LaunchConfiguration('domain_id')),
                 SetEnvironmentVariable('RMW_FASTRTPS_USE_QOS_FROM_XML', "1"),
                 SetEnvironmentVariable('FASTRTPS_DEFAULT_PROFILES_FILE', target_path),
                 base_launchfile
@@ -104,8 +110,13 @@ def generate_launch_description():
         'type', description="Must be one of the following : 'namespace', 'domain_id', 'discovery' 'partitions'", default_value=''
     )
 
+    domain_id_launch_arg = DeclareLaunchArgument(
+        'domain_id', description="The domain ID to use if not in domain ID bridge mode", default_value="99"
+    )
+
     return LaunchDescription([
         multibot_type_launch_arg,
+        domain_id_launch_arg,
 
         # Rviz with specific config
         OpaqueFunction(function=tbot)
