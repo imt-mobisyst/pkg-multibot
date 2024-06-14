@@ -3,7 +3,7 @@ import os,re,socket
 from ament_index_python import get_package_share_directory
 
 from launch import LaunchDescription
-from launch_ros.actions import Node, PushRosNamespace
+from launch_ros.actions import Node, PushRosNamespace, SetRemap
 from launch.actions import IncludeLaunchDescription, GroupAction, SetEnvironmentVariable
 from launch.actions import DeclareLaunchArgument
 from launch.actions import OpaqueFunction
@@ -46,6 +46,8 @@ def tbot(context):
         case "namespace":
             # Add namespace to base launchfile
             return [GroupAction([
+                SetRemap(src='/tf',dst='tf'),
+                SetRemap(src='/tf_static',dst='tf_static'),
                 PushRosNamespace(f"robot_{robot_id}"),
                 base_launchfile
             ])]
