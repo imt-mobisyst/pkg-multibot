@@ -18,7 +18,9 @@ def rviz(context):
         namespace= LaunchConfiguration('namespace'),
         arguments=['-d' + path],
         remappings=[('/tf', 'tf'),
-                    ('/tf_static', 'tf_static')]
+                    ('/tf_static', 'tf_static'),
+                    ('/initialpose', 'initialpose'),
+                    ('/goal_pose', 'goal_pose'),]
     )]
 
 def generate_launch_description():
