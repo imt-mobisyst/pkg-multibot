@@ -53,7 +53,6 @@ def generate_launch_description():
 
     return LaunchDescription([
         nb_robots_launch_arg,
-        rviz_config_launch_arg,
         
         # Run operator nodes (operator & rviz)
         operator_nodes
