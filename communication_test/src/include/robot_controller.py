@@ -48,6 +48,9 @@ class RobotController(Node):
         self.queue = TaskQueue()
         self.robotMoving = False
 
+        # Visualization
+        self.markerScale = 1.0
+
     def paramInt(self, name):
         return self.get_parameter(name).get_parameter_value().integer_value
 
@@ -74,9 +77,9 @@ class RobotController(Node):
         marker.id = self.paramInt('robot_id')
 
         # Set the scale of the marker
-        marker.scale.x = 0.6
-        marker.scale.y = 0.2
-        marker.scale.z = 0.2
+        marker.scale.x = 0.6 * self.markerScale
+        marker.scale.y = 0.2 * self.markerScale
+        marker.scale.z = 0.2 * self.markerScale
 
         # Set the color
         marker.color.r = 0.0
