@@ -1,4 +1,4 @@
-import os
+import os, socket
 
 from ament_index_python import get_package_share_directory
 
@@ -10,6 +10,7 @@ from launch_ros.actions import Node
 from launch.substitutions import LaunchConfiguration
 from launch.substitutions import TextSubstitution
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.actions import IncludeLaunchDescription, OpaqueFunction, SetLaunchConfiguration
 
 
 def generate_launch_description():
@@ -18,6 +19,32 @@ def generate_launch_description():
     nb_robots_launch_arg = DeclareLaunchArgument(
         "nb_robots", default_value=TextSubstitution(text="3")
     )
+
+    robot_id_launch_arg = DeclareLaunchArgument(
+        'robot_id', default_value=None
+    )
+
+
+    # Robot ID
+    def getRobotId(context):
+        id = LaunchConfiguration('robot_id').perform(context)
+
+        if id is None:
+            id = int(socket.gethostname()[-2:]) # Default value = Last number of the kobuki RPI hostname
+
+
+        namespace = f"robot_{id}"
+
+        print(f'Using robot {id} on namespace "{namespace}"')
+
+        return [
+            SetLaunchConfiguration('id', id),
+            SetLaunchConfiguration('namespace', namespace)
+        ]
+    
+    robot_id = OpaqueFunction(function=getRobotId)
+
+
 
     # Launch operator nodes only in the common network
     operator_nodes = GroupAction([
@@ -37,13 +64,16 @@ def generate_launch_description():
             executable='package_dispenser.py'
         ),
 
+        
+
         # Rviz node with specific configuration
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
                 os.path.join(
                     get_package_share_directory('communication_test'), 'launch','include','rviz_launch.py')),
                 launch_arguments={
-                    "config": os.path.join(get_package_share_directory('communication_test'),'config','stage.rviz')
+                    "config": os.path.join(get_package_share_directory('communication_test'),'config','real.rviz'),
+                    "namespace": LaunchConfiguration('namespace')
                 }.items()
         )
 
@@ -53,6 +83,9 @@ def generate_launch_description():
 
     return LaunchDescription([
         nb_robots_launch_arg,
+        robot_id_launch_arg,
+
+        robot_id,
         
         # Run operator nodes (operator & rviz)
         operator_nodes

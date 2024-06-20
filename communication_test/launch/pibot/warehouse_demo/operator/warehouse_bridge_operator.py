@@ -49,7 +49,7 @@ def generate_launch_description():
                 os.path.join(
                     get_package_share_directory('communication_test'),'launch','include','rviz_launch.py')),
                 launch_arguments={
-                    "config": os.path.join(get_package_share_directory('communication_test'),'config','stage.rviz'),
+                    "config": os.path.join(get_package_share_directory('communication_test'),'config','real.rviz'),
                 }.items()
             ),
     ])
