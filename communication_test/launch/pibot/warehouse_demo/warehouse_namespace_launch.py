@@ -45,8 +45,8 @@ def generate_launch_description():
         PushRosNamespace(LaunchConfiguration('namespace')),
         Node(
             package='communication_test',
-            executable='stage_controller.py',
-            name='stage_controller',
+            executable='kobuki_warehouse_controller.py',
+            name='warehouse_controller',
             parameters=[
                 {
                     'robot_id': LaunchConfiguration('id'),

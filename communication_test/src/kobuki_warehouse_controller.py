@@ -4,27 +4,30 @@ import rclpy
 
 from include.warehouse_controller import WarehouseRobotController
 
-from geometry_msgs.msg import Pose
+from geometry_msgs.msg import Pose, PoseWithCovarianceStamped
 from nav_msgs.msg import Odometry
 
 from include.helpers import getYaw, createPoint
 
-class StageRobotController(WarehouseRobotController):
+class KobukiWarehouseController(WarehouseRobotController):
 
     def __init__(self):
-        super().__init__('stage_robot_controller')
+        super().__init__('kobuki_controller')
 
         # Init stage specific subscriptions
         # -> Position
-        self.create_subscription(Odometry, 'ground_truth', self.pose_callback, 10)
+        self.create_subscription(PoseWithCovarianceStamped, 'amcl_pose', self.pose_callback, 10)
 
         # Init variables
         self.pose = Pose()
 
+        # Visualization
+        self.markerScale = 0.7
+
 
     # Get position and rotation of the robot
 
-    def pose_callback(self, msg:Odometry):
+    def pose_callback(self, msg:PoseWithCovarianceStamped):
         newPose = msg.pose.pose
         # If not moved since last callback, do nothing
         if(self.pose is not None and newPose.position.x == self.pose.position.x and newPose.position.y == self.pose.position.y and getYaw(newPose.orientation) == getYaw(self.pose.orientation)):
@@ -41,9 +44,11 @@ class StageRobotController(WarehouseRobotController):
         return getYaw(self.pose.orientation)
 
 
+
+
 def main(args=None):
     rclpy.init(args=args)
-    node = StageRobotController()
+    node = KobukiWarehouseController()
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()

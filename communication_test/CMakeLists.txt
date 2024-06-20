@@ -42,6 +42,7 @@ install( PROGRAMS
   # Robot controllers
   src/turtlesim_controller.py
   src/stage_controller.py
+  src/kobuki_warehouse_controller.py
 
   # Turtlesim movement
   src/turtle_mvt.py
