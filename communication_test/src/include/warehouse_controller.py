@@ -5,11 +5,8 @@ import rclpy
 from include.robot_controller import RobotController
 
 from std_msgs.msg import Int8
-from geometry_msgs.msg import Pose
-from nav_msgs.msg import Odometry
 from visualization_msgs.msg import Marker, MarkerArray
 
-from include.helpers import getYaw, createPoint
 from include.package import Package, PackageState
 from include.tasks import StoreTask, RetrieveTask
 
@@ -136,6 +133,11 @@ class WarehouseRobotController(RobotController):
         marker_array._markers.append(marker)
 
         pub.publish(marker_array)
+
+    
+    
+    def paramBool(self, name):
+        return self.get_parameter(name).get_parameter_value().bool_value
 
 
 
