@@ -1,0 +1,5 @@
+bool publish
+geometry_msgs/Point position
+---
+float32 signal_quality
+float32 signal_dbm
