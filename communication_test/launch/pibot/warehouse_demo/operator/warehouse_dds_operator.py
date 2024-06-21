@@ -67,7 +67,10 @@ def generate_launch_description():
         # Package dispenser
         Node(
             package='communication_test',
-            executable='package_dispenser.py'
+            executable='package_dispenser.py',
+            parameters=[
+                {'is_simulation': False}
+            ]
         ),
 
         # Rviz node with specific configuration

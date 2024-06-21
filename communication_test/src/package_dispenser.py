@@ -19,6 +19,10 @@ class PackageDispenserNode(Node):
         self.declare_parameter('period', 1)
         self.declare_parameter('rate', 0.07) # 7% package spawn every second by default
 
+        # Set package positions
+        self.declare_parameter('is_simulation', True)
+        Package.setSimulation(self.paramBool('is_simulation'))
+
         # Init publishers
         self.markerPublisher = self.create_publisher(Marker, '/package_marker', 10)
         self.spawnedMarkerCleaner = self.create_publisher(MarkerArray, '/package_marker_array', 10)
@@ -44,6 +48,8 @@ class PackageDispenserNode(Node):
         return self.get_parameter(name).get_parameter_value().integer_value
     def paramDouble(self, name):
         return self.get_parameter(name).get_parameter_value().double_value
+    def paramBool(self, name):
+        return self.get_parameter(name).get_parameter_value().bool_value
     
 
 

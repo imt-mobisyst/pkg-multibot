@@ -5,14 +5,17 @@ import rclpy
 from include.warehouse_controller import WarehouseRobotController
 
 from geometry_msgs.msg import Pose, PoseWithCovarianceStamped
-from nav_msgs.msg import Odometry
 
 from include.helpers import getYaw, createPoint
+from include.package import Package
 
 class KobukiWarehouseController(WarehouseRobotController):
 
     def __init__(self):
         super().__init__('kobuki_controller')
+
+        # Set package positions
+        Package.setSimulation(False)
 
         # Init stage specific subscriptions
         # -> Position

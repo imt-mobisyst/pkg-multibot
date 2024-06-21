@@ -13,7 +13,7 @@ class PackageState(Enum):
 
 class Package():
 
-    # Static variables
+    # Static variables (simulation values)
     nbPackages = 0
 
     colors = {
@@ -35,7 +35,31 @@ class Package():
         "yellow": createPoint(-4.952, 1.816)
     }
     
-    retrievalSpot = createPoint(6.328, -1.784)
+    retrievalSpotPoint = createPoint(6.328, -1.784)
+
+    markerScale = 1.0
+
+
+    # Different positions when running on the real robot
+    def setSimulation(isSimulation):
+        if isSimulation:
+            return
+        
+        Package.spawnSpots = [
+            createPoint(-1,-1)
+        ]
+
+
+        Package.depositSpots = {
+            "red":    createPoint(-1,-1),
+            "green":  createPoint(-1,-1),
+            "blue":   createPoint(-1,-1),
+            "yellow": createPoint(-1,-1)
+        }
+        
+        Package.retrievalSpotPoint = createPoint(-1,-1)
+
+        Package.markerScale = 0.5
 
 
     # Functions
@@ -78,7 +102,7 @@ class Package():
     
     def retrievalSpot():
         """Get the position that the package should be retrieved at"""
-        return Package.randomizeSpot(Package.retrievalSpot)
+        return Package.randomizeSpot(Package.retrievalSpotPoint)
 
     
 
@@ -97,9 +121,9 @@ class Package():
         marker.ns = self.colorName
 
         # Set the scale of the marker
-        marker.scale.x = 0.3
-        marker.scale.y = 0.3
-        marker.scale.z = 0.3
+        marker.scale.x = 0.3 * Package.markerScale
+        marker.scale.y = 0.3 * Package.markerScale
+        marker.scale.z = 0.3 * Package.markerScale
 
         # Set the color
         color = self.color()
