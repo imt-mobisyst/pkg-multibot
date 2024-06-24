@@ -20,7 +20,7 @@ class WifiMeasureNode(Node):
         self.srv = self.create_service(WifiMeasure, 'wifi_measure', self.serviceHandler)
 
         # Create publisher
-        self.measurePublisher = self.create_publisher(Marker, 'wifi_measure', 10)
+        self.measurePublisher = self.create_publisher(Marker, 'wifi_measure_marker', 10)
 
         # Store values
         self.nbMeasures = 0

@@ -7,6 +7,7 @@ from include.kobuki_controller import KobukiController
 from geometry_msgs.msg import PoseStamped
 from std_msgs.msg import Int8
 from include.tasks import GoalPoseTask
+from communication_test_interfaces.srv import WifiMeasure
 
 class KobukiMeasureController(KobukiController):
 
@@ -16,6 +17,12 @@ class KobukiMeasureController(KobukiController):
         # Init turtlesim specific subscriptions
         # -> Goal poses
         self.create_subscription(PoseStamped, '/goal_pose', self.goalPose_callback, 10)
+
+        # Init measure
+        # -> Measure service client
+        self.client = self.create_client(WifiMeasure, 'wifi_measure')
+        # -> Init measure timer
+        self.create_timer(1.0, self.measureWifi)
 
 
 
@@ -38,6 +45,15 @@ class KobukiMeasureController(KobukiController):
         self.targetPos = None
 
 
+    def measureWifi(self):
+        print("MEASURE")
+        # Create request
+        request = WifiMeasure.Request()
+        request.position = self.getRobotPosition()
+        request.publish = True
+
+        # Send request
+        self.client.call_async(request)
 
 
 def main(args=None):
