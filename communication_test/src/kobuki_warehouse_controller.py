@@ -3,48 +3,17 @@ import rclpy
 
 
 from include.warehouse_controller import WarehouseRobotController
+from include.kobuki_controller import KobukiController
 
-from geometry_msgs.msg import Pose, PoseWithCovarianceStamped
-
-from include.helpers import getYaw, createPoint
 from include.package import Package
 
-class KobukiWarehouseController(WarehouseRobotController):
+class KobukiWarehouseController(KobukiController, WarehouseRobotController):
 
     def __init__(self):
-        super().__init__('kobuki_controller')
+        super().__init__('kobuki_warehouse_controller')
 
         # Set package positions
         Package.setSimulation(False)
-
-        # Init stage specific subscriptions
-        # -> Position
-        self.create_subscription(PoseWithCovarianceStamped, 'amcl_pose', self.pose_callback, 10)
-
-        # Init variables
-        self.pose = Pose()
-
-        # Visualization
-        self.markerScale = 0.7
-
-
-    # Get position and rotation of the robot
-
-    def pose_callback(self, msg:PoseWithCovarianceStamped):
-        newPose = msg.pose.pose
-        # If not moved since last callback, do nothing
-        if(self.pose is not None and newPose.position.x == self.pose.position.x and newPose.position.y == self.pose.position.y and getYaw(newPose.orientation) == getYaw(self.pose.orientation)):
-            return
-        
-        # If moved, update pose and marker
-        self.pose = newPose
-        self.publishPoseMarker()
-
-    def getRobotPosition(self):
-        return createPoint(self.pose.position.x, self.pose.position.y)
-
-    def getRobotAngle(self):
-        return getYaw(self.pose.orientation)
 
 
 
