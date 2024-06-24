@@ -60,7 +60,7 @@ def generate_launch_description():
     # Launch operator node only in the common network
     operator_node = Node(
         package='communication_test',
-        executable='stage_operator.py',
+        executable='warehouse_operator.py',
         name='operator',
         parameters=[
             {'nb_robots': 3}

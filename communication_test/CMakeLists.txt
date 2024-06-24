@@ -58,7 +58,7 @@ install( PROGRAMS
   # Operator nodes to control the fleet
   src/static_operator.py
   src/dynamic_operator.py
-  src/stage_operator.py
+  src/warehouse_operator.py
   src/parasit.py
 DESTINATION lib/${PROJECT_NAME})
 

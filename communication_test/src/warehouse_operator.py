@@ -7,13 +7,13 @@ from static_operator import Operator
 from visualization_msgs.msg import Marker
 from include.package import Package
 
-class StageOperator(Operator):
+class WarehouseOperator(Operator):
 
     def __init__(self):
         self.robotIPaddresses = {}
         
         # Init node with default operator behaviour
-        super().__init__('stage_operator')
+        super().__init__('warehouse_operator')
 
         # Init subscribers
         # -> Update stock
@@ -23,7 +23,7 @@ class StageOperator(Operator):
 
 
         # Init publisher
-        self.retrievePosePublisher = self.create_publisher(Marker, '/retrieve_marker', 10)
+        self.retrievePackagePublisher = self.create_publisher(Marker, '/retrieve_marker', 10)
     
 
         # Init empty stock
@@ -55,12 +55,12 @@ class StageOperator(Operator):
         package = self.stock[colorName].pop(0) # Get the first package (oldest)
 
         # Send message (Marker) to robots to request an auction bid
-        package.publishMarker(self.retrievePosePublisher, self)
+        package.publishMarker(self.retrievePackagePublisher, self)
 
 
 def main(args=None):
     rclpy.init(args=args)
-    node = StageOperator()
+    node = WarehouseOperator()
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
