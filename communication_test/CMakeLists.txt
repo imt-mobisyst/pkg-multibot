@@ -44,6 +44,9 @@ install( PROGRAMS
   src/stage_controller.py
   src/kobuki_warehouse_controller.py
 
+  # Real Robot
+  src/wifi_measure.py
+
   # Turtlesim movement
   src/turtle_mvt.py
 
