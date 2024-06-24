@@ -49,20 +49,21 @@ class WifiMeasureNode(Node):
 
 
     def takeMeasure(self):
-        # Get all wifi measures
-        proc = subprocess.Popen(["iwlist", self.interface(), "scan"],stdout=subprocess.PIPE, universal_newlines=True)
+        # Get wifi measure for the current network
+        proc = subprocess.Popen(["iwconfig", self.interface()],stdout=subprocess.PIPE, universal_newlines=True)
         out, err = proc.communicate()
+
 
         # Get the line that interests us
         lines = out.split("\n")
         line = None
         for l in lines:
-            if "Quality=" in l:
+            if "Link Quality=" in l:
                 line = l.strip()
                 break
 
 
-        # The line is in the form : "Quality=47/70  Signal level=-63 dBm"
+        # The line is in the form : "Link Quality=59/70  Signal level=-51 dBm"
         if line is not None:
             self.nbMeasures += 1
 
@@ -74,13 +75,10 @@ class WifiMeasureNode(Node):
             dBm = int(line.split('=')[2].split(" ")[0])
 
 
-            self.get_logger().debug(f"Quality : {quality}\t Strength : {dBm} dBm")
+            self.get_logger().debug(f"Quality : {quality:.3f}\t Strength : {dBm} dBm")
 
 
             return quality, dBm
-
-
-
 
 
     def publishMeasure(self, position:Point, quality:float):
