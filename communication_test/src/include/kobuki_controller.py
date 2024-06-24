@@ -5,8 +5,7 @@ import rclpy
 from include.robot_controller import RobotController
 from include.helpers import createPoint, getYaw
 
-from geometry_msgs.msg import PoseWithCovarianceStamped
-from turtlesim.msg import Pose
+from geometry_msgs.msg import PoseWithCovarianceStamped, Pose
 
 class KobukiController(RobotController):
 
@@ -15,7 +14,7 @@ class KobukiController(RobotController):
 
         # Init turtlesim specific subscriptions
         # -> Position
-        self.create_subscription(PoseWithCovarianceStamped, 'amcl_pose', self.pose_callback, 10)
+        self.create_subscription(PoseWithCovarianceStamped, 'amcl_pose', self.poseCallback, 10)
 
         # Init variables
         self.pose = Pose()
@@ -26,7 +25,7 @@ class KobukiController(RobotController):
 
     # Get position and rotation of the robot
 
-    def pose_callback(self, msg:PoseWithCovarianceStamped):
+    def poseCallback(self, msg:PoseWithCovarianceStamped):
         newPose = msg.pose.pose
         # If not moved since last callback, do nothing
         if(self.pose is not None and newPose.position.x == self.pose.position.x and newPose.position.y == self.pose.position.y and getYaw(newPose.orientation) == getYaw(self.pose.orientation)):
