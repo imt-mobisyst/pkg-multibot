@@ -30,15 +30,13 @@ def generate_launch_description():
         id = LaunchConfiguration('robot_id').perform(context)
 
         if id is None:
-            id = int(socket.gethostname()[-2:]) # Default value = Last number of the kobuki RPI hostname
+            namespace = ''
+        else:
+            namespace = f"robot_{id}"
+            print(f'Using robot {id} on namespace "{namespace}"')
 
-
-        namespace = f"robot_{id}"
-
-        print(f'Using robot {id} on namespace "{namespace}"')
 
         return [
-            SetLaunchConfiguration('id', id),
             SetLaunchConfiguration('namespace', namespace)
         ]
     
