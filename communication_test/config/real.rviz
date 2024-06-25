@@ -325,8 +325,6 @@ Visualization Manager:
           Value: false
         left_wheel:
           Value: false
-        map:
-          Value: false
         odom:
           Value: false
         right_wheel:
@@ -337,30 +335,7 @@ Visualization Manager:
       Show Axes: true
       Show Names: false
       Tree:
-        map:
-          odom:
-            base_footprint:
-              base_link:
-                camera_link:
-                  {}
-                caster_back_link:
-                  {}
-                caster_front_link:
-                  {}
-                cliff_sensor_front_link:
-                  {}
-                cliff_sensor_left_link:
-                  {}
-                cliff_sensor_right_link:
-                  {}
-                imu_link:
-                  {}
-                laser_link:
-                  {}
-                left_wheel:
-                  {}
-                right_wheel:
-                  {}
+        {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -447,7 +422,7 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Angle: 0
+      Angle: 1.169999122619629
       Class: rviz_default_plugins/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
@@ -457,11 +432,11 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 95.9233627319336
+      Scale: 79.75064849853516
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz_default_plugins)
-      X: 2.1284027099609375
-      Y: 2.199688673019409
+      X: -1.628954291343689
+      Y: -0.560215175151825
     Saved: ~
 Window Geometry:
   Displays:
