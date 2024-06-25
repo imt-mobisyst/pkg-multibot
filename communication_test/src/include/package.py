@@ -48,9 +48,9 @@ class Package():
         
         # Remove yellow color
         Package.colors = {
-            'red':    Package['red'],
-            'green':  Package['green'],
-            'blue':   Package['blue'],
+            'red':    Package.colors['red'],
+            'green':  Package.colors['green'],
+            'blue':   Package.colors['blue'],
         }
 
         # Set points in the real map coordinates
