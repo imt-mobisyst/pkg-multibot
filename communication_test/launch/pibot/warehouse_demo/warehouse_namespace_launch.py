@@ -3,7 +3,7 @@ from ament_index_python import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, GroupAction
 from launch.substitutions import LaunchConfiguration
-from launch_ros.actions import Node, PushRosNamespace
+from launch_ros.actions import Node, PushRosNamespace, SetRemap
 from launch.actions import IncludeLaunchDescription, OpaqueFunction, SetLaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
@@ -45,6 +45,8 @@ def generate_launch_description():
 
     # Start a controller node
     controller_node = GroupAction([
+        SetRemap(src='/tf',dst='tf'),
+        SetRemap(src='/tf_static',dst='tf_static'),
         PushRosNamespace(LaunchConfiguration('namespace')),
         Node(
             package='communication_test',
