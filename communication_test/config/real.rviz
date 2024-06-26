@@ -88,7 +88,7 @@ Visualization Manager:
       Enabled: true
       Name: Robots
       Namespaces:
-        {}
+        robot22: true
       Topic:
         Depth: 10
         Durability Policy: Volatile
@@ -301,32 +301,6 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: false
-        base_footprint:
-          Value: true
-        base_link:
-          Value: false
-        camera_link:
-          Value: false
-        caster_back_link:
-          Value: false
-        caster_front_link:
-          Value: false
-        cliff_sensor_front_link:
-          Value: false
-        cliff_sensor_left_link:
-          Value: false
-        cliff_sensor_right_link:
-          Value: false
-        imu_link:
-          Value: false
-        laser_link:
-          Value: false
-        left_wheel:
-          Value: false
-        odom:
-          Value: false
-        right_wheel:
-          Value: false
       Marker Scale: 1
       Name: TF
       Show Arrows: true
@@ -421,7 +395,7 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Angle: 1.0899994373321533
+      Angle: 1.1349985599517822
       Class: rviz_default_plugins/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
