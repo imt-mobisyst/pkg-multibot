@@ -1,8 +1,10 @@
-# Scripts d'évaluation
+# Evaluation scriots
 
-Ces scripts permettent de comparer le nombre de paquets envoyés sur le réseau lors du processus de "Discovery" en fonction de l'architecture choisie (Serveurs DDS, multi domain ID, namespaces).
+> These are based on the [following scripts](https://docs.ros.org/en/foxy/Tutorials/Advanced/Discovery-Server/Discovery-Server.html#compare-fast-dds-discovery-server-with-simple-discovery-protocol)
 
-Pour récupérer les données : 
+These scripts allow to compare the number of packets sent to the networ during the "Discovery protocol", depending on the chosen architecture (DDS Discovery servers, Domain ID bridge, namespaces, partitions).
+
+In order to get the data from the network, run the following commands : 
 
 ```bash
 export FASTRTPS_DEFAULT_PROFILES_FILE="no_intraprocess_configuration.xml"
@@ -11,7 +13,7 @@ sudo bash generate_discovery_packages.bash ~/ros2/install/local_setup.bash DOMAI
 sudo bash generate_discovery_packages.bash ~/ros2/install/local_setup.bash
 ```
 
-Pour comparer les données :
+To compare the data :
 ```bash
 python3 discovery_packets.py
 ```
