@@ -54,7 +54,7 @@ class KobukiController(RobotController):
             newPose.position
             newPose.position.x = newTF.translation.x
             newPose.position.y = newTF.translation.y
-            newPose.position.z = newTF.translation.z
+            newPose.position.z = 0.0
             newPose.orientation = newTF.rotation
 
             # Store new pose
@@ -80,7 +80,7 @@ class KobukiController(RobotController):
 
 
     def getRobotPosition(self):
-        return createPoint(self.pose.position.x, self.pose.position.y)
+        return self.pose.position
 
     def getRobotAngle(self):
         return getYaw(self.pose.orientation)
