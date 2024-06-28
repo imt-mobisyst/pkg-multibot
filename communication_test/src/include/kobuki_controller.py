@@ -4,7 +4,7 @@ import numpy as np
 
 
 from include.robot_controller import RobotController
-from include.helpers import createPoint, getYaw, euclideanDistance
+from include.helpers import getYaw, euclideanDistance
 
 from geometry_msgs.msg import Pose
 
@@ -57,12 +57,13 @@ class KobukiController(RobotController):
             newPose.position.z = 0.0
             newPose.orientation = newTF.rotation
 
-            # Store new pose
-            self.pose = newPose
 
             # If not moved since last callback, do nothing
             if(self.pose is not None and euclideanDistance(newPose.position, self.pose.position) < 0.05 and np.abs(getYaw(newPose.orientation) - getYaw(self.pose.orientation)) < 0.05):
                 return
+            
+            # Store new pose
+            self.pose = newPose
             
             # If moved significantly, update marker
             self.publishPoseMarker()
