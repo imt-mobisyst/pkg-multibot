@@ -248,6 +248,14 @@ def generate_launch_description():
         condition=IfCondition(use_composition),
         actions=[
             SetParameter('use_sim_time', use_sim_time),
+            Node(
+                name='nav2_container',
+                package='rclcpp_components',
+                executable='component_container_isolated',
+                parameters=[configured_params, {'autostart': autostart}],
+                remappings=remappings,
+                output='screen'
+            ),
             LoadComposableNodes(
                 target_container=container_name_full,
                 composable_node_descriptions=[
