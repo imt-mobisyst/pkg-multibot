@@ -57,7 +57,7 @@ def tbot(context):
         case "domain_id":
             # Set the correct domain ID to base launchfile
             return [GroupAction([
-                SetEnvironmentVariable('ROS_DOMAIN_ID', robot_id),
+                SetEnvironmentVariable('ROS_DOMAIN_ID', str(robot_id)),
                 base_launchfile
             ])]
         
