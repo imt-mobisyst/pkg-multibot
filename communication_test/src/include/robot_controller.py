@@ -34,11 +34,7 @@ class RobotController(Node):
 
         # Init publishers
         self.auctionBidPublisher = self.create_publisher(AuctionBid, '/auctionBid', 10)
-        self.markerPublisher = self.create_publisher(Marker, '/robot_marker', QoSProfile(
-            durability=DurabilityPolicy.TRANSIENT_LOCAL,
-            history=HistoryPolicy.KEEP_LAST,
-            depth=3)
-        )
+        self.markerPublisher = self.create_publisher(Marker, '/robot_marker', 10)
 
         # Init action client
         self.action_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
