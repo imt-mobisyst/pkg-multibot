@@ -10,11 +10,6 @@ topics:
   robot_marker:
     type: visualization_msgs/msg/Marker
     reversed: true
-    qos:
-      reliability: reliable
-      history: keep_last
-      durability: transient_local
-      depth: 10
 
   # Bridge "/map" to the operator domain ID (99)
   map:
