@@ -26,12 +26,12 @@ def generate_launch_description():
     # Automatic DDS server
     common_dds_ip = socket.gethostbyname(socket.gethostname())
     common_dds_port = 11811
-
-    print(f"-> Shared DDS Discovery server : {common_dds_ip}:{common_dds_port}")
     
-    def setDiscoveryServerEnv(context):
+    def setDiscoveryServerEnv(_):
 
         discoveryServer = f"{common_dds_ip}:{common_dds_port}"
+
+        print(f'-> Starting shared DDS Discovery server : "{discoveryServer}"')
 
         return [SetEnvironmentVariable(name='ROS_DISCOVERY_SERVER', value=discoveryServer)]
 

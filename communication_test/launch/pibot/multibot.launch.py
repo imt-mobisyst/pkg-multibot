@@ -64,6 +64,9 @@ def tbot(context):
 
 
         case "discovery":
+            # The ROS_DISCOVERY_SERVER variable must list the servers as a list with their ID as index
+            localDiscovery = (";"*robot_id) + (robot_ip + ":11811")
+
             # Start and set the correct discovery server to base launchfile
             return [GroupAction([
                 # Start DDS server
@@ -71,7 +74,7 @@ def tbot(context):
                     cmd=[[
                         FindExecutable(name='fastdds'),
                         ' discovery -i ',
-                        '1',
+                        str(robot_id),
                         ' -l ',
                         robot_ip,
                         ' -p ',
@@ -80,7 +83,7 @@ def tbot(context):
                     shell=True
                 ),
 
-                SetEnvironmentVariable('ROS_DISCOVERY_SERVER', robot_id),
+                SetEnvironmentVariable('ROS_DISCOVERY_SERVER', localDiscovery),
                 base_launchfile
             ])]
         

@@ -3,9 +3,7 @@ from ament_index_python import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, GroupAction
 from launch.actions import SetEnvironmentVariable
-from launch.actions import ExecuteProcess
 from launch.substitutions import LaunchConfiguration
-from launch.substitutions import FindExecutable
 from launch_ros.actions import Node, PushRosNamespace
 from launch.actions import IncludeLaunchDescription, OpaqueFunction, SetLaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -42,32 +40,9 @@ def generate_launch_description():
             SetLaunchConfiguration('id', id),
             SetLaunchConfiguration('namespace', namespace),
             SetLaunchConfiguration('robot_config', robot_config),
-
-            SetLaunchConfiguration('server_id', str(int(id)-21)) #1,2,3
         ]
     
     robot_id_setup = OpaqueFunction(function=setRobotId)
-
-    # Start FastDDS Discovery server
-    def createDDSserver(context):
-        server_id = LaunchConfiguration('server_id').perform(context)
-        robot_ip = LaunchConfiguration('robot_ip').perform(context)
-        robot_port = LaunchConfiguration('robot_port').perform(context)
-
-        return [ExecuteProcess(
-            cmd=[[
-                FindExecutable(name='fastdds'),
-                ' discovery -i ',
-                str(server_id),
-                ' -l ',
-                robot_ip,
-                ' -p ',
-                robot_port
-            ]],
-            shell=True
-        )]
-
-    DDSserver = OpaqueFunction(function=createDDSserver)
 
     # Create ROS_DISCOVERY_SERVER variables
 
@@ -75,13 +50,13 @@ def generate_launch_description():
         subnet_dds_server =  LaunchConfiguration('subnet_dds_server').perform(context)
         robot_ip = LaunchConfiguration('robot_ip').perform(context)
         robot_port = LaunchConfiguration('robot_port').perform(context)
-        server_id = int(LaunchConfiguration('server_id').perform(context))
+        robot_id = int(LaunchConfiguration('id').perform(context))
 
         robot_dds_server = robot_ip + ":" + robot_port
 
         # The ROS_DISCOVERY_SERVER variable must list the servers as a list with their ID as index
         # When running on the same machine, we need to add multiple ";" to match the many IDs
-        controller_servers = subnet_dds_server + (";"*server_id) + (robot_dds_server)
+        controller_servers = subnet_dds_server + (";"*robot_id) + (robot_dds_server)
 
         return [SetLaunchConfiguration('common_servers', controller_servers)]
 
@@ -91,13 +66,13 @@ def generate_launch_description():
     def create_local_servers(context):
         robot_ip = LaunchConfiguration('robot_ip').perform(context)
         robot_port = LaunchConfiguration('robot_port').perform(context)
-        server_id = int(LaunchConfiguration('server_id').perform(context))
+        robot_id = int(LaunchConfiguration('id').perform(context))
 
         robot_dds_server = robot_ip + ":" + robot_port
 
         # The ROS_DISCOVERY_SERVER variable must list the servers as a list with their ID as index
         # When running on the same machine, we need to add multiple ";" to match the many IDs
-        controller_servers = (";"*server_id) + robot_dds_server
+        controller_servers = (";"*robot_id) + robot_dds_server
 
         return [SetLaunchConfiguration('local_servers', controller_servers)]
 
