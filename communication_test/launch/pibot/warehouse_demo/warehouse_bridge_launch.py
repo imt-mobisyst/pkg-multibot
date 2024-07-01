@@ -86,7 +86,7 @@ def generate_launch_description():
     # ------------------------------ Domain bridge ------------------------------ #
 
     def createConfigFile(originalPath, robotId):
-        targetPath = originalPath.replace('stage_bridge_config', f'/build/stage_bridge_config_robot{robotId}_')
+        targetPath = originalPath.replace('stage_bridge_config', f'/build/stage_bridge_config_robot{robotId}')
         os.makedirs(os.path.dirname(targetPath), exist_ok=True) #Create folder if doesn't exist
 
         # Make substitutions to the original file text
