@@ -31,7 +31,7 @@ def generate_launch_description():
     
     def setDiscoveryServerEnv(context):
 
-        discoveryServer = ";" + common_dds_ip + ":" + common_dds_port
+        discoveryServer = f";{common_dds_ip}:{common_dds_port}"
 
         return [SetEnvironmentVariable(name='ROS_DISCOVERY_SERVER', value=discoveryServer)]
 
