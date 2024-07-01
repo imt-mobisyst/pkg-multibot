@@ -25,7 +25,7 @@ def generate_launch_description():
 
     # Launch operator nodes only in the operator domain ID (1)
     operator_nodes = GroupAction([
-        SetEnvironmentVariable(name='ROS_DOMAIN_ID', value=LaunchConfiguration("operator_domain_od")),
+        SetEnvironmentVariable(name='ROS_DOMAIN_ID', value=LaunchConfiguration("operator_domain_id")),
 
         # Operator node
         Node(

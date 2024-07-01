@@ -16,7 +16,7 @@ def generate_launch_description():
     )
 
     robot_id_launch_arg = DeclareLaunchArgument(
-        'robot_id', default_value=None
+        'robot_id', default_value=''
     )
 
 
@@ -24,7 +24,7 @@ def generate_launch_description():
     def setRobotId(context):
         id = LaunchConfiguration('robot_id').perform(context)
 
-        if id is None:
+        if id == '':
             id = int(socket.gethostname()[-2:]) # Default value = Last number of the kobuki RPI hostname
 
 

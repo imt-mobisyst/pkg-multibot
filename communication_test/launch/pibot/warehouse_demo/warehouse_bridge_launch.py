@@ -5,7 +5,7 @@ from launch.actions import DeclareLaunchArgument, GroupAction, SetEnvironmentVar
 from launch.substitutions import LaunchConfiguration
 from launch.substitutions import TextSubstitution
 from launch_ros.actions import Node
-from launch.actions import IncludeLaunchDescription, OpaqueFunction
+from launch.actions import IncludeLaunchDescription, OpaqueFunction, SetLaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
@@ -19,9 +19,28 @@ def generate_launch_description():
         "operator_domain_id", default_value=TextSubstitution(text="99")
     )
 
+    robot_id_launch_arg = DeclareLaunchArgument(
+        'robot_id', default_value=''
+    )
+
     # Robot ID
-    robot_id = int(socket.gethostname()[-2:])
-    bot_domain_id = robot_id
+    def setRobotId(context):
+        id = LaunchConfiguration('robot_id').perform(context)
+
+        if id == '':
+            id = int(socket.gethostname()[-2:]) # Default value = Last number of the kobuki RPI hostname
+
+        
+        print(f'Using robot {id} on domain ID "{id}"')
+
+        robot_config = os.path.join(get_package_share_directory('communication_test'), 'config', 'nav2', f'nav2_localization_kobuki_{id}.yaml')
+
+        return [
+            SetLaunchConfiguration('id', id),
+            SetLaunchConfiguration('robot_config', robot_config)
+        ]
+    
+    robot_id_setup = OpaqueFunction(function=setRobotId)
 
     # Start a controller node
     controller_node = Node(
@@ -30,7 +49,7 @@ def generate_launch_description():
         name='warehouse_controller',
         parameters=[
             {
-                'robot_id': robot_id
+                'robot_id': LaunchConfiguration('id')
             }
         ]
     )
@@ -43,7 +62,7 @@ def generate_launch_description():
                         'launch/localization_launch.py')),
         launch_arguments={
             'map': os.path.join(get_package_share_directory('communication_test'), 'map', 'map.yaml'),
-            'params_file': os.path.join(get_package_share_directory('communication_test'), 'config', 'nav2', 'nav2_params_kobuki.yaml'),
+            'params_file': LaunchConfiguration('robot_config'),
             'autostart': 'True',
             'log_level': LaunchConfiguration('nav_log_level')
         }.items()
@@ -88,6 +107,7 @@ def generate_launch_description():
 
 
     def createOperatorBridge(context):
+        robot_id = LaunchConfiguration('id').perform(context)
         configFilePath = createConfigFile(os.path.join(get_package_share_directory('communication_test'), 'config','domain_bridge','stage_bridge_config_operator.yaml'), robot_id)
 
         return [IncludeLaunchDescription(
@@ -97,7 +117,7 @@ def generate_launch_description():
                 'launch/include/domain_bridge.launch.py')),
         launch_arguments={
             'config':  configFilePath,
-            'to_domain': bot_domain_id,
+            'to_domain': robot_id,
             'from_domain': LaunchConfiguration('operator_domain_id'),
             # 'wait_for_subscription': 'false',
             # 'wait_for_publisher': 'false',
@@ -113,11 +133,14 @@ def generate_launch_description():
     return LaunchDescription([
         log_level_launch_arg,
         operator_domain_id_launch_arg,
+        robot_id_launch_arg,
+
+        robot_id_setup,
 
         operator_bridge_launch,
 
         GroupAction([
-            SetEnvironmentVariable(name='ROS_DOMAIN_ID', value=bot_domain_id),
+            SetEnvironmentVariable(name='ROS_DOMAIN_ID', value=LaunchConfiguration('id')),
             controller_node,
 
             localization,
