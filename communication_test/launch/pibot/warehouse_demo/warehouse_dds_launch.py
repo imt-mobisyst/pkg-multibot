@@ -21,7 +21,7 @@ def generate_launch_description():
     # CLI arguments
     subnet_dds_server_launch_arg = DeclareLaunchArgument("subnet_dds_server")
     robot_ip_launch_arg = DeclareLaunchArgument('robot_ip', default_value=this_ip)
-    robot_port_launch_arg = DeclareLaunchArgument('robot_port', '11811')
+    robot_port_launch_arg = DeclareLaunchArgument('robot_port', default_value='11811')
 
     # Robot ID
 
@@ -43,7 +43,7 @@ def generate_launch_description():
             SetLaunchConfiguration('namespace', namespace),
             SetLaunchConfiguration('robot_config', robot_config),
 
-            SetLaunchConfiguration('server_id', id-21) #1,2,3
+            SetLaunchConfiguration('server_id', str(int(id)-21)) #1,2,3
         ]
     
     robot_id_setup = OpaqueFunction(function=setRobotId)
@@ -53,7 +53,7 @@ def generate_launch_description():
         cmd=[[
             FindExecutable(name='fastdds'),
             ' discovery -i ',
-            LaunchConfiguration('server_id'),
+            str(LaunchConfiguration('server_id')),
             ' -l ',
             LaunchConfiguration('robot_ip'),
             ' -p ',
@@ -85,7 +85,7 @@ def generate_launch_description():
     def create_local_servers(context):
         robot_ip = LaunchConfiguration('robot_ip').perform(context)
         robot_port = LaunchConfiguration('robot_port').perform(context)
-        server_id = int(LaunchConfiguration('id').perform(context))
+        server_id = int(LaunchConfiguration('server_id').perform(context))
 
         robot_dds_server = robot_ip + ":" + robot_port
 
