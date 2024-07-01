@@ -49,19 +49,25 @@ def generate_launch_description():
     robot_id_setup = OpaqueFunction(function=setRobotId)
 
     # Start FastDDS Discovery server
-    DDSserver = ExecuteProcess(
-        cmd=[[
-            FindExecutable(name='fastdds'),
-            ' discovery -i ',
-            str(LaunchConfiguration('server_id')),
-            ' -l ',
-            LaunchConfiguration('robot_ip'),
-            ' -p ',
-            LaunchConfiguration('robot_port')
-        ]],
-        shell=True
-    )
+    def createDDSserver(context):
+        server_id = LaunchConfiguration('server_id').perform(context)
+        robot_ip = LaunchConfiguration('robot_ip').perform(context)
+        robot_port = LaunchConfiguration('robot_port').perform(context)
 
+        return [ExecuteProcess(
+            cmd=[[
+                FindExecutable(name='fastdds'),
+                ' discovery -i ',
+                str(server_id),
+                ' -l ',
+                robot_ip,
+                ' -p ',
+                robot_port
+            ]],
+            shell=True
+        )]
+
+    DDSserver = OpaqueFunction(function=createDDSserver)
 
     # Create ROS_DISCOVERY_SERVER variables
 
