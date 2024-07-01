@@ -31,14 +31,14 @@ def generate_launch_description():
     
     def setDiscoveryServerEnv(context):
 
-        discoveryServer = f";{common_dds_ip}:{common_dds_port}"
+        discoveryServer = f"{common_dds_ip}:{common_dds_port}"
 
         return [SetEnvironmentVariable(name='ROS_DISCOVERY_SERVER', value=discoveryServer)]
 
 
 
 
-    # Start FastDDS servers
+    # Start FastDDS Discovery server
     DDSserver = ExecuteProcess(
         cmd=[[
             FindExecutable(name='fastdds'),
