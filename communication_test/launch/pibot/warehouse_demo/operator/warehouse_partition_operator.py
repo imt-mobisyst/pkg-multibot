@@ -1,4 +1,4 @@
-import os, socket
+import os
 
 from ament_index_python import get_package_share_directory
 
@@ -7,10 +7,7 @@ from launch.actions import GroupAction
 from launch.actions import DeclareLaunchArgument
 from launch.actions import IncludeLaunchDescription
 from launch.actions import SetEnvironmentVariable
-from launch.actions import ExecuteProcess
-from launch.actions import OpaqueFunction
 from launch.substitutions import LaunchConfiguration
-from launch.substitutions import FindExecutable
 from launch.substitutions import TextSubstitution
 from launch_ros.actions import Node
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -23,36 +20,11 @@ def generate_launch_description():
         "nb_robots", default_value=TextSubstitution(text="3")
     )
 
-    # Automatic DDS server
-    common_dds_ip = socket.gethostbyname(socket.gethostname())
-    common_dds_port = 11811
 
-    print(f"-> Shared DDS Discovery server : {common_dds_ip}:{common_dds_port}")
-    
-    def setDiscoveryServerEnv(context):
-
-        discoveryServer = ";" + common_dds_ip + ":" + common_dds_port
-
-        return [SetEnvironmentVariable(name='ROS_DISCOVERY_SERVER', value=discoveryServer)]
-
-
-
-
-    # Start FastDDS servers
-    DDSserver = ExecuteProcess(
-        cmd=[[
-            FindExecutable(name='fastdds'),
-            ' discovery -i 0 -l ',
-            common_dds_ip,
-            ' -p ',
-            str(common_dds_port)
-        ]],
-        shell=True
-    )
-
-    # Launch operator nodes only in the common network
+    # Launch operator nodes only listening and publishing to the "shared" partition
     operator_nodes = GroupAction([
-        OpaqueFunction(function=setDiscoveryServerEnv),
+        SetEnvironmentVariable(name='FASTRTPS_DEFAULT_PROFILES_FILE',
+                               value=os.path.join(get_package_share_directory('communication_test'),'config','dds_partitions','operator_config.xml')),
 
         # Operator node
         Node(
@@ -89,9 +61,6 @@ def generate_launch_description():
     return LaunchDescription([
         nb_robots_launch_arg,
 
-        # Start common DDS server
-        DDSserver,
-        
         # Run operator nodes (operator, package dispenser & rviz)
         operator_nodes
     ])

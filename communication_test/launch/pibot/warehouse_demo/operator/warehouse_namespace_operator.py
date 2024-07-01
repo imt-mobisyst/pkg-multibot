@@ -1,4 +1,4 @@
-import os, socket
+import os
 
 from ament_index_python import get_package_share_directory
 
@@ -88,6 +88,6 @@ def generate_launch_description():
 
         robot_id,
         
-        # Run operator nodes (operator & rviz)
+        # Run operator nodes (operator, package dispenser & rviz)
         operator_nodes
     ])
