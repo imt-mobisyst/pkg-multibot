@@ -20,8 +20,7 @@ def generate_launch_description():
     subnet_dds_server_launch_arg = DeclareLaunchArgument("subnet_dds_server")
     robot_ip_launch_arg = DeclareLaunchArgument('robot_ip', default_value=this_ip)
     robot_port_launch_arg = DeclareLaunchArgument('robot_port', default_value='11811')
-
-    # Robot ID
+    
 
     # Robot ID
     def setRobotId(context):
@@ -141,8 +140,6 @@ def generate_launch_description():
 
         common_servers_arg,
         local_servers_arg,
-
-        DDSserver,
 
 
         GroupAction([
