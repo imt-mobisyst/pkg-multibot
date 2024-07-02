@@ -1,4 +1,5 @@
-import os, socket
+import os
+from subprocess import check_output
 
 from ament_index_python import get_package_share_directory
 
@@ -24,7 +25,7 @@ def generate_launch_description():
     )
 
     # Automatic DDS server
-    common_dds_ip = socket.gethostbyname(socket.gethostname())
+    common_dds_ip = check_output(['hostname', '-I'])
     common_dds_port = 11811
     
     def setDiscoveryServerEnv(_):
