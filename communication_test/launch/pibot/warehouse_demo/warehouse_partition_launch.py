@@ -31,12 +31,30 @@ def generate_launch_description():
 
 
     # Robot ID
-    robot_id = int(socket.gethostname()[-2:])
-    namespace = f"robot_{robot_id}"
+    def setRobotId(context):
+        id = LaunchConfiguration('robot_id').perform(context)
+
+        if id == '':
+            id = int(socket.gethostname()[-2:]) # Default value = Last number of the kobuki RPI hostname
+
+        
+        print(f'Using robot {id} on domain ID "{id}"')
+
+        robot_config = os.path.join(get_package_share_directory('communication_test'), 'config', 'nav2', f'nav2_localization_kobuki_{id}.yaml')
+
+        return [
+            SetLaunchConfiguration('id', id),
+            SetLaunchConfiguration('namespace', f"robot_{id}"),
+            SetLaunchConfiguration('robot_config', robot_config)
+        ]
+    
+    robot_id_setup = OpaqueFunction(function=setRobotId)
 
 
 
     def local_config_path(context):
+        robot_id = LaunchConfiguration('id').perform(context)
+
         # Get configuration file
         config_file_path = os.path.join(get_package_share_directory('communication_test'), 'config', 'dds_partitions','robot_local_debug_config.xml')
         target_path = createConfigFile(config_file_path, robot_id)
@@ -46,6 +64,8 @@ def generate_launch_description():
     local_config_path_arg = OpaqueFunction(function=local_config_path)
 
     def shared_config_path(context):
+        robot_id = LaunchConfiguration('id').perform(context)
+
         # Get configuration file
         config_file_path = os.path.join(get_package_share_directory('communication_test'), 'config', 'dds_partitions','robot_shared_config.xml')
         target_path = createConfigFile(config_file_path, robot_id)
@@ -61,14 +81,14 @@ def generate_launch_description():
     controller_node = GroupAction([
         SetEnvironmentVariable(name='RMW_FASTRTPS_USE_QOS_FROM_XML', value="1"),
         SetEnvironmentVariable(name='FASTRTPS_DEFAULT_PROFILES_FILE', value=LaunchConfiguration('shared_config_path')),
-        PushRosNamespace(namespace),
+        PushRosNamespace(LaunchConfiguration('namespace')),
         Node(
             package='communication_test',
             executable='kobuki_warehouse_controller.py',
             name='warehouse_controller',
             parameters=[
                 {
-                    'robot_id': robot_id,
+                    'robot_id': LaunchConfiguration('id'),
                 }
             ]
         )
@@ -76,14 +96,14 @@ def generate_launch_description():
 
 
     localization = GroupAction([
-        PushRosNamespace(namespace),
+        PushRosNamespace(LaunchConfiguration('namespace')),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
                         os.path.join(
                             get_package_share_directory('nav2_bringup'),
                             'launch/localization_launch.py')),
             launch_arguments={
-                "namespace": namespace,
+                "namespace": LaunchConfiguration('namespace'),
                 'map': os.path.join(get_package_share_directory('communication_test'), 'map', 'map.yaml'),
                 'params_file': os.path.join(get_package_share_directory('communication_test'), 'config', 'nav2', 'nav2_params_kobuki.yaml'),
                 'autostart': 'True',
@@ -100,7 +120,7 @@ def generate_launch_description():
                 get_package_share_directory('communication_test'),
                 'launch/nav/navigation_launch.py')),
         launch_arguments={
-            "namespace": namespace,
+            "namespace": LaunchConfiguration('namespace'),
             "params_file": os.path.join(get_package_share_directory('communication_test'), 'config', 'nav2', 'nav2_params_kobuki.yaml'),
             'log_level': LaunchConfiguration('nav_log_level')
         }.items()
@@ -110,6 +130,8 @@ def generate_launch_description():
 
     return LaunchDescription([
         log_level_launch_arg,
+
+        robot_id_setup,
 
         local_config_path_arg,
         shared_config_path_arg,
