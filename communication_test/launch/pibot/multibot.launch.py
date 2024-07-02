@@ -36,7 +36,7 @@ def tbot(context):
 
     # Get robot informations
     robot_id = int(socket.gethostname()[-2:])
-    robot_ip = check_output(['hostname', '-I'])
+    robot_ip = check_output(['hostname', '-I']).decode().split()[0]
 
 
     base_launchfile = IncludeLaunchDescription(
