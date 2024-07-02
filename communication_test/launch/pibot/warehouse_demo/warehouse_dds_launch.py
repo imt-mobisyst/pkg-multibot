@@ -1,4 +1,5 @@
 import os, socket
+from subprocess import check_output
 from ament_index_python import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, GroupAction
@@ -14,7 +15,7 @@ def generate_launch_description():
         'nav_log_level', default_value='info', description='log level'
     )
 
-    this_ip = socket.gethostbyname(socket.gethostname())
+    this_ip = check_output(['hostname', '-I'])
 
     # CLI arguments
     subnet_dds_server_launch_arg = DeclareLaunchArgument("subnet_dds_server")
