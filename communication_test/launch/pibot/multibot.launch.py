@@ -86,6 +86,12 @@ def tbot(context):
                     shell=True
                 ),
 
+                # Add namespace
+                SetRemap(src='/tf',dst='tf'),
+                SetRemap(src='/tf_static',dst='tf_static'),
+                PushRosNamespace(f"robot_{robot_id}"),
+
+                # Connect to the local discovery server
                 SetEnvironmentVariable('ROS_DISCOVERY_SERVER', localDiscovery),
                 base_launchfile
             ])]
