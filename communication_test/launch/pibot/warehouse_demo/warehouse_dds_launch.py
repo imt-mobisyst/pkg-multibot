@@ -15,7 +15,7 @@ def generate_launch_description():
         'nav_log_level', default_value='info', description='log level'
     )
 
-    this_ip = check_output(['hostname', '-I'])
+    this_ip = check_output(['hostname', '-I']).decode().split()[0]
 
     # CLI arguments
     subnet_dds_server_launch_arg = DeclareLaunchArgument("subnet_dds_server")

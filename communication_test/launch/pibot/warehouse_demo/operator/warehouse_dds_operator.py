@@ -25,7 +25,7 @@ def generate_launch_description():
     )
 
     # Automatic DDS server
-    common_dds_ip = check_output(['hostname', '-I'])
+    common_dds_ip = check_output(['hostname', '-I']).decode().split()[0]
     common_dds_port = 11811
     
     def setDiscoveryServerEnv(_):
