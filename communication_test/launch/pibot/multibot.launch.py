@@ -1,4 +1,5 @@
 import os,re,socket
+from subprocess import check_output
 
 from ament_index_python import get_package_share_directory
 
@@ -35,7 +36,7 @@ def tbot(context):
 
     # Get robot informations
     robot_id = int(socket.gethostname()[-2:])
-    robot_ip = socket.gethostbyname(socket.gethostname())
+    robot_ip = check_output(['hostname', '-I'])
 
 
     base_launchfile = IncludeLaunchDescription(
