@@ -28,6 +28,8 @@ def createConfigFile(originalPath, robotId):
     f.write(xmlstring)
     f.close()
 
+    return targetPath
+
 
 
 
