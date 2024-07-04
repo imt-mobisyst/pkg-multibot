@@ -17,6 +17,7 @@ class ListenerNode(Node):
     
 
         self.totalNbMessages = 0
+        self.nbBadId = 0
     
     
 
@@ -27,6 +28,14 @@ class ListenerNode(Node):
 
         if self.totalNbMessages == 0:
             self.initTime = self.get_clock().now()
+
+        if msg.data == 'END':
+            self.get_logger().info(f"-> Successfully received {self.totalNbMessages} messages")
+            self.get_logger().info(f"-> {self.nbBadId} messages were received in the wrong order")
+
+            # Kill node
+            self.destroy_node()
+            exit()
 
 
 
@@ -39,7 +48,9 @@ class ListenerNode(Node):
         self.totalNbMessages += 1
         self.get_logger().info(f"Received message n°{self.totalNbMessages} ({msg.data}) at time {duration}")
             
-            
+        msgId = int(msg.data.split()[2])
+        if msgId != self.totalNbMessages:
+            self.nbBadId += 1
 
 
 

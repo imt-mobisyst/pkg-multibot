@@ -41,6 +41,13 @@ class TalkerNode(Node):
         
         if duration > self.paramDouble('duration'):
             self.get_logger().info(f"-> Successfully sent {self.totalNbMessages} messages")
+
+            # Tell listener that it's the end
+            str = String()
+            str.data = f"END"
+            self.publisher.publish(str)
+
+            # Kill node
             self.destroy_node()
             exit()
             
