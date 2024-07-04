@@ -20,7 +20,7 @@ class ListenerNode(Node):
     
     
 
-    def receiveMessage(self, msg):
+    def receiveMessage(self, msg:String):
         """
         Receive a message to another computer
         """
@@ -37,7 +37,7 @@ class ListenerNode(Node):
         
         # Save data
         self.totalNbMessages += 1
-        self.get_logger().info(f"Received message n°{self.totalNbMessages} at time {duration}")
+        self.get_logger().info(f"Received message n°{self.totalNbMessages} ({msg.data}) at time {duration}")
             
             
 

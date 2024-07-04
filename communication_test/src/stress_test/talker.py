@@ -47,7 +47,7 @@ class TalkerNode(Node):
 
         # Send message
         str = String()
-        str.data = "Hello world"
+        str.data = f"Hello world {self.totalNbMessages+1}"
 
         self.publisher.publish(str)
 
