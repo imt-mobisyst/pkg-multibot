@@ -15,6 +15,9 @@ class TalkerNode(Node):
         self.declare_parameter('duration', 10.0)
         self.declare_parameter('frequency', 100.0)
 
+        # Log
+        self.get_logger().info(f"Starting to publish at {self.paramDouble('frequency')}Hz for {self.paramDouble('duration')}s\n")
+
         # Init publishers
         self.publisher = self.create_publisher(String, '/test', 10)
         
@@ -44,7 +47,7 @@ class TalkerNode(Node):
 
             # Tell listener that it's the end
             str = String()
-            str.data = f"END"
+            str.data = f"END {self.totalNbMessages}"
             self.publisher.publish(str)
 
             # Kill node
