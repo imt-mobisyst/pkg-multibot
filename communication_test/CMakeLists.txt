@@ -61,6 +61,11 @@ install( PROGRAMS
   src/dynamic_operator.py
   src/warehouse_operator.py
   src/parasit.py
+
+  # Network stress test
+  src/stress_test/talker.py
+  src/stress_test/listener.py
+
 DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
