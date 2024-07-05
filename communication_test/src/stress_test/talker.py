@@ -2,6 +2,8 @@
 import rclpy
 from rclpy.node import Node
 
+from time import sleep
+
 import rclpy.time
 from std_msgs.msg import String
 
@@ -14,12 +16,13 @@ class TalkerNode(Node):
         # Declare ROS parameters
         self.declare_parameter('duration', 10.0)
         self.declare_parameter('frequency', 100.0)
+        self.declare_parameter('namespace', '')
 
         # Log
         self.get_logger().info(f"Starting to publish at {self.paramDouble('frequency')}Hz for {self.paramDouble('duration')}s\n")
 
         # Init publishers
-        self.publisher = self.create_publisher(String, '/test', 10)
+        self.publisher = self.create_publisher(String, f'{self.paramString('namespace')}/test', 10)
         
         # Init loop
         self.create_timer(1.0 / self.paramDouble('frequency'), self.sendMessage)
@@ -30,6 +33,8 @@ class TalkerNode(Node):
     
     def paramDouble(self, name):
         return self.get_parameter(name).get_parameter_value().double_value
+    def paramString(self, name):
+        return self.get_parameter(name).get_parameter_value().string_value
     
 
     def sendMessage(self):
@@ -51,6 +56,7 @@ class TalkerNode(Node):
             self.publisher.publish(str)
 
             # Kill node
+            sleep(1)
             self.destroy_node()
             exit()
             

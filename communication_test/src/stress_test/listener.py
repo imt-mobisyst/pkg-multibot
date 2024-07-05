@@ -10,14 +10,20 @@ class ListenerNode(Node):
     def __init__(self):
         super().__init__('listener')
 
+        # Declare ROS parameters
+        self.declare_parameter('namespace', '')
+
         # Init subscribers
-        self.publisher = self.create_subscription(String, '/test', self.receiveMessage, 10)
+        self.publisher = self.create_subscription(String, f"{self.paramString('namespace')}/test", self.receiveMessage, 10)
 
         self.get_logger().info('Listening...')
     
 
         self.totalNbMessages = 0
         self.nbBadId = 0
+        
+    def paramString(self, name):
+        return self.get_parameter(name).get_parameter_value().string_value
     
     
 
