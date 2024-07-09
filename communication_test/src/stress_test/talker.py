@@ -22,7 +22,7 @@ class TalkerNode(Node):
         self.get_logger().info(f"Starting to publish at {self.paramDouble('frequency')}Hz for {self.paramDouble('duration')}s\n")
 
         # Init publishers
-        self.publisher = self.create_publisher(String, f'{self.paramString('namespace')}/test', 10)
+        self.publisher = self.create_publisher(String, f"{self.paramString('namespace')}/test", 10)
         
         # Init loop
         self.create_timer(1.0 / self.paramDouble('frequency'), self.sendMessage)
