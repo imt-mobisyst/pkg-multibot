@@ -44,8 +44,8 @@ def tbot(context):
     base_launchfile = IncludeLaunchDescription(
         AnyLaunchDescriptionSource(os.path.join(get_package_share_directory('tbot_node'), 'launch', 'minimal_launch.yaml')),
         launch_arguments={
-            "a_min": -1.65,
-            "a_max":  1.65
+            "a_min": "-1.65",
+            "a_max":  "1.65"
         }.items()
     )
 
