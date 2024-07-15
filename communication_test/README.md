@@ -439,3 +439,40 @@ ros2 launch communication_test stage_partition_launch.py
 To start spawning packages, use the `Publish Point` button in rviz (it will toggle the package spawning).  
 To retrieve a package with a specific color, run `ros2 topic pub /retrieve std_msgs/msg/String "{data: 'green'}" --once`
 *(other colors: `yellow`, `blue`, `red`)*.
+
+
+## 5. Robot isolation with domain ID and Zenoh
+
+### a. Simple test with a talker and a listener
+
+First we will start the 2 Zenoh bridges, in 2 different terminals :
+```bash
+ROS_DOMAIN_ID=1 zenoh-bridge-ros2dds -c /path/to/bridge_config_talker.json5
+ROS_DOMAIN_ID=2 zenoh-bridge-ros2dds -c /path/to/bridge_config_listener.json5
+```
+
+Then we will launch the talker and listener nodes, and prevent the DDS communication between nodes by
+starting them in different domain IDs
+
+```bash
+ROS_DOMAIN_ID=1 ros2 run demo_nodes_cpp talker
+ROS_DOMAIN_ID=2 ros2 run demo_nodes_cpp listener
+```
+
+### b. Test with the stage simulator
+
+Each "robot" will have its own Zenoh bridge as well as its own namespace (`robotX`). Topics that need to be shared across robots will be specified in the Zenoh bridge `allow` configuration.
+
+To launch rviz, run the following commands :
+```bash
+ROS_DOMAIN_ID=99 ros2 launch communication_test rviz_launch.py config:=config/stage.rviz
+```
+
+In another terminal, launch the demo (with the simulator, the controllers, the nav2 stacks...):
+```bash
+ros2 launch communication_test stage_zenoh_launch.py
+```
+
+To start spawning packages, use the `Publish Point` button in rviz (it will toggle the package spawning).  
+To retrieve a package with a specific color, run `ros2 topic pub /retrieve std_msgs/msg/String "{data: 'green'}" --once`
+*(other colors: `yellow`, `blue`, `red`)*.
