@@ -57,7 +57,7 @@ Visualization Manager:
         robot2: true
       Topic:
         Depth: 20
-        Durability Policy: Transient Local
+        Durability Policy: Volatile
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
