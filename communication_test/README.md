@@ -13,6 +13,11 @@ For each solution, there are 3 working demos *(with different complexity levels)
     brings it to the retrieval zone
 
 
+## 0. Dependencies
+
+- [ROS2 Iron](https://docs.ros.org/en/iron/Installation.html)
+- [Stage Simulator and Stage ROS2](https://github.com/tuw-robotics/stage_ros2/blob/humble/res/install.md)
+
 
 ## 1. Robot separation using namespaces
 
