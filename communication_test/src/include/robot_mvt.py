@@ -21,7 +21,6 @@ class RobotMovement(Node):
 
         # Declare ROS parameters
         self.declare_parameter('robot_id', 1)
-        self.get_logger().info(f"Robot {self.paramInt('robot_id')} started")
 
         # Log DDS server
         if(getenv('ROS_DISCOVERY_SERVER') is not None):
@@ -45,9 +44,6 @@ class RobotMovement(Node):
         self.distanceTolerance = 0.01
 
         self.targetPos = None
-
-    def paramInt(self, name):
-        return self.get_parameter(name).get_parameter_value().integer_value
 
 
     def pose_callback(self, msg):

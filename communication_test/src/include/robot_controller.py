@@ -23,7 +23,7 @@ class RobotController(Node):
 
         # Declare ROS parameters
         self.declare_parameter('robot_id', 1)
-        self.get_logger().info(f"Robot {self.paramInt('robot_id')} started")
+        self.get_logger().info(f"Robot {self.robotId()} started")
 
         # Log DDS server
         if(getenv('ROS_DISCOVERY_SERVER') is not None):
@@ -51,8 +51,10 @@ class RobotController(Node):
         # Visualization
         self.markerScale = 1.0
 
-    def paramInt(self, name):
-        return self.get_parameter(name).get_parameter_value().integer_value
+    def robotId(self) -> int:
+        return self.get_parameter('robot_id').get_parameter_value().integer_value
+    
+    
 
     def pose_callback(self, msg):
         raise NotImplementedError
@@ -73,8 +75,8 @@ class RobotController(Node):
 
         # set shape, Arrow: 0; Cube: 1 ; Sphere: 2 ; Cylinder: 3
         marker.type = 0
-        marker.ns = "robot" + str(self.paramInt('robot_id'))
-        marker.id = self.paramInt('robot_id')
+        marker.ns = "robot" + str(self.robotId())
+        marker.id = self.robotId()
 
         # Set the scale of the marker
         marker.scale.x = 0.6 * self.markerScale
@@ -110,7 +112,7 @@ class RobotController(Node):
 
         # Send it to the operator to see which robot gets assigned to it
         res = AuctionBid()
-        res.robot_id = self.paramInt('robot_id') # Send the domain ID that the robot is currently in
+        res.robot_id = self.robotId() # Send the domain ID that the robot is currently in
         res.distance = totalDistance
 
         self.auctionBidPublisher.publish(res)

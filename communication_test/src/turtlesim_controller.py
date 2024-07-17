@@ -49,7 +49,7 @@ class TurtleController(RobotController):
         assignedRobotId = int(msg.data)
         self.get_logger().info(f"Turtle {assignedRobotId} goes to the target")
 
-        if(assignedRobotId == self.paramInt('robot_id') and self.targetPos is not None):# If the robot assigned is this one, tell it to move
+        if(assignedRobotId == self.robotId and self.targetPos is not None):# If the robot assigned is this one, tell it to move
             task = GoalPoseTask(self.targetPos)
             self.queue.addTask(task)
         

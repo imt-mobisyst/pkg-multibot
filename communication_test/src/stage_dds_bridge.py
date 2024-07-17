@@ -13,9 +13,9 @@ class StageSimBridge(Node):
 
         self.declare_parameter('robot_id', 0)
 
-        self.get_logger().info(f"Bridge for robot {self.paramInt('robot_id')} has DDS : {getenv('ROS_DISCOVERY_SERVER')}")
+        self.get_logger().info(f"Bridge for robot {self.robotId()} has DDS : {getenv('ROS_DISCOVERY_SERVER')}")
 
-        ns = f"robot_{self.paramInt('robot_id')}"
+        ns = f"robot_{self.robotId()}"
 
         self.topics = {
             f'{ns}/map' : {
@@ -69,8 +69,8 @@ class StageSimBridge(Node):
     def callback(self, msg, topicName):
         self.publishersDict[topicName].publish(msg)
 
-    def paramInt(self, name):
-        return self.get_parameter(name).get_parameter_value().integer_value
+    def robotId(self) -> int:
+        return self.get_parameter('robot_id').get_parameter_value().integer_value
     
     
 def main(args=None):

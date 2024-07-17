@@ -55,7 +55,7 @@ class WarehouseRobotController(RobotController):
     def assignedRobot_callback(self, msg:Int8):
         assignedRobotId = int(msg.data)
 
-        if(assignedRobotId == self.paramInt('robot_id') and self._targetPackage is not None):# If the robot assigned is this one, tell it to move
+        if(assignedRobotId == self.robotId() and self._targetPackage is not None):# If the robot assigned is this one, tell it to move
             
             if self._targetPackage.state == PackageState.SPAWNED:
                 self.get_logger().info(f"Robot {assignedRobotId} is assigned the STORE task for {self._targetPackage.colorName} package")
