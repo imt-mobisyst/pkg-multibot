@@ -117,7 +117,7 @@ def generate_launch_description():
         robot_id = int(LaunchConfiguration('robot_id').perform(context))
         operator_ip = LaunchConfiguration('operator_ip').perform(context)
 
-        configFilePath = createConfigFile(os.path.join(get_package_share_directory('communication_test'), 'config/zenoh/stage/bridge_config_robot_operator.json5'), robot_id, operator_ip)
+        configFilePath = createConfigFile(os.path.join(get_package_share_directory('communication_test'), 'config', 'zenoh', 'kobuki', 'bridge_config_robot_operator.json5'), robot_id, operator_ip)
 
         return [GroupAction([
             SetEnvironmentVariable(name='ROS_DOMAIN_ID', value=LaunchConfiguration('bot_domain_id')),
