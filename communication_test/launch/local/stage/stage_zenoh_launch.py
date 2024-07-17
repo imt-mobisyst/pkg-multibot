@@ -46,7 +46,7 @@ def generate_launch_description():
             cmd=[[
                 FindExecutable(name='zenoh-bridge-ros2dds'),
                 ' -c ',
-                os.path.join(get_package_share_directory('communication_test'), 'config', 'zenoh', 'stage_bridge_config_sim.json5')
+                os.path.join(get_package_share_directory('communication_test'), 'config', 'zenoh', 'stage', 'bridge_config_sim.json5')
             ]],
             shell=True
         )
@@ -119,7 +119,7 @@ def generate_launch_description():
                 cmd=[[
                     FindExecutable(name='zenoh-bridge-ros2dds'),
                     ' -c ',
-                    os.path.join(get_package_share_directory('communication_test'), 'config', 'zenoh', 'stage_bridge_config_operator.json5')
+                    os.path.join(get_package_share_directory('communication_test'), 'config', 'zenoh', 'stage', 'bridge_config_operator.json5')
                 ]],
                 shell=True
             )

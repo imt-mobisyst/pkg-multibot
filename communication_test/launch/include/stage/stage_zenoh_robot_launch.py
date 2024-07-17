@@ -93,7 +93,7 @@ def generate_launch_description():
     # ------------------------------ Zenoh bridge ------------------------------ #
 
     def createConfigFile(originalPath, robotId):
-        targetPath = originalPath.replace('stage_bridge_config_robot', f'/build/stage_bridge_config_robot{robotId}')
+        targetPath = originalPath.replace('bridge_config_robot', f'/build/bridge_config_robot{robotId}')
         os.makedirs(os.path.dirname(targetPath), exist_ok=True) #Create folder if doesn't exist
 
         # Make substitutions to the original file text
@@ -116,7 +116,7 @@ def generate_launch_description():
     def createSimBridge(context):
         robot_id = int(LaunchConfiguration('robot_id').perform(context))
 
-        configFilePath = createConfigFile(os.path.join(get_package_share_directory('communication_test'), 'config/zenoh/stage_bridge_config_robot_sim.json5'), robot_id)
+        configFilePath = createConfigFile(os.path.join(get_package_share_directory('communication_test'), 'config/zenoh/stage/bridge_config_robot_sim.json5'), robot_id)
 
 
         return [GroupAction([
@@ -138,7 +138,7 @@ def generate_launch_description():
     def createOperatorBridge(context):
         robot_id = int(LaunchConfiguration('robot_id').perform(context))
 
-        configFilePath = createConfigFile(os.path.join(get_package_share_directory('communication_test'), 'config/zenoh/stage_bridge_config_robot_operator.json5'), robot_id)
+        configFilePath = createConfigFile(os.path.join(get_package_share_directory('communication_test'), 'config/zenoh/stage/bridge_config_robot_operator.json5'), robot_id)
 
         return [GroupAction([
             SetEnvironmentVariable(name='ROS_DOMAIN_ID', value=LaunchConfiguration('bot_domain_id')),
