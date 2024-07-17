@@ -113,16 +113,29 @@ def tbot(context):
                 SetEnvironmentVariable('FASTRTPS_DEFAULT_PROFILES_FILE', target_path),
                 base_launchfile
             ])]
+        
+        case "zenoh":
+            return [GroupAction([
+                # Isolate domain ID and communication
+                SetEnvironmentVariable('ROS_DOMAIN_ID', str(robot_id)),
+
+                # Remap
+                SetRemap(src='/tf',dst='tf'),
+                SetRemap(src='/tf_static',dst='tf_static'),
+                PushRosNamespace(f"robot_{robot_id}"),
+
+                base_launchfile
+            ])]
 
 
-    print("Wrong multibot type, must be one of the following : 'namespace', 'domain_id', 'discovery' 'partitions'")
+    print("Wrong multibot type, must be one of the following : 'namespace', 'domain_id', 'discovery', 'partitions', 'zenoh'")
     return []
 
 
 
 def generate_launch_description():
     multibot_type_launch_arg = DeclareLaunchArgument(
-        'type', description="Must be one of the following : 'namespace', 'domain_id', 'discovery' 'partitions'", default_value=''
+        'type', description="Must be one of the following : 'namespace', 'domain_id', 'discovery' 'partitions', 'zenoh'", default_value=''
     )
 
     return LaunchDescription([

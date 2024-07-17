@@ -102,7 +102,7 @@ def generate_launch_description():
             'OPERATOR_IP': operator_ip,
         } 
         pattern = re.compile(r'%([^%]+)%')
-        xmlstring = re.sub(pattern, lambda m: substitutions[m.group(1)], xmlstring) # Replace %robot_X% by robot_9 (if id=9)
+        xmlstring = re.sub(pattern, lambda m: substitutions[m.group(1)], xmlstring) # Replace values
 
         # Save edited file
         f = open(targetPath, "w")
