@@ -120,7 +120,7 @@ def generate_launch_description():
         configFilePath = createConfigFile(os.path.join(get_package_share_directory('communication_test'), 'config', 'zenoh', 'kobuki', 'bridge_config_robot_operator.json5'), robot_id, operator_ip)
 
         return [GroupAction([
-            SetEnvironmentVariable(name='ROS_DOMAIN_ID', value=LaunchConfiguration('bot_domain_id')),
+            SetEnvironmentVariable(name='ROS_DOMAIN_ID', value=LaunchConfiguration('id')),
             ExecuteProcess(
                 cmd=[[
                     FindExecutable(name='zenoh-bridge-ros2dds'),
