@@ -3,7 +3,6 @@ from os import getenv
 from rclpy.node import Node
 from rclpy.action import ActionClient
 from rclpy.task import Future
-from rclpy.qos import QoSProfile, DurabilityPolicy, HistoryPolicy
 
 from communication_test_interfaces.msg import AuctionBid
 from geometry_msgs.msg import PoseStamped, Point

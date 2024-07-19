@@ -67,25 +67,11 @@ def generate_launch_description():
         ]
     )
 
-    # Rviz with specific config
-    rviz_node = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(
-                get_package_share_directory('communication_test'),
-                'launch/include/rviz_launch.py')),
-        launch_arguments={
-            "config": os.path.join('config', 'stage.rviz')
-        }.items()
-    )
-
 
 
     return LaunchDescription([
         log_level_launch_arg,
         map_launch_arg,
-
-        # Rviz with specific config
-        # rviz_node,
 
         # Launch stage simulator with 3 robots
         simulator,
