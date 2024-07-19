@@ -80,6 +80,16 @@
             </partition>
         </qos>
     </publisher>
+    <subscriber profile_name="/robot_marker">
+        <qos>
+            <partition>
+                <names>
+                    <name>shared</name>
+                </names>
+            </partition>
+        </qos>
+    </subscriber>
+    
 
     <publisher profile_name="/package_deposit_marker">
         <qos>

@@ -7,16 +7,33 @@
                      <discovery_config>
                          <discoveryProtocol>SUPER_CLIENT</discoveryProtocol>
                          <discoveryServersList>
-                             <RemoteServer prefix="44.53.01.5f.45.50.52.4f.53.49.4d.41">
+
+                             <!-- SHARED MACHINE : DEEPTHOUGHT -->
+
+                             <!-- <RemoteServer prefix="44.53.00.5f.45.50.52.4f.53.49.4d.41">
                                  <metatrafficUnicastLocatorList>
                                      <locator>
                                          <udpv4>
                                              <address>10.89.5.90</address>
-                                             <port>11812</port>
+                                             <port>11811</port>
+                                         </udpv4>
+                                     </locator>
+                                 </metatrafficUnicastLocatorList>
+                             </RemoteServer> -->
+
+                             <!-- LOCAL : RPI 22 -->
+
+                             <RemoteServer prefix="44.53.16.5f.45.50.52.4f.53.49.4d.41">
+                                 <metatrafficUnicastLocatorList>
+                                     <locator>
+                                         <udpv4>
+                                             <address>10.89.5.22</address>
+                                             <port>11811</port>
                                          </udpv4>
                                      </locator>
                                  </metatrafficUnicastLocatorList>
                              </RemoteServer>
+
                          </discoveryServersList>
                      </discovery_config>
                  </builtin>

@@ -83,6 +83,29 @@
         </qos>
     </data_writer>
 
+    <data_writer profile_name="/%robotX%/global_costmap/costmap">
+        <topic>
+            <historyQos>
+                <kind>KEEP_LAST</kind>
+                <depth>10</depth>
+            </historyQos>
+        </topic>
+        <qos>
+            <partition>
+                <names>
+                    <name>shared</name>
+                    <name>%robotX%</name>
+                </names>
+            </partition>
+            <reliability>
+                <kind>RELIABLE</kind>
+            </reliability>
+            <durability>
+                <kind>TRANSIENT_LOCAL</kind>
+            </durability>
+        </qos>
+    </data_writer>
+
     <publisher profile_name="/%robotX%/transformed_global_plan">
         <qos>
             <partition>

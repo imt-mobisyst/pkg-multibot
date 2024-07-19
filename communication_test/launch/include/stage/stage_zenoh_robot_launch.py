@@ -89,6 +89,15 @@ def generate_launch_description():
         }.items()
     )
 
+    costmapPublisher = Node(
+        package='communication_test',
+        executable='costmap_publisher.py',
+        name='costmap_publisher',
+        parameters=[{
+            'robot_id': LaunchConfiguration('robot_id')
+        }]
+    )
+
 
     # ------------------------------ Zenoh bridge ------------------------------ #
 
@@ -177,6 +186,8 @@ def generate_launch_description():
             localization,
 
             nav2,
+
+            costmapPublisher
         ])
 
     ])

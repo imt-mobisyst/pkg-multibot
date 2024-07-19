@@ -36,6 +36,15 @@ class StageSimBridge(Node):
                     depth=1
                 )
             },
+            f'{ns}/global_costmap/costmap' : {
+                'type': OccupancyGrid,
+                'qos' :QoSProfile(
+                    reliability=ReliabilityPolicy.RELIABLE,
+                    durability=DurabilityPolicy.TRANSIENT_LOCAL,
+                    history=HistoryPolicy.KEEP_LAST,
+                    depth=1
+                )
+            },
             f'{ns}/local_costmap/costmap_updates' : {
                 'type': OccupancyGridUpdate,
             },

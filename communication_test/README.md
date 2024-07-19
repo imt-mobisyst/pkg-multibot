@@ -17,7 +17,20 @@ For each solution, there are 3 working demos *(with different complexity levels)
 
 - [ROS2 Iron](https://docs.ros.org/en/iron/Installation.html)
 - [Stage Simulator and Stage ROS2](https://github.com/tuw-robotics/stage_ros2/blob/humble/res/install.md)
+- [domain_bridge]https://github.com/ros2/domain_bridge?tab=readme-ov-file#installation library
 - [zenoh-bridge-ros2dds](https://github.com/eclipse-zenoh/zenoh-plugin-ros2dds?tab=readme-ov-file#linux-debian)
+- [people_msgs](https://github.com/wg-perception/people/tree/ros2) :
+```bash
+git clone https://github.com/wg-perception/people.git -b src/people
+colcon build --packages-select people_msgs
+```
+- [nav2_social_costmap_plugin](https://github.com/robotics-upo/nav2_social_costmap_plugin)
+```bash
+git clone https://github.com/robotics-upo/nav2_social_costmap_plugin.git -b src/nav2_social_costmap_plugin
+colcon build --packages-select nav2_social_costmap_plugin
+```
+
+
 
 
 ## 1. Robot separation using namespaces
@@ -131,11 +144,17 @@ We'll use the following domain IDs :
 Start Rviz in the correct domain ID :
 ```bash
 export ROS_DOMAIN_ID=99
+export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 ros2 launch communication_test rviz_launch.py config:=config/stage.rviz
 ```
 
+> **Note :** We use CycloneDDS here because there is a [bug](https://github.com/ros2/domain_bridge/pull/79) in the
+> `domain_bridge` library that causes the `bidirectional`bridge configuration to create an infinite loop
+> when using `rmw_fastrtps_cpp`
+
 Launch the demo (with the simulator, the controllers, the nav2 stacks...):
 ```bash
+export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 ros2 launch communication_test stage_bridge_launch.py
 ```
 

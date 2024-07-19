@@ -132,6 +132,18 @@ def generate_launch_description():
     ])
     
   
+    costmapPublisher = GroupAction([
+        PushRosNamespace(LaunchConfiguration('namespace')),
+        Node(
+            package='communication_test',
+            executable='costmap_publisher.py',
+            name='costmap_publisher',
+            parameters=[{
+                'robot_id': LaunchConfiguration('robot_id')
+            }]
+        )
+    ])
+
 
     return LaunchDescription([
         log_level_launch_arg,
@@ -151,11 +163,13 @@ def generate_launch_description():
         GroupAction([
             SetEnvironmentVariable(name='ROS_DISCOVERY_SERVER', value=LaunchConfiguration('common_servers')),
             controller_node,
+            
+            costmapPublisher
         ]),
 
         GroupAction([
             SetEnvironmentVariable('ROS_DISCOVERY_SERVER', LaunchConfiguration('local_servers')),
             localization,
-            nav2
+            nav2,
         ])
     ])

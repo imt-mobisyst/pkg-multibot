@@ -84,6 +84,20 @@ def generate_launch_description():
             }.items()
         )
     ])
+
+
+    costmapPublisher = GroupAction([
+        PushRosNamespace(LaunchConfiguration('namespace')),
+        Node(
+            package='communication_test',
+            executable='costmap_publisher.py',
+            name='costmap_publisher',
+            parameters=[{
+                'robot_id': LaunchConfiguration('robot_id')
+            }]
+        )
+    ])
+
     
   
 
@@ -99,5 +113,7 @@ def generate_launch_description():
 
         localization,
 
-        nav2
+        nav2,
+
+        costmapPublisher
     ])

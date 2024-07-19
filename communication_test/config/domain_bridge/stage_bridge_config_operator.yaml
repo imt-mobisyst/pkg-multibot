@@ -6,10 +6,10 @@ topics:
 
   # ------------------------------------------ RVIZ ------------------------------------------ #
 
-  # Bridge "/robot_marker" topic to the operator domain ID (99)
+  # Bridge "/robot_marker" topic to and from the operator domain ID (99) 
   robot_marker:
     type: visualization_msgs/msg/Marker
-    reversed: true
+    bidirectional: True
 
   # Bridge "/map" to the operator domain ID (99)
   map:
@@ -82,6 +82,22 @@ topics:
     type: map_msgs/msg/OccupancyGridUpdate
     reversed: true
     remap: /%robot_X%/local_costmap/costmap_updates
+
+  
+  global_costmap/costmap:
+    type: nav_msgs/msg/OccupancyGrid
+    reversed: true
+    remap: /%robot_X%/global_costmap/costmap
+    qos:
+      reliability: reliable
+      history: keep_last
+      durability: transient_local
+      depth: 10
+    
+  global_costmap/costmap_updates:
+    type: map_msgs/msg/OccupancyGridUpdate
+    reversed: true
+    remap: /%robot_X%/global_costmap/costmap_updates
 
   # Plan
   transformed_global_plan:

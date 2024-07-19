@@ -61,6 +61,8 @@ install( PROGRAMS
   src/dynamic_operator.py
   src/warehouse_operator.py
   src/parasit.py
+
+  src/costmap_publisher.py
 DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
