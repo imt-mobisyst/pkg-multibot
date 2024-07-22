@@ -19,6 +19,7 @@ def generate_launch_description():
 
     # CLI arguments
     subnet_dds_server_launch_arg = DeclareLaunchArgument("subnet_dds_server")
+    robot_id_launch_arg = DeclareLaunchArgument('robot_id', default_value='')
     robot_ip_launch_arg = DeclareLaunchArgument('robot_ip', default_value=this_ip)
     robot_port_launch_arg = DeclareLaunchArgument('robot_port', default_value='11811')
     
@@ -28,10 +29,9 @@ def generate_launch_description():
         id = LaunchConfiguration('robot_id').perform(context)
 
         if id == '':
-            namespace = ""
             id = int(socket.gethostname()[-2:]) # Default value = Last number of the kobuki RPI hostname
-        else:
-            namespace = f"robot_{id}"
+
+        namespace = f"robot_{id}"
 
 
         robot_config = os.path.join(get_package_share_directory('communication_test'), 'config', 'nav2', f'nav2_localization_kobuki_{id}.yaml')
@@ -135,6 +135,7 @@ def generate_launch_description():
         
         subnet_dds_server_launch_arg,
         
+        robot_id_launch_arg,
         robot_ip_launch_arg,
         robot_port_launch_arg,
         robot_id_setup,
