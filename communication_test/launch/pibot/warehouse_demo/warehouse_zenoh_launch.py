@@ -16,6 +16,7 @@ def generate_launch_description():
 
     # CLI arguments
     operator_ip_launch_arg = DeclareLaunchArgument("operator_ip")
+    robot_ip_launch_arg = DeclareLaunchArgument("robot_ip", default_value="192.168.1.1")
 
     robot_id_launch_arg = DeclareLaunchArgument(
         'robot_id', default_value=''
@@ -91,7 +92,7 @@ def generate_launch_description():
 
     # ------------------------------ Zenoh bridge ------------------------------- #
 
-    def createConfigFile(originalPath, robotId, operator_ip):
+    def createConfigFile(originalPath, robotId, operator_ip, robot_ip):
         targetPath = originalPath.replace('bridge_config', f'/build/bridge_config_robot{robotId}')
         os.makedirs(os.path.dirname(targetPath), exist_ok=True) #Create folder if doesn't exist
 
@@ -100,6 +101,7 @@ def generate_launch_description():
         substitutions = {
             'ID': str(robotId),
             'OPERATOR_IP': operator_ip,
+            'PIBOT_IP': robot_ip,
         } 
         pattern = re.compile(r'%([^%]+)%')
         xmlstring = re.sub(pattern, lambda m: substitutions[m.group(1)], xmlstring) # Replace values
@@ -116,8 +118,12 @@ def generate_launch_description():
     def createOperatorBridge(context):
         robot_id = int(LaunchConfiguration('robot_id').perform(context))
         operator_ip = LaunchConfiguration('operator_ip').perform(context)
+        robot_ip = LaunchConfiguration('robot_ip').perform(context)
 
-        configFilePath = createConfigFile(os.path.join(get_package_share_directory('communication_test'), 'config', 'zenoh', 'kobuki', 'bridge_config_robot_operator.json5'), robot_id, operator_ip)
+        configFilePath = createConfigFile(
+            os.path.join(get_package_share_directory('communication_test'), 'config', 'zenoh', 'kobuki', 'bridge_config_robot.json5'),
+            robot_id, operator_ip, robot_ip
+        )
 
         return [GroupAction([
             SetEnvironmentVariable(name='ROS_DOMAIN_ID', value=LaunchConfiguration('id')),
@@ -141,14 +147,21 @@ def generate_launch_description():
     return LaunchDescription([
         log_level_launch_arg,
         operator_ip_launch_arg,
+        robot_ip_launch_arg,
         robot_id_launch_arg,
 
         robot_id_setup,
 
-        operator_bridge_launch,
 
         GroupAction([
-            SetEnvironmentVariable(name='ROS_DOMAIN_ID', value=LaunchConfiguration('id')),
+            # Launch all nodes using only the local network interface
+            SetEnvironmentVariable('RMW_IMPLEMENTATION', 'rmw_cyclonedds_cpp'),
+            SetEnvironmentVariable('ROS_AUTOMATIC_DISCOVERY_RANGE', 'SUBNET'),
+            SetEnvironmentVariable('CYCLONEDDS_URI', 
+                os.path.join(get_package_share_directory('communication_test'), 'config', 'zenoh', 'kobuki', 'local_cyclonedds.xml')),
+            
+            operator_bridge_launch,
+
             controller_node,
 
             localization,

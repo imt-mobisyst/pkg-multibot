@@ -114,17 +114,37 @@ def tbot(context):
                 base_launchfile
             ])]
         
+
+
         case "zenoh":
             return [GroupAction([
-                # Isolate domain ID and communication
-                SetEnvironmentVariable('ROS_DOMAIN_ID', str(robot_id)),
+                # Launch all nodes using only the local network interface
+                SetEnvironmentVariable('RMW_IMPLEMENTATION', 'rmw_cyclonedds_cpp'),
+                SetEnvironmentVariable('ROS_AUTOMATIC_DISCOVERY_RANGE', 'SUBNET'),
+                SetEnvironmentVariable('CYCLONEDDS_URI', 
+                    os.path.join(get_package_share_directory('communication_test'), 'config', 'zenoh', 'kobuki', 'local_cyclonedds.xml')),
+            
 
-                # Remap
-                SetRemap(src='/tf',dst='tf'),
-                SetRemap(src='/tf_static',dst='tf_static'),
-                PushRosNamespace(f"robot_{robot_id}"),
+                # Zenoh bridge
+                ExecuteProcess(
+                    cmd=[[
+                        FindExecutable(name='zenoh-bridge-ros2dds'),
+                        ' -c ',
+                        os.path.join(get_package_share_directory('communication_test'), 'config', 'zenoh', 'kobuki', 'bridge_config_pibot.json5')
+                    ]],
+                    shell=True
+                ),
 
-                base_launchfile
+
+                # Namespaced launchfile
+                GroupAction([
+                    # Remap
+                    SetRemap(src='/tf',dst='tf'),
+                    SetRemap(src='/tf_static',dst='tf_static'),
+                    PushRosNamespace(f"robot_{robot_id}"),
+
+                    base_launchfile
+                ])                
             ])]
 
 
