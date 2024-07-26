@@ -3,7 +3,7 @@ from ament_index_python import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, GroupAction, SetEnvironmentVariable
 from launch.substitutions import LaunchConfiguration
-from launch_ros.actions import Node, PushRosNamespace
+from launch_ros.actions import Node, PushRosNamespace, SetRemap
 from launch.actions import IncludeLaunchDescription, OpaqueFunction, SetLaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
@@ -81,6 +81,9 @@ def generate_launch_description():
     controller_node = GroupAction([
         SetEnvironmentVariable(name='RMW_FASTRTPS_USE_QOS_FROM_XML', value="1"),
         SetEnvironmentVariable(name='FASTRTPS_DEFAULT_PROFILES_FILE', value=LaunchConfiguration('shared_config_path')),
+        
+        SetRemap('/tf', 'tf'),
+        SetRemap('/tf_static', 'tf_static'),
         PushRosNamespace(LaunchConfiguration('namespace')),
         Node(
             package='communication_test',

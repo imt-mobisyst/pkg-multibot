@@ -4,7 +4,7 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, GroupAction, SetEnvironmentVariable, ExecuteProcess
 from launch.substitutions import LaunchConfiguration
 from launch.substitutions import FindExecutable
-from launch_ros.actions import Node, PushRosNamespace
+from launch_ros.actions import Node, PushRosNamespace, SetRemap
 from launch.actions import IncludeLaunchDescription, OpaqueFunction, SetLaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
@@ -44,6 +44,8 @@ def generate_launch_description():
 
     # Start a controller node
     controller_node = GroupAction([        
+        SetRemap(src='/tf',dst='tf'),
+        SetRemap(src='/tf_static',dst='tf_static'),
         PushRosNamespace(LaunchConfiguration('namespace')),
         Node(
             package='communication_test',
@@ -126,7 +128,6 @@ def generate_launch_description():
         )
 
         return [GroupAction([
-            SetEnvironmentVariable(name='ROS_DOMAIN_ID', value=LaunchConfiguration('id')),
             ExecuteProcess(
                 cmd=[[
                     FindExecutable(name='zenoh-bridge-ros2dds'),

@@ -5,7 +5,7 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, GroupAction
 from launch.actions import SetEnvironmentVariable
 from launch.substitutions import LaunchConfiguration
-from launch_ros.actions import Node, PushRosNamespace
+from launch_ros.actions import Node, PushRosNamespace, SetRemap
 from launch.actions import IncludeLaunchDescription, OpaqueFunction, SetLaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
@@ -83,6 +83,8 @@ def generate_launch_description():
 
     # Start a controller node
     controller_node = GroupAction([
+        SetRemap('/tf', 'tf'),
+        SetRemap('/tf_static', 'tf_static'),
         PushRosNamespace(LaunchConfiguration('namespace')),
         Node(
             package='communication_test',
@@ -147,6 +149,12 @@ def generate_launch_description():
         GroupAction([
             SetEnvironmentVariable('ROS_DISCOVERY_SERVER', LaunchConfiguration('common_servers')),
             controller_node,
+            # Node(
+            #     package="communication_test",
+            #     executable="stage_dds_bridge.py",
+            #     name=f"bridge",
+            #     parameters=[{'robot_id': LaunchConfiguration('id')}]
+            # )
         ]),
 
         GroupAction([
