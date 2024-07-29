@@ -21,13 +21,13 @@ def generate_launch_description():
     nb_robots_launch_arg = DeclareLaunchArgument(
         "nb_robots", default_value=TextSubstitution(text="3")
     )
-    operator_domain_id_launch_arg = DeclareLaunchArgument(
-        "operator_domain_id", default_value=TextSubstitution(text="99")
-    )
-
-    # Launch operator nodes only in the operator domain ID (1)
+    # Launch operator nodes only in local
     operator_nodes = GroupAction([
-        SetEnvironmentVariable(name='ROS_DOMAIN_ID', value=LaunchConfiguration("operator_domain_id")),
+        SetEnvironmentVariable('RMW_IMPLEMENTATION', 'rmw_cyclonedds_cpp'),
+        SetEnvironmentVariable('ROS_AUTOMATIC_DISCOVERY_RANGE', 'SUBNET'),
+        SetEnvironmentVariable('CYCLONEDDS_URI', 
+            os.path.join(get_package_share_directory('communication_test'), 'config', 'zenoh', 'kobuki', 'local_cyclonedds.xml')),
+        
 
         # Operator node
         Node(
@@ -73,7 +73,6 @@ def generate_launch_description():
 
     return LaunchDescription([
         nb_robots_launch_arg,
-        operator_domain_id_launch_arg,
         
         # Run operator nodes (operator, package dispenser & rviz)
         operator_nodes

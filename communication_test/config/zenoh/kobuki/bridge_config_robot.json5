@@ -15,13 +15,13 @@
         ///      This identifier will also appears in the logs of all other bridges on discovery events.
         ///      By default a random UUID
         ////
-        id: "robot_%ID%_operator_bridge",
+        id: "robot_%ID%_bridge",
   
         ////
         //// nodename: A ROS node name to be used by this bridge.
         ////            Default: "zenoh_bridge_ros2dds"
         ////
-        nodename: "robot_%ID%_operator_bridge",
+        nodename: "robot_%ID%_bridge",
   
         ////
         //// namespace: A ROS namespace which:
@@ -71,7 +71,7 @@
         allow: {
           publishers: [
             ".*/robot_marker", ".*/map", ".*/package_deposit_marker", ".*/package_marker_array", ".*/package_deposit_marker_array", ".*/package_retrieved_marker", ".*/auctionBid", ".*/local_costmap/costmap", ".*/local_costmap/costmap_updates", ".*/transformed_global_plan", // OPERATOR
-            ".*/multi/cmd_nav" // PIBOT
+            ".*/multi/cmd_nav", ".*/tf", ".*/tf_static" // PIBOT
           ],
           subscribers: [
             ".*/package_marker", ".*/retrieve_marker", ".*/assignedRobot", // OPERATOR

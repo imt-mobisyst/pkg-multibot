@@ -70,7 +70,7 @@
         // },
         allow: {
           publishers: [".*/scan", ".*/odom", ".*/tf", ".*/tf_static"],
-          subscribers: [".*/multi/cmd_nav"],
+          subscribers: [".*/multi/cmd_nav", , ".*/tf", ".*/tf_static"],
           service_servers: [],
           service_clients: [],
           action_servers: [],
