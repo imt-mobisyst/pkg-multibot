@@ -69,7 +69,7 @@
         //   action_clients: [],
         // },
         allow: {
-          publishers: [".*/robot_marker", ".*/map", ".*/package_deposit_marker", ".*/package_marker_array", ".*/package_deposit_marker_array", ".*/package_retrieved_marker", ".*/auctionBid", ".*/local_costmap/costmap", ".*/local_costmap/costmap_updates", ".*/transformed_global_plan"],
+          publishers: [".*/robot_marker", ".*/map", ".*/package_deposit_marker", ".*/package_marker_array", ".*/package_deposit_marker_array", ".*/package_retrieved_marker", ".*/auctionBid", ".*/local_costmap/costmap", ".*/local_costmap/costmap_updates", ".*/plan"],
           subscribers: [".*/package_marker", ".*/retrieve_marker", ".*/assignedRobot", ".*/robot_marker"],
           service_servers: [],
           service_clients: [],

@@ -106,7 +106,7 @@
         </qos>
     </data_writer>
 
-    <publisher profile_name="/%robotX%/transformed_global_plan">
+    <publisher profile_name="/%robotX%/plan">
         <qos>
             <partition>
                 <names>

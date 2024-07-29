@@ -48,7 +48,7 @@ class StageSimBridge(Node):
             f'{ns}/local_costmap/costmap_updates' : {
                 'type': OccupancyGridUpdate,
             },
-            f'{ns}/transformed_global_plan': {
+            f'{ns}/plan': {
                 'type': Path,
             },
         }

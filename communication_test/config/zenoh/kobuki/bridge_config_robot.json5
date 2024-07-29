@@ -70,7 +70,7 @@
         // },
         allow: {
           publishers: [
-            ".*/robot_marker", "/robot_%ID%/map", ".*/package_deposit_marker", ".*/package_marker_array", ".*/package_deposit_marker_array", ".*/package_retrieved_marker", ".*/auctionBid", "/robot_%ID%/local_costmap/costmap", "/robot_%ID%/local_costmap/costmap_updates", "/robot_%ID%/transformed_global_plan", // OPERATOR
+            ".*/robot_marker", "/robot_%ID%/map", ".*/package_deposit_marker", ".*/package_marker_array", ".*/package_deposit_marker_array", ".*/package_retrieved_marker", ".*/auctionBid", "/robot_%ID%/local_costmap/costmap", "/robot_%ID%/local_costmap/costmap_updates", "/robot_%ID%/plan", // OPERATOR
             "/robot_%ID%/multi/cmd_nav", "/robot_%ID%/tf", "/robot_%ID%/tf_static" // PIBOT
           ],
           subscribers: [

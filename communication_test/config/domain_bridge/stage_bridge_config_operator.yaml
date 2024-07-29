@@ -100,9 +100,9 @@ topics:
     remap: /%robot_X%/global_costmap/costmap_updates
 
   # Plan
-  transformed_global_plan:
+  plan:
     type: nav_msgs/msg/Path
     reversed: true
-    remap: /%robot_X%/transformed_global_plan
+    remap: /%robot_X%/plan
   
 
