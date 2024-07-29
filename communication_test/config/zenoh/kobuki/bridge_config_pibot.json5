@@ -70,7 +70,7 @@
         // },
         allow: {
           publishers: [".*/scan", ".*/odom", ".*/tf", ".*/tf_static"],
-          subscribers: [".*/multi/cmd_nav", , ".*/tf", ".*/tf_static"],
+          subscribers: [".*/multi/cmd_nav"],
           service_servers: [],
           service_clients: [],
           action_servers: [],
@@ -179,11 +179,11 @@
     ////
 
     // Use the default listener to listen locally
-    // listen: {
-    //   endpoints: [
-    //     // "<proto>/<ip>:<port>"
-    //   ]
-    // },
+    listen: {
+      endpoints: [
+        // "<proto>/<ip>:<port>"
+      ]
+    },
   
     ////
     //// Configure the scouting mechanisms and their behaviours
