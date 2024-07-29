@@ -70,12 +70,12 @@
         // },
         allow: {
           publishers: [
-            ".*/robot_marker", ".*/map", ".*/package_deposit_marker", ".*/package_marker_array", ".*/package_deposit_marker_array", ".*/package_retrieved_marker", ".*/auctionBid", ".*/local_costmap/costmap", ".*/local_costmap/costmap_updates", ".*/transformed_global_plan", // OPERATOR
-            ".*/multi/cmd_nav", ".*/tf", ".*/tf_static" // PIBOT
+            ".*/robot_marker", "/robot_%ID%/map", ".*/package_deposit_marker", ".*/package_marker_array", ".*/package_deposit_marker_array", ".*/package_retrieved_marker", ".*/auctionBid", "/robot_%ID%/local_costmap/costmap", "/robot_%ID%/local_costmap/costmap_updates", "/robot_%ID%/transformed_global_plan", // OPERATOR
+            "/robot_%ID%/multi/cmd_nav", "/robot_%ID%/tf", "/robot_%ID%/tf_static" // PIBOT
           ],
           subscribers: [
             ".*/package_marker", ".*/retrieve_marker", ".*/assignedRobot", // OPERATOR
-            ".*/scan", ".*/odom", ".*/tf", ".*/tf_static" // PIBOT
+            "/robot_%ID%/scan", "/robot_%ID%/odom", "/robot_%ID%/tf", "/robot_%ID%/tf_static" // PIBOT
           ],
           service_servers: [],
           service_clients: [],
