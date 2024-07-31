@@ -29,6 +29,10 @@ def generate_launch_description():
         'nav_log_level', default_value='info', description='log level'
     )
 
+    # CLI arguments
+    robot_id_launch_arg = DeclareLaunchArgument(
+        'robot_id', default_value=''
+    )
 
     # Robot ID
     def setRobotId(context):
@@ -133,7 +137,8 @@ def generate_launch_description():
 
     return LaunchDescription([
         log_level_launch_arg,
-
+        robot_id_launch_arg,
+        
         robot_id_setup,
 
         local_config_path_arg,
