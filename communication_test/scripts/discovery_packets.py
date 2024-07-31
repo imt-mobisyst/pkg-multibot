@@ -120,7 +120,8 @@ if __name__ == '__main__':
         'namespaces.pcapng',
         'domain_id.pcapng',
         'discovery_server.pcapng',
-        'partitions.pcapng'
+        'partitions.pcapng',
+        'zenoh.pcapng',
     ]
 
     data = pd.DataFrame()
@@ -142,6 +143,8 @@ if __name__ == '__main__':
             method = 'Domain ID'
         elif 'partition' in f:
             method = 'DDS partitions'
+        elif 'zenoh' in f:
+            method = 'Zenoh'
 
         methods.append(method)
         nbPackets.append(count_packets(f))

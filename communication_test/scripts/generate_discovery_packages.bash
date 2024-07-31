@@ -4,12 +4,12 @@ usage="usage: $(basename "$0") SETUP_FILE [PROTOCOL] [-h] -- analyze network tra
 
 positional arguments:
     SETUP_FILE location setup.bash of ROS 2
-    [optional] PROTOCOL : SERVER for DDS, DOMAIN for domain ID, otherwise namespaces
+    [optional] PROTOCOL : DOMAIN for domain ID, SERVER for DDS Discovery Server, PARTITION for DDS Partitions, ZENOH for Zenoh, otherwise namespaces
 
 options:
     -h  show this help text"
 
-seed=42
+
 while getopts ':h:' option; do
   case "$option" in
     h) echo "$usage"
@@ -32,31 +32,41 @@ if [ -z ${SETUP_FILE} ]
     exit 2
 fi
 
-# If second argument is SERVER it uses Discovery Service
+# If second argument must be one of the communication methods (see USAGE)
 PROTOCOL=${2}
+
+
+echo "--------------------------------- SETUP ---------------------------------"
 
 # Prepare environment
 echo "Source ROS2"
 source /opt/ros/iron/setup.bash
-echo "source to file: " ${SETUP_FILE}
+echo "Source ROS2 workspace :" ${SETUP_FILE}
 source ${SETUP_FILE}
 
-# Dump file for capture
+
+
+# Setup dump file for capture
 mkdir -p data
 DUMP_FILE="data/namespaces.pcapng"
 if [[ ${PROTOCOL} == "SERVER" ]]
 then
     DUMP_FILE="data/discovery_server.pcapng"
-    echo "Run in DDS mode"
 elif [[ ${PROTOCOL} == "DOMAIN" ]]
 then
     DUMP_FILE="data/domain_id.pcapng"
-    unset ROS_DISCOVERY_SERVER
-    echo "Run in DOMAIN_ID mode"
-else
-    unset ROS_DISCOVERY_SERVER
-    echo "Run in namespaces mode"
+elif [[ ${PROTOCOL} == "PARTITION" ]]
+then
+    DUMP_FILE="data/partitions.pcapng"
+elif [[ ${PROTOCOL} == "ZENOH" ]]
+then
+    DUMP_FILE="data/zenoh.pcapng"
 fi
+
+
+
+
+
 
 # Time running
 RUN_TIME=15
@@ -66,63 +76,75 @@ rm -f ${DUMP_FILE} > /dev/null 2>&1
 tcpdump -G $((RUN_TIME + 2)) -W 1 -i any -nn -s 0 -w ${DUMP_FILE} > /dev/null 2>&1 &
 TCPDUMP_PID=$!
 
-# Start talker in SERVER or SIMPLE mode
+
+
+
+
+echo "-------------------------------- RUNNING --------------------------------"
+
+# Start the operator launchfile
 if [[ ${PROTOCOL} == "SERVER" ]]
 then
-    echo "Using DDS servers"
-    ros2 launch communication_test turtlesim_dds_launch.py &
+    echo -e "-> Running DDS Discovery Servers\n"
+    ros2 launch communication_test warehouse_dds_operator.py &
 
 elif [[ ${PROTOCOL} == "DOMAIN" ]]
 then
-    echo "Using DOMAIN ID bridge"
-    ros2 launch communication_test turtlesim_bridge_launch.py &
+    echo -e "-> Running DOMAIN ID bridge\n"
+    ros2 launch communication_test warehouse_bridge_operator.py &
+
+
+elif [[ ${PROTOCOL} == "PARTITION" ]]
+then
+    echo -e "-> Running DDS partitions\n"
+    ros2 launch communication_test warehouse_partition_operator.py &
+
+
+elif [[ ${PROTOCOL} == "ZENOH" ]]
+then
+    echo -e "-> Running Zenoh bridge\n"
+    ros2 launch communication_test warehouse_zenoh_operator.py &
 
 else
     # Run simple namespaces
-    echo "Using namespaces"
-    ros2 launch communication_test turtlesim_namespace_launch.py &
+    echo -e "-> Running namespaces\n"
+    ros2 launch communication_test warehouse_namespace_operator.py &
 fi
 
-# Spawn 50 listeners. They will be CLIENTS if ${PROTOCOL} is SERVER, else they will
-# be simple participants
-# for i in {1..50}
-# do
-#     ros2 run demo_nodes_cpp \
-#         listener --ros-args --remap __node:=listener_${i} > /dev/null 2>&1  &
-# done
+
+
+
 
 # Wait for tcpdump to finish and send ctrl-c to talker and listeners
 sleep $RUN_TIME
-# kill -s SIGINT $(ps -C talker) > /dev/null 2>&1
 
+
+echo "-------------------------------- ENDING ---------------------------------"
 echo "Trying to kill programs"
-# kill -s SIGINT $(ps -C listener) > /dev/null 2>&1
+
 
 # Ends ROS2 nodes
-kill -s SIGINT $(pgrep turtle) > /dev/null 2>&1
-kill -s SIGINT $(pgrep operator) > /dev/null 2>&1
-kill -s SIGINT $(pgrep rviz) > /dev/null 2>&1
+pkill -f communication_test > /dev/null 2>&1
+
 if [[ ${PROTOCOL} == "SERVER" ]]
 then
-    kill -s SIGINT $(pgrep discovery) > /dev/null 2>&1
-    kill -s SIGINT $(pgrep -f turtlesim_dds_launch.py) > /dev/null 2>&1
+    pkill -f discovery > /dev/null 2>&1
 
 elif [[ ${PROTOCOL} == "DOMAIN" ]]
 then
-    kill -s SIGINT $(pgrep bridge) > /dev/null 2>&1
-    kill -s SIGINT $(pgrep -f turtlesim_bridge_launch.py) > /dev/null 2>&1
-else
-    kill -s SIGINT $(pgrep -f turtlesim_namespace_launch.py) > /dev/null 2>&1
+    pkill -f bridge > /dev/null 2>&1
 
+elif [[ ${PROTOCOL} == "ZENOH" ]]
+then
+    pkill -f zenoh-bridge-ros2dds > /dev/null 2>&1
 fi
 
 
+
+# END
+
 sleep 1
 
-echo "Traffic capture can be found in: ${DUMP_FILE}"
+echo "Traffic capture can be found in : ${DUMP_FILE}"
 
 chmod -R 777 data
-
-# Make sure they are killed
-# pkill talker
-# pkill listener
