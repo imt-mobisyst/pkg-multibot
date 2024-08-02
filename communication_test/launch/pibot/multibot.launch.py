@@ -4,7 +4,7 @@ from subprocess import check_output
 from ament_index_python import get_package_share_directory
 
 from launch import LaunchDescription
-from launch_ros.actions import Node, PushRosNamespace, SetRemap
+from launch_ros.actions import PushRosNamespace, SetRemap
 from launch.actions import IncludeLaunchDescription, GroupAction, SetEnvironmentVariable
 from launch.actions import DeclareLaunchArgument
 from launch.actions import OpaqueFunction
@@ -111,7 +111,16 @@ def tbot(context):
             return [GroupAction([
                 SetEnvironmentVariable('RMW_FASTRTPS_USE_QOS_FROM_XML', "1"),
                 SetEnvironmentVariable('FASTRTPS_DEFAULT_PROFILES_FILE', target_path),
-                base_launchfile
+
+                # Namespaced launchfile
+                GroupAction([
+                    # Remap
+                    SetRemap(src='/tf',dst='tf'),
+                    SetRemap(src='/tf_static',dst='tf_static'),
+                    PushRosNamespace(f"robot_{robot_id}"),
+
+                    base_launchfile
+                ])     
             ])]
         
 
