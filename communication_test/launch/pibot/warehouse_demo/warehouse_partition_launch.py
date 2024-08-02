@@ -110,7 +110,7 @@ def generate_launch_description():
             launch_arguments={
                 "namespace": LaunchConfiguration('namespace'),
                 'map': os.path.join(get_package_share_directory('communication_test'), 'map', 'map.yaml'),
-                'params_file': os.path.join(get_package_share_directory('communication_test'), 'config', 'nav2', 'nav2_params_kobuki.yaml'),
+                'params_file': LaunchConfiguration('robot_config'),
                 'autostart': 'True',
                 'log_level': LaunchConfiguration('nav_log_level')
             }.items()
