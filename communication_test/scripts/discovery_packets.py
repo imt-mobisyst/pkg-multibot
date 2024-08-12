@@ -2,7 +2,7 @@
 
 # Script based on this file : https://docs.ros.org/en/iron/_downloads/617a6849c029c43a931e24db314cb224/discovery_packets.py
 
-"""Script to count number of rtps packages in a tcpdump capture."""
+"""Script to count the number of rtps/zenoh packages in a tcpdump capture, and see their evolution."""
 import os
 import subprocess
 import pandas as pd
@@ -15,13 +15,15 @@ current = os.path.dirname(os.path.abspath(__file__))
 inputFolder  = os.path.join(current, "data")
 outputFolder = os.path.join(current, "results")
 
+nbSeconds = 30
+
 # Plot functions
 def plot_packets(data):
     """Plot a graph with the result obtained."""
     ax = data.plot.bar(x='discovery_architecture', y='discovery_packets', rot=0)
     plt.title('Packet traffic during discovery')
     plt.xlabel('Discovery Architecture')
-    plt.ylabel('Number of packets')
+    plt.ylabel(f'Number of packets in {nbSeconds}s')
     plt.legend().remove()
     # plt.show()
 
@@ -33,17 +35,22 @@ def plot_packets(data):
 
 
 
-def plot_packets_evolution(data, methods):
+def plot_packets_evolution(times, methods):
     """Plot a graph with the evolution of the packet traffic obtained."""
     for i in range(len(data)):
-        ranges, counts = data[i]
+
+        # Define the time ranges
+        ranges = np.arange(np.floor(np.min(times[i])), np.ceil(np.max(times[i])), 0.1)  # Create ranges with step size of 0.1
+        # Count the number of values in each range
+        counts, _ = np.histogram(times[i], ranges)
+        
         method = methods[i]
 
         plt.plot(ranges[:-1], counts,  marker='o', linestyle='-', linewidth=1, markersize=2, label=method)
 
     
     plt.title('Packet traffic evolution over time')
-    plt.xlabel('Time')
+    plt.xlabel('Time (s)')
     plt.ylabel('Number of packets')
     # plt.show()
 
@@ -55,42 +62,39 @@ def plot_packets_evolution(data, methods):
 
 # Data extraction functions
 def createFilter(method):
+    """Create a filter for the tshark cli command"""
+    filter = 'rtps && ip.src != 127.0.0.1 && ip.dst != 127.0.0.1'
+
     if method == 'Zenoh':
-        return '"Zenoh"'
+        filter = f'({filter}) || zenoh'
     
-    return '"rtps"'
-
-def count_packets(filename, filter):
-    """Count the discovery packets"""
-
-    command = f'tshark -r {filename} -Y {filter} | wc -l'
-
-    res = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-    n_packets = int(res.communicate()[0].decode().rstrip())
-    return n_packets
+    return filter
 
 
-def packet_evolution(filename, filter):
-    """Get the times of the discovery packets"""
+def extractPacketData(filename, filter):
+    """Get the times and total number of discovery packets"""
 
-    command = f'tshark -r {filename} -Y {filter}'
+    # Filter tcpdump output
+    command = f'tshark -r {filename} -Y "{filter}"'
 
     res = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
     lines = res.communicate()[0].decode().split('\n')
 
-    cleanedLines = [" ".join(l.split()) for l in lines if l.strip() != ""]
+    # Clean output
+    cleanedLines = [l.strip().split() for l in lines if l.strip() != ""]
+    filteredLines = [l for l in cleanedLines if float(l[1]) < nbSeconds]
 
-    times = [float(l.strip().split(' ')[1]) for l in cleanedLines]
-    times = [t for t in times if t < 30]
+    # Extract data
 
-    
-    # Define the time (time ranges)
-    ranges = np.arange(np.floor(np.min(times)), np.ceil(np.max(times)), 0.1)  # Create ranges with step size of 0.1
+    ## Timestamps
+    times = [float(l[1]) for l in filteredLines if len(l)] 
 
-    # Count the number of values in each range
-    counts, _ = np.histogram(times, ranges)
+    ## Nb packets
+    nbPackets = len(filteredLines)
 
-    return ranges, counts
+    ## Nb subnet packets
+
+    return nbPackets, times
 
 
 
@@ -129,8 +133,10 @@ if __name__ == '__main__':
         filter = createFilter(method)
 
         # Extract data from tcpdump
-        nbPackets.append(count_packets(f, filter))
-        packetEvolution.append(packet_evolution(f, filter))
+        n, times = extractPacketData(f, filter)
+
+        nbPackets.append(n)
+        packetEvolution.append(times)
 
     data = pd.DataFrame(
         {
