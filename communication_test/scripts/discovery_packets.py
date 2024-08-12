@@ -111,6 +111,7 @@ if __name__ == '__main__':
     }
 
     data = pd.DataFrame()
+    methods = []
     nbPackets = []
     packetEvolution = []
 
@@ -123,17 +124,13 @@ if __name__ == '__main__':
             continue
 
         print(f'Processing {f}')
-
+        methods.append(method)
 
         filter = createFilter(method)
 
         # Extract data from tcpdump
         nbPackets.append(count_packets(f, filter))
         packetEvolution.append(packet_evolution(f, filter))
-
-
-
-    methods = list(files.keys())
 
     data = pd.DataFrame(
         {
