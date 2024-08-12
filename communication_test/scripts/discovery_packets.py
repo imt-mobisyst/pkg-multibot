@@ -10,11 +10,12 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 
+# Path definition
 current = os.path.dirname(os.path.abspath(__file__))
 inputFolder  = os.path.join(current, "data")
 outputFolder = os.path.join(current, "results")
 
-
+# Plot functions
 def plot_packets(data):
     """Plot a graph with the result obtained."""
     ax = data.plot.bar(x='discovery_architecture', y='discovery_packets', rot=0)
@@ -52,55 +53,36 @@ def plot_packets_evolution(data, methods):
 
     return path
 
+# Data extraction functions
+def createFilter(method):
+    if method == 'Zenoh':
+        return '"Zenoh"'
+    
+    return '"rtps"'
 
-def count_packets(filename):
-    """Count the discovery packets filtering them by Entity id."""
-    print('Processing {}'.format(filename))
-    command = 'tshark -r {} -Y'.format(filename)
-    command += ' "rtps'
-    # command += ' && ((rtps.sm.rdEntityId == 0x000002c2) ||'
-    # command +=     ' (rtps.sm.rdEntityId == 0x000002c7) ||'
-    # command +=     ' (rtps.sm.rdEntityId == 0x000003c2) ||'
-    # command +=     ' (rtps.sm.rdEntityId == 0x000003c7) ||'
-    # command +=     ' (rtps.sm.rdEntityId == 0x000004c2) ||'
-    # command +=     ' (rtps.sm.rdEntityId == 0x000004c7) ||'
-    # command +=     ' (rtps.sm.rdEntityId == 0x000100c2) ||'
-    # command +=     ' (rtps.sm.rdEntityId == 0x000100c7) ||'
-    # command +=     ' (rtps.sm.rdEntityId == 0x000200C2) ||'
-    # command +=     ' (rtps.sm.rdEntityId == 0x000200C7) ||'
-    # command +=     ' (rtps.sm.rdEntityId == 0x000201C3) ||'
-    # command +=     ' (rtps.sm.rdEntityId == 0x000201C4))'
-    command += '" | wc -l'
+def count_packets(filename, filter):
+    """Count the discovery packets"""
+
+    command = f'tshark -r {filename} -Y {filter} | wc -l'
 
     res = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
     n_packets = int(res.communicate()[0].decode().rstrip())
     return n_packets
 
 
-def packet_evolution(filename):
+def packet_evolution(filename, filter):
+    """Get the times of the discovery packets"""
 
-    command = 'tshark -r {} -Y'.format(filename)
-    command += ' "rtps'
-    # command += ' && ((rtps.sm.rdEntityId == 0x000002c2) ||'
-    # command +=     ' (rtps.sm.rdEntityId == 0x000002c7) ||'
-    # command +=     ' (rtps.sm.rdEntityId == 0x000003c2) ||'
-    # command +=     ' (rtps.sm.rdEntityId == 0x000003c7) ||'
-    # command +=     ' (rtps.sm.rdEntityId == 0x000004c2) ||'
-    # command +=     ' (rtps.sm.rdEntityId == 0x000004c7) ||'
-    # command +=     ' (rtps.sm.rdEntityId == 0x000100c2) ||'
-    # command +=     ' (rtps.sm.rdEntityId == 0x000100c7) ||'
-    # command +=     ' (rtps.sm.rdEntityId == 0x000200C2) ||'
-    # command +=     ' (rtps.sm.rdEntityId == 0x000200C7) ||'
-    # command +=     ' (rtps.sm.rdEntityId == 0x000201C3) ||'
-    # command +=     ' (rtps.sm.rdEntityId == 0x000201C4))'
+    command = f'tshark -r {filename} -Y {filter}'
 
     res = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-
-    lines = res.communicate()[0].split('\n')
+    lines = res.communicate()[0].decode().split('\n')
 
     cleanedLines = [" ".join(l.split()) for l in lines if l.strip() != ""]
 
     times = [float(l.strip().split(' ')[1]) for l in cleanedLines]
+    times = [t for t in times if t < 30]
+
     
     # Define the time (time ranges)
     ranges = np.arange(np.floor(np.min(times)), np.ceil(np.max(times)), 0.1)  # Create ranges with step size of 0.1
@@ -115,41 +97,43 @@ def packet_evolution(filename):
 
 if __name__ == '__main__':
 
+    # Create output folder
+    if not os.path.isdir(outputFolder):
+        os.makedirs(outputFolder)
+
     # Load tcpdump files
-    files = [
-        'namespaces.pcapng',
-        'domain_id.pcapng',
-        'discovery_server.pcapng',
-        'partitions.pcapng',
-        'zenoh.pcapng',
-    ]
+    files = {
+        'Domain ID': 'domain_id.pcapng',
+        'Zenoh': 'zenoh.pcapng'
+        # 'Namespaces': 'namespaces.pcapng',
+        # 'DDS Discovery Server': 'discovery_server.pcapng',
+        # 'DDS partitions': 'partitions.pcapng',
+    }
 
     data = pd.DataFrame()
-    methods = []
     nbPackets = []
     packetEvolution = []
 
     # Process data
-    for f in files:
+    for method, f in files.items():
+
         f = os.path.join(inputFolder, f)
         if not os.path.isfile(f):
             print('Cannot find file {}'.format(f))
             continue
 
-        method = 'Namespaces'
-        if 'server' in f:
-            method = 'DDS Discovery Server'
-        elif 'domain' in f:
-            method = 'Domain ID'
-        elif 'partition' in f:
-            method = 'DDS partitions'
-        elif 'zenoh' in f:
-            method = 'Zenoh'
+        print(f'Processing {f}')
 
-        methods.append(method)
-        nbPackets.append(count_packets(f))
 
-        packetEvolution.append(packet_evolution(f))
+        filter = createFilter(method)
+
+        # Extract data from tcpdump
+        nbPackets.append(count_packets(f, filter))
+        packetEvolution.append(packet_evolution(f, filter))
+
+
+
+    methods = list(files.keys())
 
     data = pd.DataFrame(
         {
@@ -157,6 +141,7 @@ if __name__ == '__main__':
             'discovery_packets': nbPackets
         }
     )
+
 
     # Plot data
 

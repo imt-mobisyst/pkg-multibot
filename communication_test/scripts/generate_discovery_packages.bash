@@ -69,7 +69,7 @@ fi
 
 
 # Time running
-RUN_TIME=15
+RUN_TIME=30
 
 # Start capture
 rm -f ${DUMP_FILE} > /dev/null 2>&1
@@ -116,7 +116,7 @@ fi
 
 
 # Wait for tcpdump to finish and send ctrl-c to talker and listeners
-sleep $RUN_TIME
+sleep $((RUN_TIME + 5))
 
 
 echo "-------------------------------- ENDING ---------------------------------"
