@@ -21,6 +21,8 @@ nbSeconds = 30
 def plot_packets(data):
     """Plot a graph with the result obtained."""
     ax = data.plot.bar(x='discovery_architecture', y='discovery_packets', rot=0)
+    ax.bar_label(ax.containers[0])
+    
     plt.title('Packet traffic during discovery')
     plt.xlabel('Discovery Architecture')
     plt.ylabel(f'Number of packets in {nbSeconds}s')
