@@ -21,15 +21,15 @@ Namespacing allows to add a prefix before every node, topic, service... in a lau
 
 To start the demo, you can use the following command, that will take care of starting everything (`turtle`, `operator` and `rviz`) :
 ```bash
-ros2 launch communication_test turtlesim_namespace_launch.py nb_robots:="3"
+ros2 launch multibot turtlesim_namespace_launch.py nb_robots:="3"
 ```
 
 ### b. Stage demo
 
 To start the demo, you can use the following commands, that will take care of starting everything (`rviz`, `stage`, `controller` and `operator`) :
 ```bash
-ros2 launch communication_test rviz_launch.py config:=config/stage.rviz
-ros2 launch communication_test stage_namespace_launch.py
+ros2 launch multibot rviz_launch.py config:=config/stage.rviz
+ros2 launch multibot stage_namespace_launch.py
 ```
 
 To start spawning packages, use the `Publish Point` button in rviz (it will toggle the package spawning).  
@@ -81,7 +81,7 @@ Each "robot" will be linked to a unique domain ID *(`bot_domain_id`)*. In each d
 
 To start the demo, you can use the following command, that will take care of starting everything (`turtle`, `operator` et `rviz`) :
 ```bash
-ros2 launch communication_test turtlesim_bridge_launch.py nb_robots:="3"
+ros2 launch multibot turtlesim_bridge_launch.py nb_robots:="3"
 ```
 ---
 
@@ -90,19 +90,19 @@ However, if you want to manually start the nodes yourself, here are the commands
 Starting the `turtle` in different terminals (nodes will be started with the correct `ROS_DOMAIN_ID` given as an argument):
 
 ```bash
-ros2 launch communication_test turtlesim_bridge_robot_launch.py bot_domain_id:="10" operator_domain_id:="1"
-ros2 launch communication_test turtlesim_bridge_robot_launch.py bot_domain_id:="11" operator_domain_id:="1"
+ros2 launch multibot turtlesim_bridge_robot_launch.py bot_domain_id:="10" operator_domain_id:="1"
+ros2 launch multibot turtlesim_bridge_robot_launch.py bot_domain_id:="11" operator_domain_id:="1"
 ```
 
 Bridge nodes will be started by the launchfiles to transmit the topics needed by nodes running in the `operator_domain_id`. Then, we'll start the operator node (which is responsible for managing priority between turtles) in this domain :
 
 ```bash
-ROS_DOMAIN_ID=1 ros2 run communication_test static_operator.py --ros-args -p nb_robots:=2
+ROS_DOMAIN_ID=1 ros2 run multibot static_operator.py --ros-args -p nb_robots:=2
 ```
 
 Running `rviz` in the operator's `ROS_DOMAIN_ID` :
 ```bash
-ROS_DOMAIN_ID=1 ros2 launch communication_test rviz_turtlesim_launch.py
+ROS_DOMAIN_ID=1 ros2 launch multibot rviz_turtlesim_launch.py
 ```
 
 ---
@@ -125,7 +125,7 @@ Start Rviz in the correct domain ID :
 ```bash
 export ROS_DOMAIN_ID=99
 export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-ros2 launch communication_test rviz_launch.py config:=config/stage.rviz
+ros2 launch multibot rviz_launch.py config:=config/stage.rviz
 ```
 
 > **Note :** We use CycloneDDS here because there is a [bug](https://github.com/ros2/domain_bridge/pull/79) in the
@@ -135,7 +135,7 @@ ros2 launch communication_test rviz_launch.py config:=config/stage.rviz
 Launch the demo (with the simulator, the controllers, the nav2 stacks...):
 ```bash
 export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-ros2 launch communication_test stage_bridge_launch.py
+ros2 launch multibot stage_bridge_launch.py
 ```
 
 To start spawning packages, use the `Publish Point` button in rviz (it will toggle the package spawning).  
@@ -238,7 +238,7 @@ Each robot will host its own "local" DDS Discovery server, allowing communicatio
 
 To start the demo, you can use the following command, that will take care of starting everything (`turtle`, `operator` et `rviz`) :
 ```bash
-ros2 launch communication_test turtlesim_dds_launch.py nb_robots:="3"
+ros2 launch multibot turtlesim_dds_launch.py nb_robots:="3"
 ```
 
 ---
@@ -259,21 +259,21 @@ fastdds discovery -i 3 -l 127.0.0.1 -p 11814 # Common DDS discovery server, on t
 Starting the `turtle` (`turtlesim` et `turtle_controller`) in different terminals (nodes will be started connecting automatically to the correct DDS Discovery server(s)) :
 
 ```bash
-ros2 launch communication_test turtlesim_dds_robot_launch.py local_dds_server:="127.0.0.1:11811" subnet_dds_server:="127.0.0.1:11814" nb_robots:="3" robot_id:="1"
-ros2 launch communication_test turtlesim_dds_robot_launch.py local_dds_server:="127.0.0.1:11812" subnet_dds_server:="127.0.0.1:11814" nb_robots:="3" robot_id:="2"
-ros2 launch communication_test turtlesim_dds_robot_launch.py local_dds_server:="127.0.0.1:11813" subnet_dds_server:="127.0.0.1:11814" nb_robots:="3" robot_id:="3"
+ros2 launch multibot turtlesim_dds_robot_launch.py local_dds_server:="127.0.0.1:11811" subnet_dds_server:="127.0.0.1:11814" nb_robots:="3" robot_id:="1"
+ros2 launch multibot turtlesim_dds_robot_launch.py local_dds_server:="127.0.0.1:11812" subnet_dds_server:="127.0.0.1:11814" nb_robots:="3" robot_id:="2"
+ros2 launch multibot turtlesim_dds_robot_launch.py local_dds_server:="127.0.0.1:11813" subnet_dds_server:="127.0.0.1:11814" nb_robots:="3" robot_id:="3"
 ```
 
 Starting the operator node :
 ```bash
 export ROS_DISCOVERY_SERVER=";;;127.0.0.1:11814"
-ros2 run communication_test static_operator.py --ros-args -p nb_robots:=3
+ros2 run multibot static_operator.py --ros-args -p nb_robots:=3
 ```
 
 Starting rviz :
 ```bash
 export ROS_DISCOVERY_SERVER=";;;127.0.0.1:11814"
-ros2 launch communication_test rviz_turtlesim_launch.py
+ros2 launch multibot rviz_turtlesim_launch.py
 ```
 
 ---
@@ -294,12 +294,12 @@ They will all be setup on `ROS_DOMAIN_ID=99`. The operator PC will have a static
 
 On the operator PC :
 ```bash
-ros2 launch communication_test pibot_dds_operator.py nb_robots:="2" common_dds_ip:="10.89.5.90" common_dds_port:="11811"
+ros2 launch multibot pibot_dds_operator.py nb_robots:="2" common_dds_ip:="10.89.5.90" common_dds_port:="11811"
 ```
 
 On each *pibot* :
 ```bash
-ros2 launch communication_test pibot_turtlesim_dds_launch.py nb_robots:=2 operator_server:="10.89.5.90:11811"
+ros2 launch multibot pibot_turtlesim_dds_launch.py nb_robots:=2 operator_server:="10.89.5.90:11811"
 ```
 
 ### d. Test with the stage simulator
@@ -314,12 +314,12 @@ To launch rviz, run the following commands :
 ```bash
 export FASTRTPS_DEFAULT_PROFILES_FILE=/path/to/super_client_subnet_config.xml
 ros2 daemon stop && ros2 daemon start
-ros2 launch communication_test rviz_launch.py config:=config/stage.rviz
+ros2 launch multibot rviz_launch.py config:=config/stage.rviz
 ```
 
 In another terminal, launch the demo (with the simulator, the controllers, the nav2 stacks...):
 ```bash
-ros2 launch communication_test stage_dds_launch.py
+ros2 launch multibot stage_dds_launch.py
 ```
 
 To start spawning packages, use the `Publish Point` button in rviz (it will toggle the package spawning).  
@@ -391,7 +391,7 @@ Each "robot" will have its own DDS partition (`robotX`). Their nodes will be com
 
 To start the demo, you can use the following command, that will take care of starting everything (`turtle`, `operator` et `rviz`) :
 ```bash
-ros2 launch communication_test turtlesim_partition_launch.py nb_robots:="3"
+ros2 launch multibot turtlesim_partition_launch.py nb_robots:="3"
 ```
 
 ---
@@ -400,9 +400,9 @@ However, if you want to manually start the nodes yourself, here are the commands
 
 Starting the `turtle` (`turtlesim` et `turtle_controller`) in different terminals (nodes will be started with the created config files to use their own partition `robotX` and the `shared` partition):
 ```bash
-ros2 launch communication_test turtlesim_partition_robot_launch.py nb_robots:="3" robot_id:="1"
-ros2 launch communication_test turtlesim_partition_robot_launch.py nb_robots:="3" robot_id:="2"
-ros2 launch communication_test turtlesim_partition_robot_launch.py nb_robots:="3" robot_id:="3"
+ros2 launch multibot turtlesim_partition_robot_launch.py nb_robots:="3" robot_id:="1"
+ros2 launch multibot turtlesim_partition_robot_launch.py nb_robots:="3" robot_id:="2"
+ros2 launch multibot turtlesim_partition_robot_launch.py nb_robots:="3" robot_id:="3"
 ```
 
 
@@ -410,14 +410,14 @@ Starting the operator node :
 ```bash
 export RMW_FASTRTPS_USE_QOS_FROM_XML=1
 export FASTRTPS_DEFAULT_PROFILES_FILE=path/to/operator_config.xml
-ros2 run communication_test static_operator.py --ros-args -p nb_robots:=3
+ros2 run multibot static_operator.py --ros-args -p nb_robots:=3
 ```
 
 Starting rviz :
 ```bash
 export RMW_FASTRTPS_USE_QOS_FROM_XML=1
 export FASTRTPS_DEFAULT_PROFILES_FILE=path/to/operator_config.xml
-ros2 launch communication_test rviz_turtlesim_launch.py
+ros2 launch multibot rviz_turtlesim_launch.py
 ```
 
 
@@ -433,12 +433,12 @@ To launch rviz, run the following commands :
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 export RMW_FASTRTPS_USE_QOS_FROM_XML=1
 export FASTRTPS_DEFAULT_PROFILES_FILE=path/to/operator_config.xml
-ros2 launch communication_test rviz_launch.py config:=config/stage.rviz
+ros2 launch multibot rviz_launch.py config:=config/stage.rviz
 ```
 
 In another terminal, launch the demo (with the simulator, the controllers, the nav2 stacks...):
 ```bash
-ros2 launch communication_test stage_partition_launch.py
+ros2 launch multibot stage_partition_launch.py
 ```
 
 To start spawning packages, use the `Publish Point` button in rviz (it will toggle the package spawning).  
@@ -470,12 +470,12 @@ Each "robot" will have its own Zenoh bridge as well as its own namespace (`robot
 
 To launch rviz, run the following commands :
 ```bash
-ROS_DOMAIN_ID=99 ros2 launch communication_test rviz_launch.py config:=config/stage.rviz
+ROS_DOMAIN_ID=99 ros2 launch multibot rviz_launch.py config:=config/stage.rviz
 ```
 
 In another terminal, launch the demo (with the simulator, the controllers, the nav2 stacks...):
 ```bash
-ros2 launch communication_test stage_zenoh_launch.py
+ros2 launch multibot stage_zenoh_launch.py
 ```
 
 To start spawning packages, use the `Publish Point` button in rviz (it will toggle the package spawning).  
