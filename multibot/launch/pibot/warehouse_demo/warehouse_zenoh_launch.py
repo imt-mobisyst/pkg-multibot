@@ -57,6 +57,15 @@ def generate_launch_description():
         )
     ])
 
+    costmapPublisher = Node(
+        package='multibot',
+        executable='costmap_publisher.py',
+        name='costmap_publisher',
+        parameters=[{
+            'robot_id': LaunchConfiguration('robot_id')
+        }]
+    )
+
 
     localization = GroupAction([
         PushRosNamespace(LaunchConfiguration('namespace')),
@@ -162,6 +171,8 @@ def generate_launch_description():
             operator_bridge_launch,
 
             controller_node,
+
+            costmapPublisher,
 
             localization,
 

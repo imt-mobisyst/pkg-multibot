@@ -75,7 +75,8 @@
           ],
           subscribers: [
             ".*/package_marker", ".*/retrieve_marker", ".*/assignedRobot", // OPERATOR
-            "/robot_%ID%/scan", "/robot_%ID%/odom", "/robot_%ID%/tf", "/robot_%ID%/tf_static" // PIBOT
+            "/robot_%ID%/scan", "/robot_%ID%/odom", "/robot_%ID%/tf", "/robot_%ID%/tf_static", // PIBOT
+            ".*/robot_marker" // Other robots
           ],
           service_servers: [],
           service_clients: [],
