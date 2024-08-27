@@ -48,7 +48,7 @@ ros2 launch multibot multibot.launch.py type:="domain_id"
 
 On the operator PC :
 ```bash
-ros2 launch multibot warehouse_brige_operator.py
+ros2 launch multibot warehouse_bridge_operator.py
 ```
 
 On the Controller PCs :
