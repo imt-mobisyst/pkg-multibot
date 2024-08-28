@@ -217,14 +217,14 @@ global_costmap:
         publish_occgrid: False
         use_passing: False
         use_vel_factor: True
-        speed_factor_multiplier: 2.0
-        covariance_front_height: 0.4
-        covariance_front_width: 0.25
-        covariance_rear_height: 0.25
-        covariance_rear_width: 0.25
-        covariance_right_height: 0.3
-        covariance_right_width: 0.2
-        covariance_when_still: 0.25
+        speed_factor_multiplier: 0.5
+        covariance_front_height: 0.1
+        covariance_front_width: 0.0625
+        covariance_rear_height: 0.0625
+        covariance_rear_width: 0.0625
+        covariance_right_height: 0.075
+        covariance_right_width: 0.05
+        covariance_when_still: 0.0625
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
         enabled: True
@@ -367,7 +367,7 @@ collision_monitor:
     polygons: ["PolygonStopLinear","PolygonSlow"]
     PolygonStopLinear:
       type: "polygon"
-      points: [0.2, 0.2, 0.2, -0.2, 0.0, -0.1, 0.0, 0.1]
+      points: [0.15, 0.15, 0.15, -0.15, 0.0, -0.15, 0.0, 0.15]
       action_type: "limit"
       linear_limit: 0.0
       angular_limit: 1.0
