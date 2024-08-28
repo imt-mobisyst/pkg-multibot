@@ -3,7 +3,8 @@ from ament_index_python import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, GroupAction
 from launch.actions import SetEnvironmentVariable
-from launch.substitutions import LaunchConfiguration
+from launch.conditions import IfCondition
+from launch.substitutions import LaunchConfiguration, NotEqualsSubstitution
 from launch_ros.actions import Node, PushRosNamespace, SetRemap
 from launch.actions import IncludeLaunchDescription, OpaqueFunction, SetLaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -20,6 +21,8 @@ def generate_launch_description():
     robot_id_launch_arg = DeclareLaunchArgument('robot_id', default_value='')
     robot_ip_launch_arg = DeclareLaunchArgument('robot_ip')
     robot_port_launch_arg = DeclareLaunchArgument('robot_port', default_value='11811')
+
+    use_bridge_launch_arg = DeclareLaunchArgument('use_bridge', default_value="false")
     
 
     # Robot ID
@@ -138,6 +141,8 @@ def generate_launch_description():
         robot_id_launch_arg,
         robot_ip_launch_arg,
         robot_port_launch_arg,
+        use_bridge_launch_arg,
+
         robot_id_setup,
 
         common_servers_arg,
@@ -147,7 +152,10 @@ def generate_launch_description():
         GroupAction([
             SetEnvironmentVariable('ROS_DISCOVERY_SERVER', LaunchConfiguration('common_servers')),
             controller_node,
+            
+            # Topic bridge
             Node(
+                condition=IfCondition(NotEqualsSubstitution(LaunchConfiguration('use_bridge'), 'false')),
                 package="multibot",
                 executable="stage_dds_bridge.py",
                 name=f"bridge",
