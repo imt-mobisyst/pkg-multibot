@@ -200,8 +200,8 @@ global_costmap:
   global_costmap:
     ros__parameters:
       use_sim_time: False
-      update_frequency: 1.0
-      publish_frequency: 1.0
+      update_frequency: 2.0
+      publish_frequency: 2.0
       global_frame: map
       robot_base_frame: base_link
       robot_radius: 0.16
@@ -218,8 +218,8 @@ global_costmap:
         use_passing: False
         use_vel_factor: True
         speed_factor_multiplier: 0.5
-        covariance_front_height: 0.1
-        covariance_front_width: 0.0625
+        covariance_front_height: 0.18
+        covariance_front_width: 0.09
         covariance_rear_height: 0.0625
         covariance_rear_width: 0.0625
         covariance_right_height: 0.075
@@ -370,7 +370,6 @@ collision_monitor:
       points: [0.15, 0.15, 0.15, -0.15, 0.0, -0.15, 0.0, 0.15]
       action_type: "limit"
       linear_limit: 0.0
-      angular_limit: 1.0
       min_points: 4
       visualize: True
       polygon_pub_topic: "polygon_stop"
