@@ -57,14 +57,17 @@ def generate_launch_description():
         )
     ])
 
-    costmapPublisher = Node(
-        package='multibot',
-        executable='costmap_publisher.py',
-        name='costmap_publisher',
-        parameters=[{
-            'robot_id': LaunchConfiguration('robot_id')
-        }]
-    )
+    costmapPublisher = GroupAction([
+        PushRosNamespace(LaunchConfiguration('namespace')),
+        Node(
+            package='multibot',
+            executable='costmap_publisher.py',
+            name='costmap_publisher',
+            parameters=[{
+                'robot_id': LaunchConfiguration('robot_id')
+            }]
+        )
+    ])
 
 
     localization = GroupAction([
