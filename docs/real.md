@@ -61,7 +61,7 @@ ros2 launch multibot warehouse_bridge_launch.py robot_id:=24 operator_domain_id:
 
 
 ### 3. FastDDS Discovery servers
-> ⚠️ NOT WORKING
+> ⚠️ HALF WORKING
 
 Pibot : Uncomment this line in the `mb6-space/bin/start-tbot.sh` file
 ```bash
@@ -75,11 +75,13 @@ ros2 launch multibot warehouse_dds_operator.py
 
 On the Controller PCs :
 ```bash
-ros2 launch multibot warehouse_dds_launch.py robot_id:=22 robot_ip:=10.89.5.22 subnet_dds_server:="10.89.5.90:11811"
-ros2 launch multibot warehouse_dds_launch.py robot_id:=23 robot_ip:=10.89.5.23 subnet_dds_server:="10.89.5.90:11811"
-ros2 launch multibot warehouse_dds_launch.py robot_id:=24 robot_ip:=10.89.5.24 subnet_dds_server:="10.89.5.90:11811"
+ros2 launch multibot warehouse_dds_launch.py robot_id:=22 robot_ip:=10.89.5.22 subnet_dds_server:="10.89.5.90:11811" use_bridge:=false
+ros2 launch multibot warehouse_dds_launch.py robot_id:=23 robot_ip:=10.89.5.23 subnet_dds_server:="10.89.5.90:11811" use_bridge:=false
+ros2 launch multibot warehouse_dds_launch.py robot_id:=24 robot_ip:=10.89.5.24 subnet_dds_server:="10.89.5.90:11811" use_bridge:=false
 ```
-> Note : `robot_ip` should be `192.168.1.1` when connected in ethernet
+> Notes : 
+> - `robot_ip` should be `192.168.1.1` when connected in ethernet
+> - `use_bridge:=true` creates an infinite loop
 
 
 
