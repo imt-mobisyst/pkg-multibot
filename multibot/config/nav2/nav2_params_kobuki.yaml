@@ -217,7 +217,7 @@ global_costmap:
         publish_occgrid: False
         use_passing: False
         use_vel_factor: True
-        speed_factor_multiplier: 1.0
+        speed_factor_multiplier: 2.0
         covariance_front_height: 0.1
         covariance_front_width: 0.0625
         covariance_rear_height: 0.0625
