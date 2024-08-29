@@ -10,21 +10,20 @@ Here is the list of the different communication methods that have been implement
 - **Zenoh**
 
 ### Namespacing
-> See working demos [here](../multibot/README.md#1-robot-separation-using-namespaces)
+> See working demos [here](./simulation.md#1-robot-separation-using-namespaces)
 
 **Namespaces** are prefixes to node names, topics, actions and services. They allow to have multiple elements with the same name but different prefix. 
 
 In a multi-robot scenario, namespacing is the easiest solution to separate each robot with a unique namespace, in order for robots
 to not have name conflicts when running the same nodes and using the same topics.
-> An example of this is to prefix the `cmd_vel`
-topic for robots (`robot1/cmd_vel` and `robot2/cmd_vel`), to prevent them from having the same velocity command.
+> An example of this is to prefix the `/cmd_vel` topic for robots (`/wall-e/cmd_vel` and `/r2d2/cmd_vel`), to prevent them from having the same velocity command.
 
 With our multi-robot architecture, we would have a configuration like the following :
 <div align="center"><img src="img/architectures/namespacing_architecture.png" width="850" title="Namespacing architecture example"></div>
 
 
 ### Different domain IDs
-> See working demos [here](../multibot/README.md#2-multi-domain_id-communication)
+> See working demos [here](./simulation.md#2-multi-domain_id-communication)
 
 ROS2 uses **DDS** (**D**ata **D**istribution **S**ervice) as the default middleware for communication. DDS allows nodes to 
 discover other nodes that are on the same network. In order to create different logical networks, DDS provides a feature called 
@@ -45,7 +44,7 @@ With our multi-robot architecture, we would have the following configuration :
 
 
 ### DDS Discovery servers
-> See working demos [here](../multibot/README.md#3-network-isolation-with-fastdds-discovery-server)
+> See working demos [here](./simulation.md#3-network-isolation-with-fastdds-discovery-server)
 
 As stated before, DDS is the protocol used by ROS2 for communicating between nodes. One aspect of this protocol is to look for
 elements that a node can communicate with on the network. It's the "Discovery protocol". By default, the **Simple Discovery 
@@ -64,9 +63,6 @@ A discovery server is described by :
 - its **IP address**
 - its **port**
 - its **ID**
-> [!NOTE] 
-> This solution is similar to the *"multi-master"* solution that existed in ROS1, as we're using IP addresses to connect
-> multiple robots
 
 In our multi-robot scenario, we could use this Discovery server to isolate nodes running on the robot, by connecting them to a DDS
 Discovery server running locally. Nodes that also need to communicate to other robots would connect to both their local DDS server
@@ -77,7 +73,7 @@ With our multi-robot architecture, we would have the following configuration :
 <div align="center"><img src="img/architectures/dds_architecture.png" width="850" title="FastDDS Discovery Server architecture"></div>
 
 ### DDS partitions
-> See working demos [here](../multibot/README.md#4-robot-isolation-using-dds-partitions)
+> See working demos [here](./simulation.md#4-robot-isolation-using-dds-partitions)
 
 
 As stated before, DDS is the protocol used by ROS2 for communicating between nodes. DDS introduced the concept of
@@ -100,6 +96,7 @@ With our multi-robot architecture, we would have the following configuration :
 
 
 ### Zenoh
+> See working demos [here](./simulation.md#5-robot-isolation-with-domain-id-and-zenoh)
 
 [Eclipse's Zenoh](https://zenoh.io/) is a communication protocol based on the Publish/Subscribe mechanism. It has grown in popularity as a potential replacement for DDS in ROS2, thanks to its reduced number of discovery messages.
 

@@ -13,7 +13,9 @@ These are the commands to run the warehouse demo on real robots.
 We are using 3 Kobuki robots, each with a Raspberry PI 3B mounted on top and running the drivers (for the motors and the 2D Lidar). Each robot is connected (either with a cable or trough the wifi network) to a controller PC (Dell XPS 13 7390) running the high level control (nav2, multi-robot communication etc.).
 
 > [!NOTE]
-> To run these demos, you'll have to clone the [mb6-space](https://github.com/imt-mobisyst/mb6-space) repository on the PIs, and checkout on the `multibot` branch
+> To run these demos, you'll have to :
+> - clone the [mb6-space](https://github.com/imt-mobisyst/mb6-space) repository on the PIs, and checkout on the `multibot` branch
+> - clone this repository on the operator and controller PCs
 
 ## Methods
 
@@ -21,7 +23,7 @@ We are using 3 Kobuki robots, each with a Raspberry PI 3B mounted on top and run
 
 > ⚠️ NOT WORKING
 
-Pibot : Uncomment this line in the `mb6-space/bin/start-tbot.sh` file
+On the Raspberry PI : Uncomment this line in the `mb6-space/bin/start-tbot.sh` file
 ```bash
 ROS_DOMAIN_ID=99 ros2 launch multibot multibot.launch.py type:="namespace"
 ```
@@ -41,7 +43,7 @@ ros2 launch multibot warehouse_namespace_launch.py robot_id:=24
 
 ### 2. Domain ID Bridge
 
-Pibot : Uncomment this line in the `mb6-space/bin/start-tbot.sh` file
+On the Raspberry PI : Uncomment this line in the `mb6-space/bin/start-tbot.sh` file
 ```bash
 ros2 launch multibot multibot.launch.py type:="domain_id"
 ```
@@ -63,7 +65,7 @@ ros2 launch multibot warehouse_bridge_launch.py robot_id:=24 operator_domain_id:
 ### 3. FastDDS Discovery servers
 > ⚠️ HALF WORKING
 
-Pibot : Uncomment this line in the `mb6-space/bin/start-tbot.sh` file
+On the Raspberry PI : Uncomment this line in the `mb6-space/bin/start-tbot.sh` file
 ```bash
 ROS_DOMAIN_ID=99 ros2 launch multibot multibot.launch.py type:="discovery"
 ```
@@ -88,7 +90,7 @@ ros2 launch multibot warehouse_dds_launch.py robot_id:=24 robot_ip:=10.89.5.24 s
 ### 4. DDS partitions
 > ⚠️ NOT WORKING
 
-Pibot : Uncomment this line in the `mb6-space/bin/start-tbot.sh` file
+On the Raspberry PI : Uncomment this line in the `mb6-space/bin/start-tbot.sh` file
 ```bash
 ROS_DOMAIN_ID=99 ros2 launch multibot multibot.launch.py type:="partitions"
 ```
@@ -109,7 +111,7 @@ ros2 launch multibot warehouse_partition_launch.py robot_id:=24
 
 ### 5. Zenoh DDS Bridge
 
-Uncomment the following line in the `mb6-space/bin/start-tbot.sh` file on the RPIs :
+On the Raspberry PI : Uncomment this line in the `mb6-space/bin/start-tbot.sh` file :
 ```bash
 ros2 launch multibot multibot.launch.py type:="zenoh"
 ```

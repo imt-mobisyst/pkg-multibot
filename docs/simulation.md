@@ -2,10 +2,10 @@
 
 In this README you'll see all the commands needed to run all the demos.
 
-For each solution, there are 3 working demos *(with different complexity levels)*:
-- A very simple **talker/listener** example (except for the namespacing)
-- Multiple turtlesims running in parallel : you can place a `goal_pose` in Rviz and one of the robots will be assigned to it
-- One with the stage simulator, with 3 robots in a warehouse environment. It perfectly illustrates the scenario explained
+For each solution, multiple demos are implemented. There are 3 type of demos *(with different complexity levels)*:
+1. A very simple **talker/listener** example (except for the namespacing)
+2. Multiple turtlesims running in parallel : you can place a `goal_pose` in Rviz and one of the robots will be assigned to it
+3. One with the stage simulator, with 3 robots in a warehouse environment. It perfectly illustrates the scenario explained
 [here](../README.md#1-scenario) :
     - when you add a `clicked_point` in Rviz, packages start to spawn at specific places in the map, and the robots coordinate
     to bring the packages to the correct deposit spot depending on their color.
@@ -111,7 +111,6 @@ In order to send goal points for the turtles to go to, you can press the `2D Goa
 ROS_DOMAIN_ID=1 ros2 topic pub /goal_pose geometry_msgs/msg/PoseStamped "{pose: {position: {x: 9, y: 9.0, z: 0.0}}}" --once
 ```
 
-> Note : After some time, nodes were "disappearing" : they had not crashed, the processes were still running, but `ros2 node list` and `ros2 topic list` returned empty lists. The only solution that seemed to fix it was to change the DDS provider from **eProsima Fast DDS** to **Eclipse Cyclone DDS**
 
 
 ### c. Test with the stage simulator
@@ -129,7 +128,7 @@ ros2 launch multibot rviz_launch.py config:=config/stage.rviz
 ```
 
 > **Note :** We use CycloneDDS here because there is a [bug](https://github.com/ros2/domain_bridge/pull/79) in the
-> `domain_bridge` library that causes the `bidirectional`bridge configuration to create an infinite loop
+> `domain_bridge` library that causes the `bidirectional` bridge configuration to create an infinite loop
 > when using `rmw_fastrtps_cpp`
 
 Launch the demo (with the simulator, the controllers, the nav2 stacks...):
@@ -144,7 +143,7 @@ To retrieve a package with a specific color, run `ros2 topic pub /retrieve std_m
 
 ## 3. Network isolation with FastDDS Discovery server
 
-DDS is the protocol used by ROS2 for communicating between nodes. One aspect of this protocol is to look for elements that a node can communicate with on the newtwork. It's the "Discovery protocol".
+DDS is the default protocol used by ROS2 for communicating between nodes. One aspect of this protocol is to look for elements that a node can communicate with on the newtwork. It's the "Discovery protocol".
 
 In our use case, we'll use Fast DDS [Discovery server](https://docs.ros.org/en/iron/Tutorials/Advanced/Discovery-Server/Discovery-Server.html), which works similarly to a router and allows to isolate DDS subnets.
 
@@ -157,7 +156,7 @@ We are going to start multiple DDS Discovery servers :
 
 ```bash
 fastdds discovery -i 0 -l 127.0.0.1 -p 11811 # Local
-fastdds discovery -i 1 -l 127.0.0.1 -p 11812 # Commun
+fastdds discovery -i 1 -l 127.0.0.1 -p 11812 # Shared
 ```
 
 ---
