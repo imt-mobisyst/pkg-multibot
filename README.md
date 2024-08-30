@@ -2,6 +2,8 @@
 
 This repository's goal is to study the **coordination of a robot fleet** using **ROS2** (Iron). We will study different communication methods and architectures to achieve a specific scenario, and compare them based on different criteria.
 
+[![Video of the simulation and real robot experiments](https://img.youtube.com/vi/BHjFgTxEIXc/0.jpg)](https://www.youtube.com/watch?v=BHjFgTxEIXc)
+
 ## Installation
 
 To install all the dependencies, check [here](docs/installation.md).
