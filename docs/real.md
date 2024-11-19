@@ -4,11 +4,7 @@ These are the commands to run the warehouse demo on real robots.
 
 ## Setup
 
-<div align="center">
-    <img src="img/real-robots-1.jpg" height="200" title="Real robots 1">
-    <img src="img/real-robots-2.jpg" height="200" title="Real robots 2">
-</div>
-
+![Real Robot Image](./img/real-robots.svg)
 
 We are using 3 Kobuki robots, each with a Raspberry PI 3B mounted on top and running the drivers (for the motors and the 2D Lidar). Each robot is connected (either with a cable or trough the wifi network) to a controller PC (Dell XPS 13 7390) running the high level control (nav2, multi-robot communication etc.).
 
@@ -106,8 +102,6 @@ ros2 launch multibot warehouse_partition_launch.py robot_id:=22
 ros2 launch multibot warehouse_partition_launch.py robot_id:=23
 ros2 launch multibot warehouse_partition_launch.py robot_id:=24
 ```
-
-
 
 ### 5. Zenoh DDS Bridge
 

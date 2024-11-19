@@ -19,7 +19,8 @@ to not have name conflicts when running the same nodes and using the same topics
 > An example of this is to prefix the `/cmd_vel` topic for robots (`/wall-e/cmd_vel` and `/r2d2/cmd_vel`), to prevent them from having the same velocity command.
 
 With our multi-robot architecture, we would have a configuration like the following :
-<div align="center"><img src="img/architectures/namespacing_architecture.png" width="850" title="Namespacing architecture example"></div>
+
+![Namespacing architecture example](./img/architectures/namespacing_architecture.png)
 
 
 ### Different domain IDs
@@ -36,11 +37,12 @@ However, using the [domain_bridge](https://github.com/ros2/domain_bridge/blob/ma
 between different domain IDs, and specify which topics should be broadcasted towards another domain ID (which would be shared between robots).
 
 This library allows us to run multiple nodes in the same OS process, in order to share data and "bridge" topics/services/actions from one DOMAIN_ID to another one.
-<div align="center"><img src="img/domain_bridge.png" width="850" title="Example for the domain_brige library"></div>
 
+![Example for the domain_brige library](./img/domain_bridge.png)
 
 With our multi-robot architecture, we would have the following configuration :
-<div align="center"><img src="img/architectures/domain_id_architecture.png" width="850" title="Multi domain ID architecture example"></div>
+
+![Multi domain ID architecture example](./img/architectures/domain_id_architecture.png)
 
 
 ### DDS Discovery servers
@@ -55,7 +57,7 @@ allows to isolate DDS subnets.
 Each node can choose which DDS Discovery servers (it can be more than 1) it connects to using the `ROS_DISCOVERY_SERVER` env 
 variable. Its main purpose is to reduce the network traffic induced by the discovery phase.
 
-<div align="center"><img src="https://docs.ros.org/en/iron/_images/ds_partition_example.svg" width="850" title="DDS Network isolation example"></div>
+![DDS Network isolation example]([./img/architectures/domain_id_architecture.png](https://docs.ros.org/en/iron/_images/ds_partition_example.svg))
 
 > Listener 1 discovers topics from Talker 1 & 2 but Listener 2 only discovers topics from Talker 1
 
@@ -70,7 +72,8 @@ and either a global one or another robot's one.
 
 
 With our multi-robot architecture, we would have the following configuration :
-<div align="center"><img src="img/architectures/dds_architecture.png" width="850" title="FastDDS Discovery Server architecture"></div>
+
+![FastDDS Discovery Server architecture](./img/architectures/dds_architecture.png)
 
 ### DDS partitions
 > See working demos [here](./simulation.md#4-robot-isolation-using-dds-partitions)
@@ -86,14 +89,14 @@ the same UDP port) but drop them if they don't have a partition in common.
 Partitions can be applied to specific nodes, but also more precisely **publishers/subscribers** *(DataReaders/DataWriters in DDS 
 terms)*. To configure this, you can create an **XML file** and apply it by setting the `FASTRTPS_DEFAULT_PROFILES_FILE=/path/to/file.xml` env variable.
 
-<div align="center"><img src="img/dds_partitions.png" width="850" title="DDS partitions"></div>
+![DDS partitions](./img/dds_partitions.png)
 
 In our multi-robot scenario, we could have **one partition for each robot** (`robot_X`). Topics that need to stay local would be 
 published to that partition and topics that need to be shared across robots would be published in the `shared` partition.
 
 With our multi-robot architecture, we would have the following configuration :
-<div align="center"><img src="img/architectures/dds_partitions_architecture.png" width="850" title="FastDDS Discovery Server architecture"></div>
 
+![FastDDS Discovery Server architecture](./img/architectures/dds_partitions_architecture.png)
 
 ### Zenoh
 > See working demos [here](./simulation.md#5-robot-isolation-with-domain-id-and-zenoh)
@@ -116,4 +119,5 @@ Both options provide very similar configuration options. As `rmw_zenoh` didn't p
 In a multi-robot scenario, one `zenoh-bridge-ros2dds` could be used for each physical computer. Publishers/Subscribers that should stay local would not be on the `allow` list in the configuration file, whereas those who need to be shared would be. The bridge could even be configured to restrict the network interfaces used to further configure the isolation.
 
 With a multi-robot architecture, you would have the following configuration :
-<div align="center"><img src="img/architectures/zenoh_architecture.png" width="850" title="Zenoh bridge architecture"></div>
+
+![Zenoh bridge architecture](./img/architectures/zenoh_architecture.png)

@@ -1,0 +1,19 @@
+site_name: MultiBot
+nav:
+  - MobiSyst <: '..'
+  - Home: 'index.md'
+  - Install: 'installation.md'
+  - Methods: 'methods.md'
+  - In Real: 'real.md'
+
+markdown_extensions:
+  - attr_list
+  - pymdownx.arithmatex:
+      generic: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+extra_css:
+  - style.css
