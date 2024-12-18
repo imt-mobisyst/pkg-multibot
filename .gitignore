@@ -1,3 +1,6 @@
+.vscode/
+site/
+
 multibot/scripts/data
 multibot/scripts/results
 **/__pycache__
