@@ -10,7 +10,7 @@ We are using 3 Kobuki robots, each with a Raspberry PI 3B mounted on top and run
 
 > [!NOTE]
 > To run these demos, you'll have to :
-> - clone the [mb6-space](https://github.com/imt-mobisyst/mb6-space) repository on the PIs, and checkout on the `multibot` branch
+> - clone the [mb6-space](https://github.com/imt-mobisyst/mb6-space) repository on the PIs, and checkout on the `multibot_arch` branch
 > - clone this repository on the operator and controller PCs
 
 ## Methods
@@ -21,19 +21,19 @@ We are using 3 Kobuki robots, each with a Raspberry PI 3B mounted on top and run
 
 On the Raspberry PI : Uncomment this line in the `mb6-space/bin/start-tbot.sh` file
 ```bash
-ROS_DOMAIN_ID=99 ros2 launch multibot multibot.launch.py type:="namespace"
+ROS_DOMAIN_ID=99 ros2 launch multibot_arch multibot.launch.py type:="namespace"
 ```
 
 On the operator PC :
 ```bash
-ros2 launch multibot warehouse_namespace_operator.py
+ros2 launch multibot_arch warehouse_namespace_operator.py
 ```
 
 On the Controller PCs :
 ```bash
-ros2 launch multibot warehouse_namespace_launch.py robot_id:=22
-ros2 launch multibot warehouse_namespace_launch.py robot_id:=23
-ros2 launch multibot warehouse_namespace_launch.py robot_id:=24
+ros2 launch multibot_arch warehouse_namespace_launch.py robot_id:=22
+ros2 launch multibot_arch warehouse_namespace_launch.py robot_id:=23
+ros2 launch multibot_arch warehouse_namespace_launch.py robot_id:=24
 ```
 
 
@@ -41,19 +41,19 @@ ros2 launch multibot warehouse_namespace_launch.py robot_id:=24
 
 On the Raspberry PI : Uncomment this line in the `mb6-space/bin/start-tbot.sh` file
 ```bash
-ros2 launch multibot multibot.launch.py type:="domain_id"
+ros2 launch multibot_arch multibot.launch.py type:="domain_id"
 ```
 
 On the operator PC :
 ```bash
-ros2 launch multibot warehouse_bridge_operator.py
+ros2 launch multibot_arch warehouse_bridge_operator.py
 ```
 
 On the Controller PCs :
 ```bash
-ros2 launch multibot warehouse_bridge_launch.py robot_id:=22 operator_domain_id:=99
-ros2 launch multibot warehouse_bridge_launch.py robot_id:=23 operator_domain_id:=99
-ros2 launch multibot warehouse_bridge_launch.py robot_id:=24 operator_domain_id:=99
+ros2 launch multibot_arch warehouse_bridge_launch.py robot_id:=22 operator_domain_id:=99
+ros2 launch multibot_arch warehouse_bridge_launch.py robot_id:=23 operator_domain_id:=99
+ros2 launch multibot_arch warehouse_bridge_launch.py robot_id:=24 operator_domain_id:=99
 ```
 
 
@@ -63,19 +63,19 @@ ros2 launch multibot warehouse_bridge_launch.py robot_id:=24 operator_domain_id:
 
 On the Raspberry PI : Uncomment this line in the `mb6-space/bin/start-tbot.sh` file
 ```bash
-ROS_DOMAIN_ID=99 ros2 launch multibot multibot.launch.py type:="discovery"
+ROS_DOMAIN_ID=99 ros2 launch multibot_arch multibot.launch.py type:="discovery"
 ```
 
 On the operator PC :
 ```bash
-ros2 launch multibot warehouse_dds_operator.py
+ros2 launch multibot_arch warehouse_dds_operator.py
 ```
 
 On the Controller PCs :
 ```bash
-ros2 launch multibot warehouse_dds_launch.py robot_id:=22 robot_ip:=10.89.5.22 subnet_dds_server:="10.89.5.90:11811" use_bridge:=false
-ros2 launch multibot warehouse_dds_launch.py robot_id:=23 robot_ip:=10.89.5.23 subnet_dds_server:="10.89.5.90:11811" use_bridge:=false
-ros2 launch multibot warehouse_dds_launch.py robot_id:=24 robot_ip:=10.89.5.24 subnet_dds_server:="10.89.5.90:11811" use_bridge:=false
+ros2 launch multibot_arch warehouse_dds_launch.py robot_id:=22 robot_ip:=10.89.5.22 subnet_dds_server:="10.89.5.90:11811" use_bridge:=false
+ros2 launch multibot_arch warehouse_dds_launch.py robot_id:=23 robot_ip:=10.89.5.23 subnet_dds_server:="10.89.5.90:11811" use_bridge:=false
+ros2 launch multibot_arch warehouse_dds_launch.py robot_id:=24 robot_ip:=10.89.5.24 subnet_dds_server:="10.89.5.90:11811" use_bridge:=false
 ```
 > Notes : 
 > - `robot_ip` should be `192.168.1.1` when connected in ethernet
@@ -88,37 +88,37 @@ ros2 launch multibot warehouse_dds_launch.py robot_id:=24 robot_ip:=10.89.5.24 s
 
 On the Raspberry PI : Uncomment this line in the `mb6-space/bin/start-tbot.sh` file
 ```bash
-ROS_DOMAIN_ID=99 ros2 launch multibot multibot.launch.py type:="partitions"
+ROS_DOMAIN_ID=99 ros2 launch multibot_arch multibot.launch.py type:="partitions"
 ```
 
 On the operator PC :
 ```bash
-ros2 launch multibot warehouse_partition_operator.py
+ros2 launch multibot_arch warehouse_partition_operator.py
 ```
 
 On the Controller PCs :
 ```bash
-ros2 launch multibot warehouse_partition_launch.py robot_id:=22
-ros2 launch multibot warehouse_partition_launch.py robot_id:=23
-ros2 launch multibot warehouse_partition_launch.py robot_id:=24
+ros2 launch multibot_arch warehouse_partition_launch.py robot_id:=22
+ros2 launch multibot_arch warehouse_partition_launch.py robot_id:=23
+ros2 launch multibot_arch warehouse_partition_launch.py robot_id:=24
 ```
 
 ### 5. Zenoh DDS Bridge
 
 On the Raspberry PI : Uncomment this line in the `mb6-space/bin/start-tbot.sh` file :
 ```bash
-ros2 launch multibot multibot.launch.py type:="zenoh"
+ros2 launch multibot_arch multibot.launch.py type:="zenoh"
 ```
 
 On the operator PC :
 ```bash
-ros2 launch multibot warehouse_zenoh_operator.py
+ros2 launch multibot_arch warehouse_zenoh_operator.py
 ```
 
 On the Controller PCs :
 ```bash
-ros2 launch multibot warehouse_zenoh_launch.py robot_id:=22 robot_ip:=10.89.5.22 operator_ip:=10.89.5.90
-ros2 launch multibot warehouse_zenoh_launch.py robot_id:=23 robot_ip:=10.89.5.23 operator_ip:=10.89.5.90
-ros2 launch multibot warehouse_zenoh_launch.py robot_id:=24 robot_ip:=10.89.5.24 operator_ip:=10.89.5.90
+ros2 launch multibot_arch warehouse_zenoh_launch.py robot_id:=22 robot_ip:=10.89.5.22 operator_ip:=10.89.5.90
+ros2 launch multibot_arch warehouse_zenoh_launch.py robot_id:=23 robot_ip:=10.89.5.23 operator_ip:=10.89.5.90
+ros2 launch multibot_arch warehouse_zenoh_launch.py robot_id:=24 robot_ip:=10.89.5.24 operator_ip:=10.89.5.90
 ```
 > Note : `robot_ip` should be `192.168.1.1` when connected in ethernet

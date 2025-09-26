@@ -1,7 +1,7 @@
 .vscode/
 site/
 
-multibot/scripts/data
-multibot/scripts/results
+multibot_arch/scripts/data
+multibot_arch/scripts/results
 **/__pycache__
 todos.md

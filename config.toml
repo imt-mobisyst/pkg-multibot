@@ -1,3 +1,3 @@
 [webpages]
-module = "pkg-multibot"
+module = "pkg-multibot_arch"
 target = "/home/guillaume/Webpages/imt-mobisyst-site"

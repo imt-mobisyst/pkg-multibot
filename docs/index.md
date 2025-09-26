@@ -1,4 +1,4 @@
-# pkg-multibot
+# pkg-multibot_arch
 
 This repository's goal is to study the **coordination of a robot fleet** using **ROS2** (Iron).
 We will study different communication methods and architectures to achieve a specific scenario, and compare them based on different criteria.

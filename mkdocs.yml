@@ -1,4 +1,4 @@
-site_name: MultiBot
+site_name: multibot_arch
 nav:
   - MobiSyst <: '..'
   - Home: 'index.md'
