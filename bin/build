@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# Go at the root directory of the project 
+cd `dirname $0`/..
+PROJECT=`basename $PWD`
+cd ..
+
+echo "# Build $PROJECT (target: $PWD/install)"
+echo "#--------------------------------------------------------------------"
+
+colcon build --base-paths $PROJECT
+
+# Debugs:
+
+# colcon build --packages-select my_pkg --event-handlers console_direct+
+# 
+# As an alternative, it the package has already been built and cmake uses make,
+# one can just go to the build directory and invoke make directly
+# 
+# cd build/my_pkg
+# make
