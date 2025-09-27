@@ -29,7 +29,7 @@ class Pub():
         self._nodes= []
         self._test_publishers= []
 
-        for domId, msg, freq in zip( [14, 42], ['salut', 'nounou'], [0.6, 0.3] ) :
+        for domId, msg, freq in zip( [14, 42], ['salut', 'nounou'], [2.0, 0.3] ) :
             rosContext = Context()
             rosContext.init(domain_id= domId)
             node= Node( f"test{domId}", context=rosContext )
