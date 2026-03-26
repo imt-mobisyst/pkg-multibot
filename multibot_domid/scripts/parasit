@@ -1,31 +1,54 @@
 #!/usr/bin/python3
-import socket, netifaces, rclpy
+import socket, netifaces, rclpy, subprocess
 from rclpy.node import Node
 from multibot_msgs.msg import Pulse
+from std_msgs.msg import String
 
 def main():
-    parasit= Basic()
+    parasit= Prasit()
+    parasit.addCmds( 'shutdown', 'shutdown now' )
+    parasit.addCmds( 'service', 'service' )
     parasit.process()
 
-class Basic():
+class Prasit():
+    def __init__(self):
+        self._name= ''
+        self._cmds= { 'echo' : ('echo', True) }
+    
+    def addCmds( self, cmd, systemCmd, inShell= True ):
+        self._cmds[cmd]= (systemCmd, inShell)
+    
     def get_stamp(self):
         return self._node.get_clock().now().to_msg()
     
     def pulse_callback(self):
-        hostname= socket.gethostname()
         pulse_msg= Pulse()
         pulse_msg.stamp= self.get_stamp()
-        pulse_msg.system_name= hostname
+        pulse_msg.system_name= self._name
         pulse_msg.description= " - ".join( getIpAddrs() )
         self.pulse_publisher.publish( pulse_msg )
+    
+    def cmd_callback(self, cmd_msg):
+        syscmd, inShell= 'echo', True
+        param= cmd_msg.data
+        cmd= param.split(" ")
+        if cmd[0] in self._cmds :
+            syscmd, inShell= self._cmds[cmd[0]]
+            param= ''
+            if len(cmd) > 1 :
+                param= ' '.join( cmd[1:] )
+        subprocess.Popen( f'{syscmd} {param}', shell= inShell )
 
     def process(self):
         # Ros initialization
         rclpy.init(domain_id= 140)
-        name= socket.gethostname()
-        name= name.replace("-", "_")
-        self._node = Node( f"parasit_{name}" )
+        self._name= socket.gethostname()
+        rosName= self._name.replace("-", "_")
+        self._node = Node( f"parasit_{ rosName }" )
         self.pulse_publisher= self._node.create_publisher( Pulse, 'pulse', 10 )
+        self.pulse_publisher= self._node.create_publisher( Pulse, 'pulse', 10 )
+
+        self._node.create_subscription( String, f"{rosName}/command", self.cmd_callback, 10 )
         self._timer = self._node.create_timer( 0.6, self.pulse_callback )
         
         # Infinite loop:

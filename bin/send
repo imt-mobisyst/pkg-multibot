@@ -1,0 +1,13 @@
+#!/usr/bin/python3
+import sys, subprocess
+
+if len(sys.argv) < 3 :
+    print( "send need at least 2 argument: the target machine name and a msg" )
+    exit(1)
+
+machine_name= sys.argv[1]
+msg= ' '.join( sys.argv[2:] )
+
+cmd= f'export ROS_DOMAIN_ID=140 ; ros2 topic pub -t 1 -w 0 /{machine_name}/command std_msgs/msg/String "data: \'echo {msg}\'"'
+print(cmd)
+subprocess.run(cmd, shell=True )
