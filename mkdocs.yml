@@ -1,10 +1,15 @@
-site_name: multibot_arch
+site_name: multibot
 nav:
   - MobiSyst <: '..'
   - Home: 'index.md'
-  - Install: 'installation.md'
-  - Methods: 'methods.md'
-  - In Real: 'real.md'
+  - Multi-Domain:
+    - Presentation: 'domid_index.md'
+  - Isolation Methods:
+    - Presentation: 'arch_index.md'
+    - Install: 'arch_install.md'
+    - Methods: 'arch_methods.md'
+    - In Real: 'arch_simulation.md'
+    - In Real: 'arch_real.md'
 
 markdown_extensions:
   - attr_list
@@ -14,6 +19,11 @@ markdown_extensions:
 extra_javascript:
   - javascripts/mathjax.js
   - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+theme:
+  name: readthedocs
+  collapse_navigation: True
+  titles_only: True
 
 extra_css:
   - style.css

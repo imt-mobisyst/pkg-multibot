@@ -1,8 +1,6 @@
 # Installation
 
-## ROS2
-
-This repository is based on ROS2 Iron, which you can install [here](https://docs.ros.org/en/iron/Installation.html)
+This packages requires some dependencies for each of the communication methods you want to use...
 
 ## Libraries
 
