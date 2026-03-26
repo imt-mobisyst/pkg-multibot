@@ -3,10 +3,15 @@
 <package format="3">
   <name>multibot_domid</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>Domian ID based Multi-robot solution</description>
   <maintainer email="guillaume.lozengue@imt-nord-europe.fr">guillaume</maintainer>
-  <license>TODO: License declaration</license>
+  <license>Open::MIT</license>
 
+  <depend>rclcpp</depend>
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>multibot_msgs</depend>
+  
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <test_depend>ament_lint_auto</test_depend>

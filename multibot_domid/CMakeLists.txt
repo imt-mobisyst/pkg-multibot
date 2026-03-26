@@ -10,11 +10,14 @@ find_package(ament_cmake REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
+find_package(multibot_msgs REQUIRED)
 
 # Python scripts
 install( PROGRAMS 
   scripts/test_pub
   scripts/test_sub
+  scripts/parasit
+  scripts/pulse_monitor
   DESTINATION lib/${PROJECT_NAME} )
 
 if(BUILD_TESTING)

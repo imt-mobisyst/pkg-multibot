@@ -1,0 +1,48 @@
+#!/usr/bin/python3
+import socket, netifaces, rclpy
+from rclpy.node import Node
+from multibot_msgs.msg import Pulse
+
+def main():
+    parasit= Basic()
+    parasit.process()
+
+class Basic():
+    def get_stamp(self):
+        return self._node.get_clock().now().to_msg()
+    
+    def pulse_callback(self):
+        hostname= socket.gethostname()
+        pulse_msg= Pulse()
+        pulse_msg.stamp= self.get_stamp()
+        pulse_msg.system_name= hostname
+        pulse_msg.description= " - ".join( getIpAddrs() )
+        self.pulse_publisher.publish( pulse_msg )
+
+    def process(self):
+        # Ros initialization
+        rclpy.init(domain_id= 140)
+        name= socket.gethostname()
+        name= name.replace("-", "_")
+        self._node = Node( f"parasit_{name}" )
+        self.pulse_publisher= self._node.create_publisher( Pulse, 'pulse', 10 )
+        self._timer = self._node.create_timer( 0.6, self.pulse_callback )
+        
+        # Infinite loop:
+        rclpy.spin(self._node)
+
+        # Clean stop:
+        self._node.destroy_node()
+        rclpy.shutdown()
+
+def getIpAddrs():
+    l= []
+    for iface in netifaces.interfaces() :
+        if netifaces.AF_INET in netifaces.ifaddresses(iface) :
+            ip= netifaces.ifaddresses( iface )[netifaces.AF_INET][0]['addr']
+            if ip != "127.0.0.1" :
+                l.append( netifaces.ifaddresses( iface )[netifaces.AF_INET][0]['addr'] )
+    return l
+
+if __name__ == '__main__':
+    main()

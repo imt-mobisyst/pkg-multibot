@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+PROJECT_PATH=`dirname $0`
+
+echo  """
+[Unit]
+Description=ros2 multibot_domid parasit node
+After=network-online.target
+
+[Service]
+User=$USER
+Group=$USER
+ExecStart=`realpath $PROJECT_PATH`/start-parasit.sh
+Type=simple
+Restart=always
+RuntimeMaxSec=180s
+
+[Install]
+WantedBy=mb6-updated.target
+""" > mb6-parasit.service
+
+sudo mv mb6-parasit.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable mb6-parasit.service
+
+echo "You can start the service: 'service mb6-parasit start'"

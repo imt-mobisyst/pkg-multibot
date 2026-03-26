@@ -28,8 +28,9 @@ endif()
 
 # Install interfaces
 rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/AuctionBid.msg"
-  "srv/WifiMeasure.srv"
+  msg/AuctionBid.msg
+  msg/Pulse.msg
+  srv/WifiMeasure.srv
   DEPENDENCIES geometry_msgs
 )
 
