@@ -6,7 +6,7 @@ from std_msgs.msg import String
 
 def main():
     parasit= Prasit()
-    parasit.addCmds( 'shutdown', 'shutdown now' )
+    parasit.addCmds( 'shutdown', 'sudo shutdown now' )
     parasit.addCmds( 'service', 'service' )
     parasit.process()
 
